@@ -16,7 +16,7 @@ module.exports = {
           '.json',
           '.tsx',
           '.ts',
-          '.native.js',
+          '.native.js'
         ],
       },
     ],
