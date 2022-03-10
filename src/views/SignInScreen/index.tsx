@@ -3,20 +3,20 @@ import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {Image, Text, colors, Button, CheckBox} from 'react-native-elements';
 
-import logoImage from '~/assets/logo2x.png';
+import bannerImage from '~/assets/banner2x.png';
 import MyInput from '~/components/MyInput';
 
 const SigninScreen = ({navigation}: any) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View>
-        <Image source={logoImage} containerStyle={styles.logoImage} />
-        <Text style={styles.welcomeText}>Welcome back 👋</Text>
+        <Image source={bannerImage} containerStyle={styles.logoImage} />
+        {/* <Text style={styles.welcomeText}>Welcome back 👋</Text>
         <Text style={styles.descriptionText}>Enter your email address and password to</Text>
-        <Text style={styles.descriptionText}>get access your account.</Text>
+        <Text style={styles.descriptionText}>get access your account.</Text> */}
       </View>
 
-      <View>
+      <View style={{paddingHorizontal: 30}}>
         <MyInput
           placeholder="Email Address"
           containerStyle={{marginTop: 32}}
@@ -70,14 +70,12 @@ const SigninScreen = ({navigation}: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 30,
     backgroundColor: colors.white,
   },
   logoImage: {
-    width: 62,
-    height: 50,
+    width: '100%',
+    height: 200,
     alignSelf: 'center',
-    marginTop: 40,
   },
   welcomeText: {
     color: colors.grey1,
