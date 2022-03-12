@@ -54,9 +54,6 @@ export default class MyScreenSlider<ItemT = any> extends React.Component<Props<I
     this.goToSlide(this.state.activeIndex + 1, true);
   };
 
-  // Get the list ref
-  getListRef = () => this.flatList;
-
   // Index that works across Android's weird rtl bugs
   _rtlSafeIndex = (i: number) => (isAndroidRTL ? this.props.data.length - 1 - i : i);
 
@@ -76,8 +73,7 @@ export default class MyScreenSlider<ItemT = any> extends React.Component<Props<I
     // Also, Android phones and their weird numbers
     const newIndex = this._rtlSafeIndex(Math.round(offset / this.state.width));
     if (newIndex === this.state.activeIndex) {
-      // No page change, don't do anything
-      return;
+      return; // No page change, don't do anything
     }
     const lastIndex = this.state.activeIndex;
     this.setState({activeIndex: newIndex});
@@ -87,14 +83,13 @@ export default class MyScreenSlider<ItemT = any> extends React.Component<Props<I
   _onLayout = ({nativeEvent}: LayoutChangeEvent) => {
     const {width, height} = nativeEvent.layout;
     if (width !== this.state.width || height !== this.state.height) {
-      // Set new width to update rendering of pages
-      this.setState({width, height});
-      // Set new scroll position
+      this.setState({width, height}); // Set new width to update rendering of pages
+
       const func = () => {
         this.flatList?.scrollToOffset({
           offset: this._rtlSafeIndex(this.state.activeIndex) * width,
           animated: false,
-        });
+        }); // Set new scroll position
       };
       setTimeout(func, 0); // Must be called like this to avoid bugs :/
     }

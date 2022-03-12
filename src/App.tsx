@@ -5,6 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AuthScreen from '~/views/AuthScreen';
 import SigninScreen from '~/views/SigninScreen';
 import SignupScreen from '~/views/SignupScreen';
+import Main from './Main';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ const MyStack = () => {
         component={SignupScreen}
         options={{headerTitle: 'Register Account', headerTitleStyle: {fontSize: 18}, headerShadowVisible: false}}
       />
+      <Stack.Screen name="Main" component={Main} options={{headerShown: false}} />
     </Stack.Navigator>
   );
 };

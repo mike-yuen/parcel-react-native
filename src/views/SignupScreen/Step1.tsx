@@ -5,15 +5,15 @@ import {Button, colors, Image, Text} from 'react-native-elements';
 
 import stepOneImage from '~/assets/step-one.png';
 
-const StepOne = (props: any) => {
+const Step1 = (props: any) => {
   const {onNext} = props;
   return (
     <View style={styles.container}>
-      <View>
+      <View style={{paddingHorizontal: 30}}>
         <Image source={stepOneImage} containerStyle={styles.logoImage} />
         <Text style={styles.welcomeText}>Join ParcelGO</Text>
-        <Text style={styles.descriptionText}>Enter your name, email address & password</Text>
-        <Text style={styles.descriptionText}>to register account.</Text>
+        <Text style={styles.descriptionText}>We'll help you create an account</Text>
+        <Text style={styles.descriptionText}>in a few easy steps.</Text>
         <Button
           title="Get started"
           containerStyle={{marginTop: 10, marginBottom: 20}}
@@ -22,9 +22,9 @@ const StepOne = (props: any) => {
           onPress={onNext}
         />
       </View>
-      <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', marginVertical: 30}}>
-        <Link to={{screen: 'Signin'}} style={{fontSize: 15, color: '#5f5fff'}}>
-          Already have account?
+      <View style={styles.signinText}>
+        <Link to={{screen: 'Signin'}} style={{fontSize: 13, color: '#5f5fff'}}>
+          Already have an account?
         </Link>
       </View>
     </View>
@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderTopWidth: 1,
     borderTopColor: colors.grey5,
-    paddingHorizontal: 30,
   },
   logoImage: {
     width: 200,
@@ -61,6 +60,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
+  signinText: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: colors.grey5,
+  },
 });
 
-export default StepOne;
+export default Step1;

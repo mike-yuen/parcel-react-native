@@ -11,9 +11,6 @@ const SigninScreen = ({navigation}: any) => {
     <ScrollView contentContainerStyle={styles.container}>
       <View>
         <Image source={bannerImage} containerStyle={styles.logoImage} />
-        {/* <Text style={styles.welcomeText}>Welcome back 👋</Text>
-        <Text style={styles.descriptionText}>Enter your email address and password to</Text>
-        <Text style={styles.descriptionText}>get access your account.</Text> */}
       </View>
 
       <View style={{paddingHorizontal: 30}}>
@@ -21,6 +18,7 @@ const SigninScreen = ({navigation}: any) => {
           placeholder="Email Address"
           containerStyle={{marginTop: 32}}
           inputContainerStyle={{borderRadius: 0, borderTopStartRadius: 8, borderTopEndRadius: 8}}
+          autoFocus
         />
         <MyInput
           placeholder="Password"
@@ -47,19 +45,18 @@ const SigninScreen = ({navigation}: any) => {
           containerStyle={{marginTop: 10, marginBottom: 20}}
           buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
           titleStyle={{color: colors.white, marginVertical: 4}}
-          onPress={() => navigation.navigate('Auth')}
+          onPress={() => navigation.navigate('Main')}
         />
       </View>
 
       <View style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 60}}>
         <Text style={{marginTop: 14, marginBottom: 12}}>Don't have an account?</Text>
-        <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           <Link to={{screen: 'Signup'}} style={{fontSize: 15, color: '#5f5fff'}}>
-            Register Account
+            Sign up for ParcelGO
           </Link>
-          <Text style={{fontSize: 14, color: colors.grey2}}> or </Text>
-          <Link to={{screen: 'Auth'}} style={{fontSize: 15, color: '#5f5fff'}}>
-            Go Back
+          <Link to={{screen: 'Auth'}} style={{fontSize: 15, color: '#5f5fff', marginTop: 8}}>
+            Back
           </Link>
         </View>
       </View>
@@ -76,21 +73,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     alignSelf: 'center',
-  },
-  welcomeText: {
-    color: colors.grey1,
-    fontSize: 22,
-    marginTop: 24,
-    marginBottom: 8,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  descriptionText: {
-    color: colors.grey2,
-    fontSize: 14,
-    lineHeight: 22,
-    fontWeight: '600',
-    textAlign: 'center',
   },
 });
 

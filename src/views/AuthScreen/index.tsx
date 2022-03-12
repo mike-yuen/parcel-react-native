@@ -36,7 +36,7 @@ const AuthScreen = ({navigation}: any) => {
           <View style={{flex: 1, height: 0.8, backgroundColor: colors.grey4}} />
         </View>
         <Button
-          title="Sign Up with Email"
+          title="Sign up with Email"
           containerStyle={{marginTop: 22}}
           buttonStyle={{backgroundColor: 'rgb(236, 236, 236)', borderRadius: 8}}
           titleStyle={{color: colors.grey0, marginVertical: 4}}
@@ -50,7 +50,7 @@ const AuthScreen = ({navigation}: any) => {
           onPress={() => navigation.navigate('Signup')}
         />
         <Button
-          title="Sign Up with Google"
+          title="Sign up with Google"
           containerStyle={{marginTop: 16, marginBottom: 20}}
           buttonStyle={{backgroundColor: 'rgb(236, 236, 236)', borderRadius: 8}}
           titleStyle={{color: colors.grey0, marginVertical: 4}}
