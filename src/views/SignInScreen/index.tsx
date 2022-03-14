@@ -1,12 +1,20 @@
 import {Link} from '@react-navigation/native';
 import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
+import {useDispatch} from 'react-redux';
 import {Image, Text, colors, Button, CheckBox} from 'react-native-elements';
 
 import bannerImage from '~/assets/banner2x.png';
 import MyInput from '~/components/MyInput';
+import {signIn} from '~/store/slices/userSlice';
 
 const SigninScreen = ({navigation}: any) => {
+  const dispatch = useDispatch();
+
+  const onSubmit = () => {
+    dispatch(signIn({email: 'nhatminh.150596+15@gmail.com', password: '123456'}));
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View>
@@ -37,6 +45,7 @@ const SigninScreen = ({navigation}: any) => {
             title="Remember me"
             containerStyle={{backgroundColor: 'transparent', borderWidth: 0, margin: 0, padding: 0, marginLeft: 0}}
             textStyle={{fontWeight: '400'}}
+            checked={false}
           />
           <Text style={{color: colors.grey1}}>Forgot Password?</Text>
         </View>
@@ -45,7 +54,7 @@ const SigninScreen = ({navigation}: any) => {
           containerStyle={{marginTop: 10, marginBottom: 20}}
           buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
           titleStyle={{color: colors.white, marginVertical: 4}}
-          onPress={() => navigation.navigate('Main')}
+          onPress={onSubmit}
         />
       </View>
 

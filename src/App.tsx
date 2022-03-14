@@ -1,7 +1,9 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {Provider} from 'react-redux';
 
+import store from '~/store';
 import AuthScreen from '~/views/AuthScreen';
 import SigninScreen from '~/views/SigninScreen';
 import SignupScreen from '~/views/SignupScreen';
@@ -26,9 +28,11 @@ const MyStack = () => {
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <MyStack />
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <MyStack />
+      </NavigationContainer>
+    </Provider>
   );
 };
 
