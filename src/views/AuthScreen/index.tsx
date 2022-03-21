@@ -47,7 +47,7 @@ const AuthScreen = ({navigation}: any) => {
             color: '#5f5fff',
           }}
           iconContainerStyle={{position: 'absolute', left: 20}}
-          onPress={() => navigation.navigate('Signup')}
+          onPress={() => navigation.navigate('SignupStep1')}
         />
         <Button
           title="Sign up with Google"

@@ -1,16 +1,32 @@
 import {Link} from '@react-navigation/native';
 import React from 'react';
+import {useForm} from 'react-hook-form';
 import {StyleSheet, View} from 'react-native';
 import {Button, colors, Text} from 'react-native-elements';
 import MyInput from '~/components/MyInput';
 
-const Step4 = (props: any) => {
-  const {onNext} = props;
+const Step4 = ({navigation}: any) => {
+  const {
+    control,
+    formState: {isValid},
+    handleSubmit,
+  } = useForm({mode: 'onChange'});
+
+  function onNext() {
+    navigation.navigate('SignupStep5');
+  }
+
   return (
     <View style={styles.container}>
       <View style={{paddingHorizontal: 30}}>
         <Text style={styles.welcomeText}>Create a password</Text>
-        <MyInput placeholder="Password" containerStyle={{marginTop: 14, marginBottom: 10}} autoFocus />
+        <MyInput
+          name="password"
+          control={control}
+          placeholder="Password"
+          containerStyle={{marginTop: 14, marginBottom: 10}}
+          autoFocus
+        />
         <Text style={styles.descriptionText}>Enter a combination of at least six numbers, letters</Text>
         <Text style={styles.descriptionText}>and punctuation marks (like ! and &).</Text>
         <Button
@@ -18,7 +34,7 @@ const Step4 = (props: any) => {
           containerStyle={{marginTop: 10, marginBottom: 20}}
           buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
           titleStyle={{color: colors.white, marginVertical: 4}}
-          onPress={onNext}
+          onPress={handleSubmit(onNext)}
         />
       </View>
       <View style={styles.signinText}>

@@ -1,16 +1,32 @@
-import {Link} from '@react-navigation/native';
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Link} from '@react-navigation/native';
+import {useForm} from 'react-hook-form';
+import {StyleSheet, TextInput, View} from 'react-native';
 import {Button, colors, Text} from 'react-native-elements';
 import MyInput from '~/components/MyInput';
 
-const Step2 = (props: any) => {
-  const {onNext} = props;
+const Step2 = ({navigation}: any) => {
+  const {
+    control,
+    formState: {isValid},
+    handleSubmit,
+  } = useForm({mode: 'onChange'});
+
+  function onNext() {
+    navigation.navigate('SignupStep3');
+  }
+
   return (
     <View style={styles.container}>
       <View style={{paddingHorizontal: 30}}>
         <Text style={styles.welcomeText}>What's your name?</Text>
-        <MyInput placeholder="Full name" containerStyle={{marginTop: 14, marginBottom: 10}} autoFocus />
+        <MyInput
+          name="fullname"
+          control={control}
+          placeholder="Full name"
+          containerStyle={{marginTop: 14, marginBottom: 10}}
+          autoFocus
+        />
         <Text style={styles.descriptionText}>Using your real name makes it easier for </Text>
         <Text style={styles.descriptionText}>receivers to recognize you.</Text>
         <Button
@@ -18,7 +34,7 @@ const Step2 = (props: any) => {
           containerStyle={{marginTop: 10, marginBottom: 20}}
           buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
           titleStyle={{color: colors.white, marginVertical: 4}}
-          onPress={onNext}
+          onPress={handleSubmit(onNext)}
         />
       </View>
       <View style={styles.signinText}>

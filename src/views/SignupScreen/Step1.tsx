@@ -5,8 +5,7 @@ import {Button, colors, Image, Text} from 'react-native-elements';
 
 import stepOneImage from '~/assets/step-one.png';
 
-const Step1 = (props: any) => {
-  const {onNext} = props;
+const Step1 = ({navigation}: any) => {
   return (
     <View style={styles.container}>
       <View style={{paddingHorizontal: 30}}>
@@ -19,7 +18,7 @@ const Step1 = (props: any) => {
           containerStyle={{marginTop: 10, marginBottom: 20}}
           buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
           titleStyle={{color: colors.white, marginVertical: 4}}
-          onPress={onNext}
+          onPress={() => navigation.navigate('SignupStep2')}
         />
       </View>
       <View style={styles.signinText}>

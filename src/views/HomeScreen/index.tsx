@@ -1,7 +1,8 @@
 import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
-import {Button, colors, Icon, Tab, TabView, Text} from 'react-native-elements';
+import {Button, colors, Image, Tab, TabView, Text} from 'react-native-elements';
 
+import emptyImage from '~/assets/empty.png';
 import MyHeader from '~/components/MyHeader';
 import MyTrackingBar from '~/components/MyTrackingBar';
 
@@ -33,19 +34,25 @@ const HomeScreen = ({navigation}: any) => {
             paddingHorizontal: 16,
           }}>
           <View style={{padding: 30, alignItems: 'center'}}>
-            <Icon
-              name="package-variant"
-              type="material-community"
-              size={140}
-              color="#e9eaed"
-              tvParallaxProperties={undefined}
+            <Image
+              source={emptyImage}
+              containerStyle={{
+                width: 200,
+                height: 140,
+                alignSelf: 'center',
+              }}
             />
-            <Text style={{fontSize: 20, fontWeight: '700', color: '#b1b1b2'}}>No parcels to show</Text>
+            <Text style={{fontSize: 18, fontWeight: '700', color: colors.grey1, marginTop: 20}}>
+              You have no orders
+            </Text>
+            <Text style={{fontSize: 12, color: colors.grey3, marginTop: 6}}>
+              You have no orders
+            </Text>
             <Button
               title="Create new request"
               containerStyle={{marginTop: 14, marginBottom: 20}}
               buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
-              titleStyle={{color: colors.white, marginVertical: 2, marginHorizontal: 10}}
+              titleStyle={{color: colors.white, marginVertical: 0, marginHorizontal: 20}}
             />
           </View>
         </TabView.Item>

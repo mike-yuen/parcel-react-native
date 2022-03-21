@@ -4,7 +4,7 @@ import baseAxios from './_base.instance';
 async function post(path: string, body: any = null) {
   try {
     const res = await baseAxios.get(path);
-    console.log('api-result', res);
+    console.log('api-result', res.data);
     const resBody = await res.data;
     return resBody;
   } catch (err) {
@@ -18,5 +18,5 @@ export const user = {
   signUp: async (body: any) => await post('/api/auth/signup', body),
   verifyEmail: async (body: any) => await post('/api/auth/verify-email', body),
   signOut: async (body: any) => await post('/api/auth/signout', body),
-  setStorage: async (key: string, value: string) => await AsyncStorage.setItem(key, value),
+  setStore: async (key: string, value: string) => await AsyncStorage.setItem(key, value),
 };
