@@ -27,6 +27,7 @@ const userSlice = createSlice({
       state.signedIn = false;
       state.error = action.payload;
     },
+    localSignIn() {},
     /**
      * signOut
      */
@@ -43,5 +44,6 @@ const userSlice = createSlice({
   },
 });
 
-export const {signIn, signInSuccess, signInError, signOut, signOutSuccess, getUser, setUser} = userSlice.actions;
+export const {signIn, signInSuccess, signInError, localSignIn, signOut, signOutSuccess, getUser, setUser} =
+  userSlice.actions;
 export default userSlice.reducer;

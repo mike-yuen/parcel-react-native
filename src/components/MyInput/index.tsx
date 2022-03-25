@@ -15,10 +15,14 @@ const MyInput = (props: any) => {
 
   function onFocus() {
     setFocus(true);
+    const {onFocus} = props;
+    if (onFocus) onFocus();
   }
 
   function onBlur() {
     setFocus(false);
+    const {onBlur} = props;
+    if (onBlur) onBlur();
   }
 
   return (
@@ -39,7 +43,7 @@ const MyInput = (props: any) => {
         {
           borderWidth: 1,
           borderStyle: 'solid',
-          borderColor: focus ? '#5f5fff' : colors.grey4,
+          borderColor: props.errors ? 'red' : focus ? '#5f5fff' : colors.grey4,
           borderRadius: 8,
           paddingHorizontal: 10,
         },

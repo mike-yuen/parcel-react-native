@@ -37,7 +37,6 @@ const SigninScreen = ({navigation}: any) => {
           containerStyle={{marginTop: 32}}
           inputContainerStyle={{borderRadius: 0, borderTopStartRadius: 8, borderTopEndRadius: 8}}
           autoFocus
-          onSubmitEditing={handleSubmit(onSubmit)}
         />
         <MyInput
           name="password"

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Provider, useSelector} from 'react-redux';
+import {Provider, useDispatch, useSelector} from 'react-redux';
 
 import store, {RootState} from '~/store';
 import AuthScreen from '~/views/AuthScreen';
@@ -13,17 +13,22 @@ import Step3 from '~/views/SignupScreen/Step3';
 import Step4 from '~/views/SignupScreen/Step4';
 import Step5 from '~/views/SignupScreen/Step5';
 import Main from './Main';
+import {localSignInSaga} from './store/saga';
 
 const Stack = createNativeStackNavigator();
 
 const MyStack = () => {
   const signupOptions = {headerTitle: 'Register Account', headerTitleStyle: {fontSize: 18}, headerShadowVisible: false};
+  const dispatch = useDispatch();
   const [token, setToken] = useState<string | null>(null);
   const {signedIn} = useSelector((state: RootState) => state.user);
 
   async function getToken() {
     const token = await AsyncStorage.getItem('jt');
     console.log('_______', token);
+    if (token && !signedIn) {
+      dispatch(localSignInSaga());
+    }
     setToken(token);
   }
 

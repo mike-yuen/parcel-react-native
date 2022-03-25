@@ -1,48 +1,77 @@
 import {Link} from '@react-navigation/native';
-import React from 'react';
+import React, {useState} from 'react';
 import {useForm} from 'react-hook-form';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, ScrollView, View} from 'react-native';
 import {Button, colors, Text} from 'react-native-elements';
+import {yupResolver} from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
 import MyInput from '~/components/MyInput';
+
+const schema = yup
+  .object({
+    email: yup.string().email().required(),
+  })
+  .required();
 
 const Step3 = ({navigation}: any) => {
   const {
     control,
-    formState: {isValid},
+    formState: {errors, isValid},
     handleSubmit,
-  } = useForm({mode: 'onChange'});
+  } = useForm({resolver: yupResolver(schema), mode: 'onBlur'});
+
+  const [focus, setFocus] = useState(false);
+
+  const emailErrors = errors.email && errors.email.type === 'email';
+
+  function onFocus() {
+    setFocus(true);
+  }
+  function onBlur() {
+    setFocus(false);
+  }
 
   function onNext() {
     navigation.navigate('SignupStep4');
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} keyboardDismissMode="interactive">
       <View style={{paddingHorizontal: 30}}>
         <Text style={styles.welcomeText}>What's your email address?</Text>
+        <Text style={{color: 'red', fontSize: 14, textAlign: 'center', opacity: emailErrors ? 1 : 0}}>
+          Email invalid
+        </Text>
         <MyInput
           name="email"
           control={control}
           placeholder="Enter your email address"
           containerStyle={{marginTop: 14, marginBottom: 10}}
           autoFocus
+          errors={emailErrors}
+          onSubmitEditing={handleSubmit(onNext)}
+          onFocus={onFocus}
+          onBlur={onBlur}
         />
         <Text style={styles.descriptionText}>You'll use this email when you log in and if you ever</Text>
-        <Text style={styles.descriptionText}>need to reset your password.</Text>
-        <Button
-          title="Next"
-          containerStyle={{marginTop: 10, marginBottom: 20}}
-          buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
-          titleStyle={{color: colors.white, marginVertical: 4}}
-          onPress={handleSubmit(onNext)}
-        />
+        <Text style={styles.descriptionText}>need to reset your password. </Text>
+        {isValid && !focus && (
+          <Button
+            title="Next"
+            containerStyle={{marginTop: 10, marginBottom: 20}}
+            buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
+            titleStyle={{color: colors.white, marginVertical: 4}}
+            onPress={handleSubmit(onNext)}
+          />
+        )}
       </View>
       <View style={styles.signinText}>
         <Link to={{screen: 'Signin'}} style={{fontSize: 13, color: '#5f5fff'}}>
           Already have an account?
         </Link>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
