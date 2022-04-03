@@ -14,11 +14,17 @@ export function* signInSaga(action: any) {
 }
 
 export function* localSignInSaga() {
-  yield put(signInSuccess());
+  try {
+    yield put(signInSuccess());
+  } catch (error) {
+    yield put(signInError(error));
+  }
 }
 
 export function* signOutSaga() {
-  yield put(signOutSuccess());
+  try {
+    yield put(signOutSuccess());
+  } catch (error) {}
 }
 
 function* rootSaga() {

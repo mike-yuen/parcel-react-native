@@ -20,13 +20,13 @@ const MyTrackingBar = (props: any) => {
           name: 'package-variant-closed',
           type: 'material-community',
           size: 18,
-          color: '#5f5fff',
+          color: '#ff7d00',
         }}
         rightIcon={{
           name: 'search',
           type: 'ionicon',
           size: 18,
-          color: colors.grey3,
+          color: '#222831',
         }}
         leftIconContainerStyle={{marginVertical: 0, paddingVertical: 0}}
         rightIconContainerStyle={{marginVertical: 0, paddingVertical: 0}}
@@ -43,7 +43,7 @@ const MyTrackingBar = (props: any) => {
           color: colors.white,
         }}
         iconContainerStyle={{marginHorizontal: 0}}
-        buttonStyle={{width: 38, height: 38, backgroundColor: '#5f5fff', borderRadius: 8}}
+        buttonStyle={{width: 38, height: 38, backgroundColor: '#222831', borderRadius: 8}}
         onPress={() => console.log('Notification')}
       />
     </View>
