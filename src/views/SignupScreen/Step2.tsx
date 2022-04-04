@@ -4,6 +4,9 @@ import {useForm} from 'react-hook-form';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {Button, colors, Text} from 'react-native-elements';
 import MyInput from '~/components/MyInput';
+import {COLORS} from '~/constants/colors';
+import {useDispatch} from 'react-redux';
+import {setSignUpData} from '~/store/slices/userSlice';
 
 const Step2 = ({navigation}: any) => {
   const {
@@ -12,6 +15,7 @@ const Step2 = ({navigation}: any) => {
     handleSubmit,
   } = useForm({mode: 'onChange'});
 
+  const dispatch = useDispatch();
   const [focus, setFocus] = useState(false);
 
   function onFocus() {
@@ -21,9 +25,10 @@ const Step2 = ({navigation}: any) => {
     setFocus(false);
   }
 
-  function onNext() {
+  const onNext = (data: any) => {
+    dispatch(setSignUpData(data));
     navigation.navigate('SignupStep3');
-  }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardDismissMode="interactive">
@@ -37,6 +42,7 @@ const Step2 = ({navigation}: any) => {
           placeholder="Full name"
           containerStyle={{marginTop: 14, marginBottom: 10}}
           autoFocus
+          onSubmitEditing={handleSubmit(onNext)}
           onFocus={onFocus}
           onBlur={onBlur}
         />
@@ -46,14 +52,14 @@ const Step2 = ({navigation}: any) => {
           <Button
             title="Next"
             containerStyle={{marginTop: 10, marginBottom: 20}}
-            buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
-            titleStyle={{color: colors.white, marginVertical: 4}}
+            buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+            titleStyle={{color: COLORS.black1, marginVertical: 2}}
             onPress={handleSubmit(onNext)}
           />
         )}
       </View>
       <View style={styles.signinText}>
-        <Link to={{screen: 'Signin'}} style={{fontSize: 13, color: '#5f5fff'}}>
+        <Link to={{screen: 'Signin'}} style={{fontSize: 13, color: COLORS.darkGolden}}>
           Already have an account?
         </Link>
       </View>
@@ -70,7 +76,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.grey5,
   },
   welcomeText: {
-    color: '#5f5fff',
+    color: COLORS.black0,
     fontSize: 20,
     marginTop: 36,
     marginBottom: 8,
@@ -78,7 +84,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   descriptionText: {
-    color: colors.grey2,
+    color: COLORS.gray,
     fontSize: 13,
     lineHeight: 22,
     fontWeight: '600',

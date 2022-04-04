@@ -49,7 +49,7 @@ const HomeScreen = ({navigation}: any) => {
   return (
     <>
       <View style={{backgroundColor: '#f4f4f4', paddingBottom: 6}}>
-        <MyHeader />
+        <MyHeader navigation={navigation} />
       </View>
       <ScrollView style={{flex: 1, backgroundColor: colors.white, borderTopLeftRadius: 30, borderTopRightRadius: 30}}>
         <Carousel
@@ -59,6 +59,7 @@ const HomeScreen = ({navigation}: any) => {
           itemWidth={Dimensions.get('window').width}
           renderItem={_renderItem}
           loop
+          loopClonesPerSide={1}
           autoplay
           enableMomentum={false}
           lockScrollWhileSnapping
@@ -71,7 +72,7 @@ const HomeScreen = ({navigation}: any) => {
             <View style={{flexDirection: 'row'}}>
               <Button
                 title="All"
-                containerStyle={{width: 60}}
+                containerStyle={{width: 60, borderRadius: 30}}
                 buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
                 titleStyle={{color: '#24252a', fontSize: 14, fontWeight: '600'}}
               />
@@ -83,7 +84,7 @@ const HomeScreen = ({navigation}: any) => {
                   color: '#b6bdc7',
                   style: {marginTop: 1, marginBottom: 2},
                 }}
-                containerStyle={{width: 60, marginLeft: 10}}
+                containerStyle={{width: 60, borderRadius: 30, marginLeft: 10}}
                 buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
               />
             </View>
@@ -97,7 +98,7 @@ const HomeScreen = ({navigation}: any) => {
                   color: '#24252a',
                 }}
                 iconRight
-                containerStyle={{width: 70, marginLeft: 10}}
+                containerStyle={{width: 70, borderRadius: 30, marginLeft: 10}}
                 buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
                 titleStyle={{color: '#24252a', fontSize: 14, fontWeight: '600', marginLeft: 4}}
               />
@@ -120,6 +121,7 @@ const HomeScreen = ({navigation}: any) => {
               containerStyle={{marginTop: 14, marginBottom: 20}}
               buttonStyle={{backgroundColor: '#f4b41f', borderRadius: 4}}
               titleStyle={{color: colors.black, fontSize: 14, marginVertical: 0, marginHorizontal: 20}}
+              onPress={() => navigation.navigate('Order')}
             />
           </View>
         </View>

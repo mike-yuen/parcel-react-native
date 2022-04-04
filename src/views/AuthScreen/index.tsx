@@ -4,10 +4,11 @@ import {Button, Image, Text, colors} from 'react-native-elements';
 
 import logoImage from '~/assets/logo2x.png';
 import googleImage from '~/assets/google.png';
+import {COLORS} from '~/constants/colors';
 
 class Google extends React.Component {
   render() {
-    return <Image source={googleImage} containerStyle={{width: 20, height: 20}} />;
+    return <Image source={googleImage} containerStyle={{width: 18, height: 18}} />;
   }
 }
 
@@ -24,27 +25,27 @@ const AuthScreen = ({navigation}: any) => {
         <Button
           title="Sign in"
           containerStyle={{marginTop: 30, marginBottom: 20}}
-          buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
-          titleStyle={{color: colors.white, marginVertical: 4}}
+          buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+          titleStyle={{color: COLORS.black1, marginVertical: 2}}
           onPress={() => navigation.navigate('Signin')}
         />
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View style={{flex: 1, height: 0.8, backgroundColor: colors.grey4}} />
+          <View style={{flex: 1, height: 0.8, backgroundColor: COLORS.gray}} />
           <View>
-            <Text style={{width: 50, textAlign: 'center', color: colors.grey3}}>OR</Text>
+            <Text style={{width: 50, textAlign: 'center', color: COLORS.gray}}>OR</Text>
           </View>
-          <View style={{flex: 1, height: 0.8, backgroundColor: colors.grey4}} />
+          <View style={{flex: 1, height: 0.8, backgroundColor: COLORS.gray}} />
         </View>
         <Button
           title="Sign up with Email"
           containerStyle={{marginTop: 22}}
-          buttonStyle={{backgroundColor: 'rgb(236, 236, 236)', borderRadius: 8}}
-          titleStyle={{color: colors.grey0, marginVertical: 4}}
+          buttonStyle={{backgroundColor: COLORS.gray0, borderRadius: 4}}
+          titleStyle={{color: COLORS.black, marginVertical: 2}}
           icon={{
             name: 'wallet-outline',
             type: 'ionicon',
             size: 22,
-            color: '#5f5fff',
+            color: COLORS.darkGolden,
           }}
           iconContainerStyle={{position: 'absolute', left: 20}}
           onPress={() => navigation.navigate('SignupStep1')}
@@ -52,8 +53,8 @@ const AuthScreen = ({navigation}: any) => {
         <Button
           title="Sign up with Google"
           containerStyle={{marginTop: 16, marginBottom: 20}}
-          buttonStyle={{backgroundColor: 'rgb(236, 236, 236)', borderRadius: 8}}
-          titleStyle={{color: colors.grey0, marginVertical: 4}}
+          buttonStyle={{backgroundColor: COLORS.gray0, borderRadius: 4}}
+          titleStyle={{color: COLORS.black, marginVertical: 2}}
           icon={{Component: Google}}
           iconContainerStyle={{position: 'absolute', left: 20}}
           onPress={() => console.log('Button with adjusted color pressed!!!')}
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   welcomeText: {
-    color: colors.grey1,
+    color: COLORS.black0,
     fontSize: 22,
     marginTop: 24,
     marginBottom: 8,
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   descriptionText: {
-    color: colors.grey2,
+    color: COLORS.gray,
     fontSize: 14,
     lineHeight: 22,
     fontWeight: '600',
@@ -104,11 +105,11 @@ const styles = StyleSheet.create({
     marginBottom: 34,
   },
   language: {
-    color: colors.grey4,
+    color: COLORS.gray,
     marginHorizontal: 8,
   },
   active: {
-    color: colors.grey2,
+    color: COLORS.black0,
     textDecorationLine: 'underline',
   },
 });

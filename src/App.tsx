@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createNativeStackNavigator, NativeStackNavigationOptions} from '@react-navigation/native-stack';
 import {Provider, useDispatch, useSelector} from 'react-redux';
+import {colors} from 'react-native-elements';
 
 import store, {RootState} from '~/store';
+import {localSignIn} from '~/store/slices/userSlice';
 import AuthScreen from '~/views/AuthScreen';
 import SigninScreen from '~/views/SigninScreen';
 import Step1 from '~/views/SignupScreen/Step1';
@@ -13,12 +15,16 @@ import Step3 from '~/views/SignupScreen/Step3';
 import Step4 from '~/views/SignupScreen/Step4';
 import Step5 from '~/views/SignupScreen/Step5';
 import Main from './Main';
-import {localSignInSaga} from './store/saga';
 
 const Stack = createNativeStackNavigator();
 
 const MyStack = () => {
-  const signupOptions = {headerTitle: 'Register Account', headerTitleStyle: {fontSize: 18}, headerShadowVisible: false};
+  const signupOptions: NativeStackNavigationOptions = {
+    headerTitle: 'Register Account',
+    headerTintColor: colors.grey1,
+    headerTitleStyle: {fontSize: 16},
+    headerShadowVisible: false,
+  };
   const dispatch = useDispatch();
   const [token, setToken] = useState<string | null>(null);
   const {signedIn} = useSelector((state: RootState) => state.user);
@@ -27,7 +33,7 @@ const MyStack = () => {
     const token = await AsyncStorage.getItem('jt');
     console.log('_______', token);
     if (token && !signedIn) {
-      dispatch(localSignInSaga());
+      dispatch(localSignIn());
     }
     setToken(token);
   }

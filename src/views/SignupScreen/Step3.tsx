@@ -7,6 +7,9 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import MyInput from '~/components/MyInput';
+import {COLORS} from '~/constants/colors';
+import {useDispatch} from 'react-redux';
+import {setSignUpData} from '~/store/slices/userSlice';
 
 const schema = yup
   .object({
@@ -17,10 +20,11 @@ const schema = yup
 const Step3 = ({navigation}: any) => {
   const {
     control,
-    formState: {errors, isValid},
+    formState: {errors, isDirty},
     handleSubmit,
-  } = useForm({resolver: yupResolver(schema), mode: 'onBlur'});
+  } = useForm({resolver: yupResolver(schema), mode: 'onSubmit'});
 
+  const dispatch = useDispatch();
   const [focus, setFocus] = useState(false);
 
   const emailErrors = errors.email && errors.email.type === 'email';
@@ -32,7 +36,8 @@ const Step3 = ({navigation}: any) => {
     setFocus(false);
   }
 
-  function onNext() {
+  function onNext(data: any) {
+    dispatch(setSignUpData(data));
     navigation.navigate('SignupStep4');
   }
 
@@ -56,18 +61,18 @@ const Step3 = ({navigation}: any) => {
         />
         <Text style={styles.descriptionText}>You'll use this email when you log in and if you ever</Text>
         <Text style={styles.descriptionText}>need to reset your password. </Text>
-        {isValid && !focus && (
+        {isDirty && !focus && (
           <Button
             title="Next"
             containerStyle={{marginTop: 10, marginBottom: 20}}
-            buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
-            titleStyle={{color: colors.white, marginVertical: 4}}
+            buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+            titleStyle={{color: COLORS.black1, marginVertical: 2}}
             onPress={handleSubmit(onNext)}
           />
         )}
       </View>
       <View style={styles.signinText}>
-        <Link to={{screen: 'Signin'}} style={{fontSize: 13, color: '#5f5fff'}}>
+        <Link to={{screen: 'Signin'}} style={{fontSize: 13, color: COLORS.darkGolden}}>
           Already have an account?
         </Link>
       </View>
@@ -84,7 +89,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.grey5,
   },
   welcomeText: {
-    color: '#5f5fff',
+    color: COLORS.black0,
     fontSize: 20,
     marginTop: 36,
     marginBottom: 8,
@@ -92,7 +97,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   descriptionText: {
-    color: colors.grey2,
+    color: COLORS.gray,
     fontSize: 13,
     lineHeight: 22,
     fontWeight: '600',

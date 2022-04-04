@@ -3,7 +3,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import HomeScreen from './views/HomeScreen';
-import SettingScreen from './views/SettingScreen';
+import ProfileScreen from './views/ProfileScreen';
 import OrderScreen from './views/OrderScreen';
 
 const Tab = createBottomTabNavigator();
@@ -35,7 +35,7 @@ const Main = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={SettingScreen}
+        component={ProfileScreen}
         options={{
           headerTitle: 'Profile',
           headerTitleStyle: {fontSize: 18},

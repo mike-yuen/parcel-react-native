@@ -1,14 +1,17 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Button, colors, Icon, Image, Input, Text} from 'react-native-elements';
+import {Button, Icon, Image, Input, Text} from 'react-native-elements';
 
 import avatarHolderImage from '~/assets/avatar.png';
 
-const MyHeader = (props: any) => {
+const MyHeader = ({navigation}: any) => {
   return (
     <View style={styles.header}>
       <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginRight: 10}}>
-        <Image source={avatarHolderImage} containerStyle={{width: 30, height: 30, borderRadius: 30}}></Image>
+        <Image
+          source={avatarHolderImage}
+          containerStyle={{width: 30, height: 30, borderRadius: 30}}
+          onPress={() => navigation.navigate('Profile')}></Image>
       </View>
       <View style={{flex: 1}}>
         <Input

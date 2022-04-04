@@ -11,8 +11,7 @@ const reducer = combineReducers({
 
 const store = configureStore({
   reducer,
-  middleware: getDefaultMiddleware =>
-    getDefaultMiddleware({serializableCheck: false, thunk: false}).concat(sagaMiddleware),
+  middleware: getDefaultMiddleware => getDefaultMiddleware({thunk: false}).concat(sagaMiddleware),
 });
 sagaMiddleware.run(rootSaga);
 

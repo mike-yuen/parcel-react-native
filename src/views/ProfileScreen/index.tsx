@@ -9,7 +9,7 @@ import {signOut} from '~/store/slices/userSlice';
 import avatarHolderImage from '~/assets/avatar.png';
 import bgImage from '~/assets/profile-bg.png';
 
-const SettingScreen = ({navigation}: any) => {
+const ProfileScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
 
   async function delToken() {
@@ -152,7 +152,7 @@ const SettingScreen = ({navigation}: any) => {
           titleStyle={{fontSize: 16, color: '#1d1e22', paddingVertical: 4}}
           onPress={handleSignOut}></Button>
 
-        <Text style={{paddingHorizontal: 16, fontSize: 12, color: '#9a9da6'}}>
+        <Text style={{paddingHorizontal: 16, fontSize: 12, color: '#9a9da6', lineHeight: 16}}>
           Please do not disclose SMS and Google Authentication codes to anyone, including ParcelGo Custormer Support.
         </Text>
       </View>
@@ -170,4 +170,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SettingScreen;
+export default ProfileScreen;

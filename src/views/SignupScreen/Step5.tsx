@@ -2,11 +2,17 @@ import {Link} from '@react-navigation/native';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Button, colors, Text} from 'react-native-elements';
+import {useSelector} from 'react-redux';
+import {COLORS} from '~/constants/colors';
+import {RootState} from '~/store';
 
 const Step5 = ({onDone}: any) => {
+  const {signUpData} = useSelector((state: RootState) => state.user);
+
   return (
     <View style={styles.container}>
       <View style={{paddingHorizontal: 30}}>
+        <Text>{JSON.stringify(signUpData)}</Text>
         <Text style={styles.welcomeText}>Finish signing up</Text>
         <Text style={styles.descriptionText}>By tapping Sign up, you agree to our Terms and</Text>
         <Text style={styles.descriptionText}>Data Policy. You may receive SMS notifications</Text>
@@ -14,13 +20,13 @@ const Step5 = ({onDone}: any) => {
         <Button
           title="Sign up"
           containerStyle={{marginTop: 10, marginBottom: 20}}
-          buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
-          titleStyle={{color: colors.white, marginVertical: 4}}
+          buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+          titleStyle={{color: COLORS.black1, marginVertical: 2}}
           onPress={onDone}
         />
       </View>
       <View style={styles.signinText}>
-        <Link to={{screen: 'Signin'}} style={{fontSize: 13, color: '#5f5fff'}}>
+        <Link to={{screen: 'Signin'}} style={{fontSize: 13, color: COLORS.darkGolden}}>
           Already have an account?
         </Link>
       </View>
@@ -37,7 +43,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.grey5,
   },
   welcomeText: {
-    color: '#5f5fff',
+    color: COLORS.black0,
     fontSize: 20,
     marginTop: 36,
     marginBottom: 8,
@@ -45,7 +51,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   descriptionText: {
-    color: colors.grey2,
+    color: COLORS.gray,
     fontSize: 13,
     lineHeight: 22,
     fontWeight: '600',

@@ -4,6 +4,7 @@ import {StyleSheet, View} from 'react-native';
 import {Button, colors, Image, Text} from 'react-native-elements';
 
 import stepOneImage from '~/assets/step-one.png';
+import {COLORS} from '~/constants/colors';
 
 const Step1 = ({navigation}: any) => {
   return (
@@ -16,13 +17,13 @@ const Step1 = ({navigation}: any) => {
         <Button
           title="Get started"
           containerStyle={{marginTop: 10, marginBottom: 20}}
-          buttonStyle={{backgroundColor: '#5f5fff', borderRadius: 8}}
-          titleStyle={{color: colors.white, marginVertical: 4}}
+          buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+          titleStyle={{color: COLORS.black1, marginVertical: 2}}
           onPress={() => navigation.navigate('SignupStep2')}
         />
       </View>
       <View style={styles.signinText}>
-        <Link to={{screen: 'Signin'}} style={{fontSize: 13, color: '#5f5fff'}}>
+        <Link to={{screen: 'Signin'}} style={{fontSize: 13, color: COLORS.darkGolden}}>
           Already have an account?
         </Link>
       </View>
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   welcomeText: {
-    color: 'rgb(5, 31, 50)',
+    color: COLORS.black0,
     fontSize: 22,
     marginTop: 36,
     marginBottom: 8,
@@ -53,7 +54,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   descriptionText: {
-    color: colors.grey2,
+    color: COLORS.gray,
     fontSize: 14,
     lineHeight: 22,
     fontWeight: '600',
