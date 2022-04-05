@@ -8,4 +8,6 @@ export const COLORS = {
 
   gray: '#9a9da6', // sub-title
   gray0: '#ebecf0', // btn
+
+  blue: '#2a75d0'
 };

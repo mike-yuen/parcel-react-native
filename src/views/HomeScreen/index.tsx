@@ -8,6 +8,7 @@ import MyHeader from '~/components/MyHeader';
 import notFoundImage from '~/assets/not-found.png';
 import guide1Image from '~/assets/guide-1.png';
 import guide2Image from '~/assets/guide-2.png';
+import {COLORS} from '~/constants/colors';
 
 const carouselItems = [
   {
@@ -119,8 +120,8 @@ const HomeScreen = ({navigation}: any) => {
             <Button
               title="Create new request"
               containerStyle={{marginTop: 14, marginBottom: 20}}
-              buttonStyle={{backgroundColor: '#f4b41f', borderRadius: 4}}
-              titleStyle={{color: colors.black, fontSize: 14, marginVertical: 0, marginHorizontal: 20}}
+              buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+              titleStyle={{color: COLORS.black1, fontSize: 14, marginVertical: 0, marginHorizontal: 20}}
               onPress={() => navigation.navigate('Order')}
             />
           </View>
