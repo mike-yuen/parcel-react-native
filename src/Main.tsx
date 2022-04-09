@@ -5,6 +5,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import HomeScreen from './views/HomeScreen';
 import ProfileScreen from './views/ProfileScreen';
 import OrderScreen from './views/OrderScreen';
+import WarehouseScreen from './views/WarehouseScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -31,6 +32,14 @@ const Main = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({color}) => <AntDesign name="shoppingcart" color={color} size={20} />,
+        }}
+      />
+      <Tab.Screen
+        name="Warehouse"
+        component={WarehouseScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({color}) => <AntDesign name="CodeSandbox" color={color} size={20} />,
         }}
       />
       <Tab.Screen

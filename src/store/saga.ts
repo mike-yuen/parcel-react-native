@@ -1,4 +1,3 @@
-import {createAction} from '@reduxjs/toolkit';
 import {all, call, put, takeLatest} from 'redux-saga/effects';
 import * as api from '~/services/api';
 import {
@@ -9,17 +8,16 @@ import {
   signOut,
   localSignIn,
   setSignUpData,
-  signUpError,
   setSignUpDataSuccess,
   setSignUpDataError,
 } from './slices/userSlice';
 
 export function* signInSaga(action: any) {
   try {
-    const response: {data: any} = yield call(api.user.signIn, action.payload);
-    const {data} = response;
+    const {accessToken, refreshToken} = yield call(api.user.signIn, action.payload);
     yield put(signInSuccess());
-    yield call(api.user.setStore, 'jt', 'abc');
+    yield call(api.user.setStore, 'jt', accessToken);
+    yield call(api.user.setStore, 'rjt', refreshToken);
   } catch (error) {
     yield put(signInError(error));
   }

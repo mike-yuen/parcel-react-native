@@ -28,8 +28,7 @@ const SigninScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
 
   const onSubmit = (data: any) => {
-    console.log('______________', data);
-    dispatch(signIn({email: 'nhatminh.150596+15@gmail.com', password: '123456'}));
+    dispatch(signIn(data));
   };
 
   return (
