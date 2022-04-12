@@ -3,11 +3,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator, NativeStackNavigationOptions} from '@react-navigation/native-stack';
 import {Provider, useDispatch, useSelector} from 'react-redux';
-import {colors} from 'react-native-elements';
+import {colors, Icon} from 'react-native-elements';
 
+import MySearch from '~/components/MySearch';
 import store, {RootState} from '~/store';
 import {localSignIn} from '~/store/slices/userSlice';
 import AuthScreen from '~/views/AuthScreen';
+import MapScreen from '~/views/MapScreen';
+import SearchScreen from '~/views/SearchScreen';
 import SigninScreen from '~/views/SigninScreen';
 import Step1 from '~/views/SignupScreen/Step1';
 import Step2 from '~/views/SignupScreen/Step2';
@@ -59,7 +62,19 @@ const MyStack = () => {
           <Stack.Screen name="SignupStep5" component={Step5} options={signupOptions} />
         </>
       ) : (
-        <Stack.Screen name="Main" component={Main} options={{headerShown: false}} />
+        <>
+          <Stack.Screen name="Main" component={Main} options={{headerShown: false}} />
+          <Stack.Screen name="Map" component={MapScreen} options={{presentation: 'fullScreenModal'}} />
+          <Stack.Screen
+            name="Search"
+            component={SearchScreen}
+            options={{
+              headerTitle: props => <MySearch {...props} />,
+              headerShadowVisible: false,
+              presentation: 'fullScreenModal',
+            }}
+          />
+        </>
       )}
     </Stack.Navigator>
   );

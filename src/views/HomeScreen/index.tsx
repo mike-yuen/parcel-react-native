@@ -9,6 +9,7 @@ import notFoundImage from '~/assets/not-found.png';
 import guide1Image from '~/assets/guide-1.png';
 import guide2Image from '~/assets/guide-2.png';
 import {COLORS} from '~/constants/colors';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const carouselItems = [
   {
@@ -45,11 +46,12 @@ const _renderItem = ({item, index}: any) => {
 };
 
 const HomeScreen = ({navigation}: any) => {
+  const insets = useSafeAreaInsets();
   const [activeIndex, setActiveIndex] = React.useState(0);
 
   return (
     <>
-      <View style={{backgroundColor: '#f4f4f4', paddingBottom: 6}}>
+      <View style={{backgroundColor: '#f4f4f4', paddingTop: insets.top, paddingBottom: 6}}>
         <MyHeader navigation={navigation} />
       </View>
       <ScrollView style={{flex: 1, backgroundColor: colors.white, borderTopLeftRadius: 30, borderTopRightRadius: 30}}>
