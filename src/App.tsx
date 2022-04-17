@@ -1,12 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator, NativeStackNavigationOptions} from '@react-navigation/native-stack';
+import debounce from 'lodash.debounce';
 import {Provider, useDispatch, useSelector} from 'react-redux';
-import {colors, Icon} from 'react-native-elements';
+import {colors} from 'react-native-elements';
 
 import MySearch from '~/components/MySearch';
 import store, {RootState} from '~/store';
+import {search} from '~/store/slices/searchSlice';
 import {localSignIn} from '~/store/slices/userSlice';
 import AuthScreen from '~/views/AuthScreen';
 import MapScreen from '~/views/MapScreen';
@@ -30,16 +32,26 @@ const MyStack = () => {
   };
   const dispatch = useDispatch();
   const [token, setToken] = useState<string | null>(null);
+  const [keyword, setKeyword] = useState<string>('');
+
   const {signedIn} = useSelector((state: RootState) => state.user);
 
   async function getToken() {
     const token = await AsyncStorage.getItem('jt');
-    console.log('_______', token);
     if (token && !signedIn) {
       dispatch(localSignIn());
     }
     setToken(token);
   }
+
+  function searchLocation(keyword: string) {
+    dispatch(search(keyword));
+  }
+
+  const debounceSearchLocation = useCallback(
+    debounce(() => searchLocation(keyword), 1000),
+    [keyword],
+  );
 
   useEffect(() => {
     getToken();
@@ -48,6 +60,10 @@ const MyStack = () => {
   useEffect(() => {
     getToken();
   }, [signedIn]);
+
+  useEffect(() => {
+    debounceSearchLocation();
+  }, [keyword]);
 
   return (
     <Stack.Navigator initialRouteName="Auth">
@@ -62,20 +78,28 @@ const MyStack = () => {
           <Stack.Screen name="SignupStep5" component={Step5} options={signupOptions} />
         </>
       ) : (
-        <>
-          <Stack.Screen name="Main" component={Main} options={{headerShown: false}} />
-          <Stack.Screen name="Map" component={MapScreen} options={{presentation: 'fullScreenModal'}} />
-          <Stack.Screen
-            name="Search"
-            component={SearchScreen}
-            options={{
-              headerTitle: props => <MySearch {...props} />,
-              headerShadowVisible: false,
-              presentation: 'fullScreenModal',
-            }}
-          />
-        </>
+        <Stack.Screen name="Main" component={Main} options={{headerShown: false}} />
       )}
+      <Stack.Screen
+        name="Map"
+        component={MapScreen}
+        options={{
+          presentation: 'fullScreenModal',
+          headerTitle: 'Choose your location',
+          headerTintColor: colors.grey1,
+          headerTitleStyle: {fontSize: 16},
+          headerShadowVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="Search"
+        options={{
+          headerTitle: props => <MySearch {...props} onChange={(data: string) => setKeyword(data)} />,
+          headerShadowVisible: false,
+          presentation: 'fullScreenModal',
+        }}>
+        {props => <SearchScreen {...props} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 };

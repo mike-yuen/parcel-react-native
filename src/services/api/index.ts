@@ -1,22 +1,60 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import baseAxios from './_base.instance';
+import {getClient} from './base.client';
 
-async function post(path: string, body: any = null) {
-  try {
-    const res = await baseAxios.post(path, body);
-    console.log('api-result', res.data);
-    const resBody = await res.data;
-    return resBody;
-  } catch (err) {
-    console.log('api-error: ', JSON.stringify(err));
-    throw err;
-  }
-}
+const parcelClient = getClient('http://app.pandamaster.club:8443');
+const goongClient = getClient('https://rsapi.goong.io');
+const GOONG_API_KEY = 'mjXPVzvQKJmyp6HbVDlczUVpYD59CHXmOShWJdeC';
 
-export const user = {
-  signIn: async (body: any) => await post('/authentication/log-in', body),
-  signUp: async (body: any) => await post('/authentication/register', body),
-  verifyEmail: async (body: any) => await post('/api/auth/verify-email', body),
-  signOut: async (body: any) => await post('/api/auth/signout', body),
-  setStore: async (key: string, value: string) => await AsyncStorage.setItem(key, value),
+export const parcelApi = {
+  // signUp: async (body: any) => await post('/authentication/register', body),
+  // verifyEmail: async (body: any) => await post('/api/auth/verify-email', body),
+  async signIn(body: any) {
+    try {
+      const res = await parcelClient.post('/authentication/log-in', body);
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async setStore(key: string, value: string) {
+    await AsyncStorage.setItem(key, value);
+  },
+
+  async signOut() {
+    try {
+      const res = await parcelClient.post('/authentication/log-out');
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+};
+
+export const goongApi = {
+  async placeAutocomplete(input: string) {
+    try {
+      const res = await goongClient.get('/Place/AutoComplete', {
+        params: {api_key: GOONG_API_KEY, limit: 4, input: encodeURI(input)},
+      });
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async placeDetail(placeId: string) {
+    try {
+      const res = await goongClient.get('/Place/Detail', {
+        params: {api_key: GOONG_API_KEY, place_id: placeId},
+      });
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
 };

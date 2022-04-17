@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
-import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
-import {Button, colors, Image, Tab, TabView, Text} from 'react-native-elements';
+import {Dimensions, ScrollView,  View} from 'react-native';
+import {Button, colors, Image, Text} from 'react-native-elements';
 import Carousel from 'react-native-snap-carousel';
 
 import MyHeader from '~/components/MyHeader';

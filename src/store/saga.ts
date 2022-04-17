@@ -1,5 +1,13 @@
 import {all, call, put, takeLatest} from 'redux-saga/effects';
-import * as api from '~/services/api';
+import {parcelApi, goongApi} from '~/services/api';
+import {
+  search,
+  searchError,
+  searchSuccess,
+  selectLocation,
+  selectLocationError,
+  selectLocationSuccess,
+} from './slices/searchSlice';
 import {
   signIn,
   signInSuccess,
@@ -14,10 +22,10 @@ import {
 
 export function* signInSaga(action: any) {
   try {
-    const {accessToken, refreshToken} = yield call(api.user.signIn, action.payload);
+    const {accessToken, refreshToken} = yield call(parcelApi.signIn, action.payload);
     yield put(signInSuccess());
-    yield call(api.user.setStore, 'jt', accessToken);
-    yield call(api.user.setStore, 'rjt', refreshToken);
+    yield call(parcelApi.setStore, 'jt', accessToken);
+    yield call(parcelApi.setStore, 'rjt', refreshToken);
   } catch (error) {
     yield put(signInError(error));
   }
@@ -45,20 +53,47 @@ export function* signOutSaga() {
   } catch (error) {}
 }
 
-export function* rootSignInSaga() {
-  yield takeLatest(signIn.type, signInSaga);
+/**
+ * Search Saga
+ */
+export function* searchSaga(action: any) {
+  try {
+    const {status, predictions} = yield call(goongApi.placeAutocomplete, action.payload);
+    if (status === 'OK') {
+      yield put(searchSuccess(predictions));
+    } else {
+      yield put(searchError(status));
+    }
+  } catch (error) {
+    yield put(searchError(error));
+  }
 }
+
+export function* selectLocationSaga(action: any) {
+  try {
+    const {status, result} = yield call(goongApi.placeDetail, action.payload);
+    console.log('===========', status)
+    if (status === 'OK') {
+      const {place_id, name, formatted_address, geometry} = result;
+      const store = {placeId: place_id, name, address: formatted_address, location: geometry.location};
+      yield put(selectLocationSuccess(store));
+    } else {
+      yield put(selectLocationError(status));
+    }
+  } catch (error) {
+    yield put(selectLocationError(error));
+  }
+}
+
 function* rootSaga() {
   yield all([
-    rootSignInSaga(),
+    takeLatest(signIn.type, signInSaga),
     takeLatest(localSignIn.type, localSignInSaga),
     takeLatest(setSignUpData.type, setSignUpDataSaga),
-    // takeLatest(actions.userSignUp.type, userSignUpSaga),
     takeLatest(signOut.type, signOutSaga),
-    // takeLatest(actions.userLoad.type, userLoadSaga),
-    // takeLatest(actions.userSignUpReset.type, userSignUpResetSaga),
-    // takeLatest(actions.userVerifyEmail.type, userVerifyEmailSaga),
-    // takeLatest(actions.loadPokerRooms.type, loadPokerRoomsSaga),
+
+    takeLatest(search.type, searchSaga),
+    takeLatest(selectLocation.type, selectLocationSaga),
   ]);
 }
 

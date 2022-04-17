@@ -1,15 +1,15 @@
 import React from 'react';
-import {Dimensions, StyleSheet, useWindowDimensions, View} from 'react-native';
-import {Button, Icon, Image, Input, Text} from 'react-native-elements';
+import {useWindowDimensions, View} from 'react-native';
+import {Input} from 'react-native-elements';
 
-const MySearch = ({navigation}: any) => {
+const MySearch = ({onChange}: any) => {
   const dimension = useWindowDimensions();
   return (
     <View style={{flex: 1, maxWidth: dimension.width - 94}}>
       <Input
         containerStyle={{display: 'flex', paddingHorizontal: 0}}
         labelStyle={{display: 'none'}}
-        placeholder="Enter tracking number"
+        placeholder="Search"
         inputContainerStyle={{
           borderRadius: 30,
           borderBottomWidth: 0,
@@ -28,6 +28,7 @@ const MySearch = ({navigation}: any) => {
         errorStyle={{display: 'none'}}
         autoCompleteType={false}
         autoFocus={false}
+        onChangeText={value => onChange(value)}
       />
     </View>
   );
