@@ -1,36 +1,85 @@
 import {Link} from '@react-navigation/native';
-import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {useState} from 'react';
+import {useForm} from 'react-hook-form';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import {Button, colors, Text} from 'react-native-elements';
-import {useSelector} from 'react-redux';
-import {COLORS} from '~/constants/colors';
-import {RootState} from '~/store';
+import {yupResolver} from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
-const Step5 = ({onDone}: any) => {
-  const {signUpData} = useSelector((state: RootState) => state.user);
+import MyInput from '~/components/MyInput';
+import {COLORS} from '~/constants/colors';
+import {useDispatch} from 'react-redux';
+import {setSignUpData} from '~/store/slices/userSlice';
+
+const schema = yup
+  .object({
+    password: yup
+      .string()
+      .required()
+      .matches(/^(?=.*\d)(?=.*[0-9])(?=.*[!@#$%^&*()\-_=+{};:,<.>])(?=.{6,})/),
+  })
+  .required();
+
+const Step5 = ({navigation}: any) => {
+  const {
+    control,
+    formState: {errors, isDirty},
+    handleSubmit,
+  } = useForm({resolver: yupResolver(schema), mode: 'onSubmit'});
+
+  const dispatch = useDispatch();
+  const [focus, setFocus] = useState(false);
+
+  const passwordErrors = errors.password && errors.password.type === 'matches';
+
+  function onFocus() {
+    setFocus(true);
+  }
+  function onBlur() {
+    setFocus(false);
+  }
+
+  function onNext(data: any) {
+    dispatch(setSignUpData(data));
+    navigation.navigate('SignupStep6');
+  }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} keyboardDismissMode="interactive">
       <View style={{paddingHorizontal: 30}}>
-        <Text>{JSON.stringify(signUpData)}</Text>
-        <Text style={styles.welcomeText}>Finish signing up</Text>
-        <Text style={styles.descriptionText}>By tapping Sign up, you agree to our Terms and</Text>
-        <Text style={styles.descriptionText}>Data Policy. You may receive SMS notifications</Text>
-        <Text style={styles.descriptionText}>from us and can opt out any time.</Text>
-        <Button
-          title="Sign up"
-          containerStyle={{marginTop: 10, marginBottom: 20}}
-          buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
-          titleStyle={{color: COLORS.black1, marginVertical: 2}}
-          onPress={onDone}
+        <Text style={styles.welcomeText}>Create a password</Text>
+        <Text style={{color: 'red', fontSize: 14, textAlign: 'center', opacity: passwordErrors ? 1 : 0}}>
+          Password too weak
+        </Text>
+        <MyInput
+          name="password"
+          control={control}
+          placeholder="Password"
+          containerStyle={{marginTop: 14, marginBottom: 10}}
+          autoFocus
+          errors={passwordErrors}
+          onSubmitEditing={handleSubmit(onNext)}
+          onFocus={onFocus}
+          onBlur={onBlur}
         />
+        <Text style={styles.descriptionText}>Enter a combination of at least six numbers, letters</Text>
+        <Text style={styles.descriptionText}>and punctuation marks (like ! and &).</Text>
+        {isDirty && !focus && (
+          <Button
+            title="Next"
+            containerStyle={{marginTop: 10, marginBottom: 20}}
+            buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+            titleStyle={{color: COLORS.black1, marginVertical: 2}}
+            onPress={handleSubmit(onNext)}
+          />
+        )}
       </View>
       <View style={styles.signinText}>
         <Link to={{screen: 'Signin'}} style={{fontSize: 13, color: COLORS.darkGolden}}>
           Already have an account?
         </Link>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

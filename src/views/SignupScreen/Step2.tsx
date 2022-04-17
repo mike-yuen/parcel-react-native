@@ -36,7 +36,7 @@ const Step2 = ({navigation}: any) => {
         <Text style={styles.welcomeText}>What's your name?</Text>
         <Text style={{color: 'red', fontSize: 14, textAlign: 'center', opacity: 0}}>Please enter your name.</Text>
         <MyInput
-          name="fullname"
+          name="displayName"
           control={control}
           rules={{required: true}}
           placeholder="Full name"

@@ -19,6 +19,7 @@ import Step2 from '~/views/SignupScreen/Step2';
 import Step3 from '~/views/SignupScreen/Step3';
 import Step4 from '~/views/SignupScreen/Step4';
 import Step5 from '~/views/SignupScreen/Step5';
+import Step6 from '~/views/SignupScreen/Step6';
 import Main from './Main';
 
 const Stack = createNativeStackNavigator();
@@ -76,6 +77,7 @@ const MyStack = () => {
           <Stack.Screen name="SignupStep3" component={Step3} options={signupOptions} />
           <Stack.Screen name="SignupStep4" component={Step4} options={signupOptions} />
           <Stack.Screen name="SignupStep5" component={Step5} options={signupOptions} />
+          <Stack.Screen name="SignupStep6" component={Step6} options={signupOptions} />
         </>
       ) : (
         <Stack.Screen name="Main" component={Main} options={{headerShown: false}} />

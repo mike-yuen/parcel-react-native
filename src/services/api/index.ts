@@ -6,8 +6,18 @@ const goongClient = getClient('https://rsapi.goong.io');
 const GOONG_API_KEY = 'mjXPVzvQKJmyp6HbVDlczUVpYD59CHXmOShWJdeC';
 
 export const parcelApi = {
-  // signUp: async (body: any) => await post('/authentication/register', body),
+  async signUp(body: any) {
+    try {
+      const res = await parcelClient.post('/authentication/register', body);
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
   // verifyEmail: async (body: any) => await post('/api/auth/verify-email', body),
+
   async signIn(body: any) {
     try {
       const res = await parcelClient.post('/authentication/log-in', body);
@@ -30,6 +40,10 @@ export const parcelApi = {
     } catch (err) {
       throw err;
     }
+  },
+
+  async removeStore(key: string) {
+    await AsyncStorage.removeItem(key);
   },
 };
 

@@ -1,5 +1,6 @@
-import {all, call, put, takeLatest} from 'redux-saga/effects';
+import {all, call, put, select, takeLatest} from 'redux-saga/effects';
 import {parcelApi, goongApi} from '~/services/api';
+import {RootState} from '.';
 import {
   search,
   searchError,
@@ -18,14 +19,16 @@ import {
   setSignUpData,
   setSignUpDataSuccess,
   setSignUpDataError,
+  signUpSuccess,
+  signUpError,
+  signUp,
 } from './slices/userSlice';
 
 export function* signInSaga(action: any) {
   try {
-    const {accessToken, refreshToken} = yield call(parcelApi.signIn, action.payload);
-    yield put(signInSuccess());
+    const {accessToken} = yield call(parcelApi.signIn, action.payload);
     yield call(parcelApi.setStore, 'jt', accessToken);
-    yield call(parcelApi.setStore, 'rjt', refreshToken);
+    yield put(signInSuccess());
   } catch (error) {
     yield put(signInError(error));
   }
@@ -47,8 +50,25 @@ export function* setSignUpDataSaga(action: any) {
   }
 }
 
+export function* signUpSaga(action: any) {
+  try {
+    const {email} = yield call(parcelApi.signUp, action.payload);
+    yield put(signUpSuccess());
+
+    const getUser = (state: RootState) => state.user;
+    const {signUpData} = yield select(getUser);
+    const {accessToken} = yield call(parcelApi.signIn, {email, password: signUpData.password});
+    yield call(parcelApi.setStore, 'jt', accessToken);
+    yield put(signInSuccess());
+  } catch (error) {
+    yield put(signUpError(error));
+  }
+}
+
 export function* signOutSaga() {
   try {
+    yield call(parcelApi.signOut);
+    yield call(parcelApi.removeStore, 'jt');
     yield put(signOutSuccess());
   } catch (error) {}
 }
@@ -72,7 +92,6 @@ export function* searchSaga(action: any) {
 export function* selectLocationSaga(action: any) {
   try {
     const {status, result} = yield call(goongApi.placeDetail, action.payload);
-    console.log('===========', status)
     if (status === 'OK') {
       const {place_id, name, formatted_address, geometry} = result;
       const store = {placeId: place_id, name, address: formatted_address, location: geometry.location};
@@ -90,6 +109,7 @@ function* rootSaga() {
     takeLatest(signIn.type, signInSaga),
     takeLatest(localSignIn.type, localSignInSaga),
     takeLatest(setSignUpData.type, setSignUpDataSaga),
+    takeLatest(signUp.type, signUpSaga),
     takeLatest(signOut.type, signOutSaga),
 
     takeLatest(search.type, searchSaga),

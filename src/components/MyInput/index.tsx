@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {useController} from 'react-hook-form';
 import {StyleSheet, TextInput} from 'react-native';
 import {Input, colors} from 'react-native-elements';
-import { COLORS } from '~/constants/colors';
+import {COLORS} from '~/constants/colors';
 
 const MyInput = (props: any) => {
   const {field} = useController({
@@ -44,7 +44,7 @@ const MyInput = (props: any) => {
         {
           borderWidth: 1,
           borderStyle: 'solid',
-          borderColor: props.errors ? 'red' : focus ? COLORS.golden : colors.grey4,
+          borderColor: props.errors ? 'red' : COLORS.golden,
           borderRadius: 4,
           paddingHorizontal: 10,
         },
@@ -53,8 +53,6 @@ const MyInput = (props: any) => {
       inputStyle={{fontSize: 14, height: 36}}
       errorStyle={{display: 'none'}}
       autoCompleteType={false}
-      //   rightIcon={{type: 'ionicon', name: 'close-circle', size: 18}}
-      //   rightIconContainerStyle={{fontSize: 10}}
       onFocus={onFocus}
       onBlur={onBlur}
     />

@@ -12,12 +12,7 @@ import bgImage from '~/assets/profile-bg.png';
 const ProfileScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
 
-  async function delToken() {
-    await AsyncStorage.removeItem('jt');
-  }
-
   async function handleSignOut() {
-    await delToken();
     dispatch(signOut());
   }
 

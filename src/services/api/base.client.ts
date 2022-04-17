@@ -10,11 +10,10 @@ export const getClient = (baseURL: string) => {
   instance.interceptors.request.use(
     async function (config) {
       const jt = await AsyncStorage.getItem('jt');
-      const rjt = await AsyncStorage.getItem('rjt');
+      // const rjt = await AsyncStorage.getItem('rjt');
 
-      if (jt && rjt) {
-        const token = `${jt}:${rjt}`;
-        config.headers!.Authorization = token;
+      if (jt) {
+        config.headers!.Authorization = jt;
       }
       return config;
     },
