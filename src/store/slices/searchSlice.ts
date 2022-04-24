@@ -9,7 +9,15 @@ const searchSlice = createSlice({
 
     selectingLocation: false,
     selectedLocation: false,
-    selectedLocationData: {},
+    selectedLocationData: {
+      placeId: '',
+      name: '',
+      address: '',
+      location: {
+        lat: '',
+        lng: '',
+      },
+    },
 
     error: {},
   },

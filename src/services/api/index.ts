@@ -28,10 +28,6 @@ export const parcelApi = {
     }
   },
 
-  async setStore(key: string, value: string) {
-    await AsyncStorage.setItem(key, value);
-  },
-
   async signOut() {
     try {
       const res = await parcelClient.post('/authentication/log-out');
@@ -40,6 +36,20 @@ export const parcelApi = {
     } catch (err) {
       throw err;
     }
+  },
+
+  async currentUser() {
+    try {
+      const res = await parcelClient.get('/authentication/current-user');
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async setStore(key: string, value: string) {
+    await AsyncStorage.setItem(key, value);
   },
 
   async removeStore(key: string) {

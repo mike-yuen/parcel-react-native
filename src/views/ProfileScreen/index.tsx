@@ -1,18 +1,19 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
 import {Button, colors, Divider, Icon, Image, Switch, Text} from 'react-native-elements';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
 import {signOut} from '~/store/slices/userSlice';
 
 import avatarHolderImage from '~/assets/avatar.png';
 import bgImage from '~/assets/profile-bg.png';
+import {RootState} from '~/store';
 
 const ProfileScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
+  const {user} = useSelector((state: RootState) => state.user);
 
-  async function handleSignOut() {
+  function handleSignOut() {
     dispatch(signOut());
   }
 
@@ -38,7 +39,7 @@ const ProfileScreen = ({navigation}: any) => {
             />
             <View style={{marginLeft: 14}}>
               <View style={{flexDirection: 'row'}}>
-                <Text style={{color: '#202a34', fontSize: 20, fontWeight: '700'}}>MikeYuen</Text>
+                <Text style={{color: '#202a34', fontSize: 20, fontWeight: '700'}}>{user.displayName}</Text>
                 <Icon
                   name="chevron-right"
                   type="fontawesome"
@@ -49,7 +50,9 @@ const ProfileScreen = ({navigation}: any) => {
                 />
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={{color: '#878c90', fontSize: 14, marginTop: 6}}>ID: 293803547</Text>
+                <Text style={{color: '#878c90', fontSize: 14, marginTop: 6}}>
+                  ID: {user.id.slice(0, 6)}...{user.id.slice(user.id.length - 4, user.id.length)}
+                </Text>
                 <Icon
                   name="md-copy"
                   type="ionicon"

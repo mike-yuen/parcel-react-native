@@ -12,6 +12,7 @@ import {search} from '~/store/slices/searchSlice';
 import {localSignIn} from '~/store/slices/userSlice';
 import AuthScreen from '~/views/AuthScreen';
 import MapScreen from '~/views/MapScreen';
+import ProductScreen from '~/views/ProductScreen';
 import SearchScreen from '~/views/SearchScreen';
 import SigninScreen from '~/views/SigninScreen';
 import Step1 from '~/views/SignupScreen/Step1';
@@ -102,6 +103,16 @@ const MyStack = () => {
         }}>
         {props => <SearchScreen {...props} />}
       </Stack.Screen>
+      <Stack.Screen
+        name="Product"
+        component={ProductScreen}
+        options={{
+          presentation: 'fullScreenModal',
+          headerTitle: 'Product',
+          headerTintColor: colors.grey1,
+          headerTitleStyle: {fontSize: 16},
+          headerShadowVisible: false,
+        }}></Stack.Screen>
     </Stack.Navigator>
   );
 };

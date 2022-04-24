@@ -2,6 +2,13 @@ import {all, call, put, select, takeLatest} from 'redux-saga/effects';
 import {parcelApi, goongApi} from '~/services/api';
 import {RootState} from '.';
 import {
+  addProduct,
+  addProductError,
+  addProductSuccess,
+  updateProduct,
+  updateProductSuccess,
+} from './slices/productSlice';
+import {
   search,
   searchError,
   searchSuccess,
@@ -22,6 +29,9 @@ import {
   signUpSuccess,
   signUpError,
   signUp,
+  getUserSuccess,
+  getUserError,
+  getUser,
 } from './slices/userSlice';
 
 export function* signInSaga(action: any) {
@@ -29,6 +39,7 @@ export function* signInSaga(action: any) {
     const {accessToken} = yield call(parcelApi.signIn, action.payload);
     yield call(parcelApi.setStore, 'jt', accessToken);
     yield put(signInSuccess());
+    yield call(getUserSaga);
   } catch (error) {
     yield put(signInError(error));
   }
@@ -37,6 +48,7 @@ export function* signInSaga(action: any) {
 export function* localSignInSaga() {
   try {
     yield put(signInSuccess());
+    yield call(getUserSaga);
   } catch (error) {
     yield put(signInError(error));
   }
@@ -57,9 +69,8 @@ export function* signUpSaga(action: any) {
 
     const getUser = (state: RootState) => state.user;
     const {signUpData} = yield select(getUser);
-    const {accessToken} = yield call(parcelApi.signIn, {email, password: signUpData.password});
-    yield call(parcelApi.setStore, 'jt', accessToken);
-    yield put(signInSuccess());
+
+    yield call(signInSaga, {email, password: signUpData.password});
   } catch (error) {
     yield put(signUpError(error));
   }
@@ -71,6 +82,15 @@ export function* signOutSaga() {
     yield call(parcelApi.removeStore, 'jt');
     yield put(signOutSuccess());
   } catch (error) {}
+}
+
+export function* getUserSaga() {
+  try {
+    const {id, displayName, email, phone, address, location} = yield call(parcelApi.currentUser);
+    yield put(getUserSuccess({id, displayName, email, phone, address, location}));
+  } catch (error) {
+    yield put(getUserError(error));
+  }
 }
 
 /**
@@ -104,6 +124,22 @@ export function* selectLocationSaga(action: any) {
   }
 }
 
+/**
+ * Product Saga
+ */
+export function* addProductSaga(action: any) {
+  try {
+    yield put(addProductSuccess(action.payload));
+  } catch (error) {
+    yield put(addProductError(error));
+  }
+}
+export function* updateProductSaga(action: any) {
+  try {
+    yield put(updateProductSuccess(action.payload));
+  } catch (error) {}
+}
+
 function* rootSaga() {
   yield all([
     takeLatest(signIn.type, signInSaga),
@@ -111,9 +147,13 @@ function* rootSaga() {
     takeLatest(setSignUpData.type, setSignUpDataSaga),
     takeLatest(signUp.type, signUpSaga),
     takeLatest(signOut.type, signOutSaga),
+    takeLatest(getUser.type, getUserSaga),
 
     takeLatest(search.type, searchSaga),
     takeLatest(selectLocation.type, selectLocationSaga),
+
+    takeLatest(addProduct.type, addProductSaga),
+    takeLatest(updateProduct.type, updateProductSaga),
   ]);
 }
 

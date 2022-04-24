@@ -1,14 +1,16 @@
 import {combineReducers, configureStore} from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import rootSaga from './saga';
-import userReducer from './slices/userSlice';
+import productReducer from './slices/productSlice';
 import searchReducer from './slices/searchSlice';
+import userReducer from './slices/userSlice';
 
 const sagaMiddleware = createSagaMiddleware();
 
 const reducer = combineReducers({
-  user: userReducer,
+  product: productReducer,
   search: searchReducer,
+  user: userReducer,
 });
 
 const store = configureStore({

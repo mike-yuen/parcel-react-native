@@ -15,7 +15,14 @@ const userSlice = createSlice({
 
     loadingUser: false,
     loadedUser: false,
-    user: {},
+    user: {
+      id: '',
+      displayName: '',
+      email: '',
+      phone: '',
+      address: '',
+      location: '',
+    },
 
     error: {},
   },
@@ -77,11 +84,22 @@ const userSlice = createSlice({
     signOutSuccess(state) {
       state.signedIn = false;
     },
-
-    getUser() {},
-    setUser(state, action) {
-      const userData = action.payload;
-      return {...state, ...userData};
+    /**
+     * getUser
+     */
+    getUser(state) {
+      state.loadingUser = true;
+      state.loadedUser = false;
+    },
+    getUserSuccess(state, action) {
+      state.user = Object.assign(state.user, action.payload);
+      state.loadingUser = false;
+      state.loadedUser = true;
+    },
+    getUserError(state, action) {
+      state.loadingUser = false;
+      state.loadedUser = false;
+      state.error = action.payload;
     },
   },
 });
@@ -100,6 +118,7 @@ export const {
   signOut,
   signOutSuccess,
   getUser,
-  setUser,
+  getUserSuccess,
+  getUserError,
 } = userSlice.actions;
 export default userSlice.reducer;
