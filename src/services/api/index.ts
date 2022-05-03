@@ -48,6 +48,46 @@ export const parcelApi = {
     }
   },
 
+  async createRecipient(body: any) {
+    try {
+      const res = await parcelClient.post('/recipient', body);
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async createOrder(body: any) {
+    try {
+      const res = await parcelClient.post('/order', body);
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async createSubOrder(body: any) {
+    try {
+      const res = await parcelClient.post('/suborder', body);
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async getOrder() {
+    try {
+      const res = await parcelClient.get('/order');
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async setStore(key: string, value: string) {
     await AsyncStorage.setItem(key, value);
   },

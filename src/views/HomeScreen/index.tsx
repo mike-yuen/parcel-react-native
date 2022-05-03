@@ -1,5 +1,5 @@
-import React, {Fragment} from 'react';
-import {Dimensions, ScrollView,  View} from 'react-native';
+import React, {Fragment, useEffect} from 'react';
+import {Dimensions, ScrollView, View} from 'react-native';
 import {Button, colors, Image, Text} from 'react-native-elements';
 import Carousel from 'react-native-snap-carousel';
 
@@ -10,6 +10,10 @@ import guide1Image from '~/assets/guide-1.png';
 import guide2Image from '~/assets/guide-2.png';
 import {COLORS} from '~/constants/colors';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import MyOrder from '~/components/MyOrder';
+import {useDispatch, useSelector} from 'react-redux';
+import {getOrder} from '~/store/slices/orderSlice';
+import {RootState} from '~/store';
 
 const carouselItems = [
   {
@@ -46,8 +50,14 @@ const _renderItem = ({item, index}: any) => {
 };
 
 const HomeScreen = ({navigation}: any) => {
+  const dispatch = useDispatch();
+  const {orderList} = useSelector((state: RootState) => state.order);
   const insets = useSafeAreaInsets();
   const [activeIndex, setActiveIndex] = React.useState(0);
+
+  useEffect(() => {
+    dispatch(getOrder());
+  }, []);
 
   return (
     <>
@@ -108,25 +118,35 @@ const HomeScreen = ({navigation}: any) => {
             </View>
           </View>
 
-          <View style={{alignItems: 'center', justifyContent: 'center'}}>
-            <Image
-              source={notFoundImage}
-              containerStyle={{
-                width: 92,
-                height: 84,
-                alignSelf: 'center',
-                marginTop: 30,
-              }}
-            />
-            <Text style={{fontSize: 12, color: '#8c8f96', marginTop: 6}}>No parcels found</Text>
-            <Button
-              title="Create new request"
-              containerStyle={{marginTop: 14, marginBottom: 20}}
-              buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
-              titleStyle={{color: COLORS.black1, fontSize: 14, marginVertical: 0, marginHorizontal: 20}}
-              onPress={() => navigation.navigate('Order')}
-            />
-          </View>
+          {/* <Text>{JSON.stringify(orderList)}</Text> */}
+
+          {orderList.length ? (
+            orderList.map(order => (
+              <View key={order.id} style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <MyOrder data={{id: order.id, value: order.value}} />
+              </View>
+            ))
+          ) : (
+            <View style={{alignItems: 'center', justifyContent: 'center'}}>
+              <Image
+                source={notFoundImage}
+                containerStyle={{
+                  width: 92,
+                  height: 84,
+                  alignSelf: 'center',
+                  marginTop: 30,
+                }}
+              />
+              <Text style={{fontSize: 12, color: '#8c8f96', marginTop: 6}}>No parcels found</Text>
+              <Button
+                title="Create new request"
+                containerStyle={{marginTop: 14, marginBottom: 20}}
+                buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+                titleStyle={{color: COLORS.black1, fontSize: 14, marginVertical: 0, marginHorizontal: 20}}
+                onPress={() => navigation.navigate('Order')}
+              />
+            </View>
+          )}
         </View>
       </ScrollView>
     </>

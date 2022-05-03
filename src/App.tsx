@@ -22,6 +22,7 @@ import Step4 from '~/views/SignupScreen/Step4';
 import Step5 from '~/views/SignupScreen/Step5';
 import Step6 from '~/views/SignupScreen/Step6';
 import Main from './Main';
+import RecipientScreen from './views/RecipientScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,11 +40,11 @@ const MyStack = () => {
   const {signedIn} = useSelector((state: RootState) => state.user);
 
   async function getToken() {
-    const token = await AsyncStorage.getItem('jt');
-    if (token && !signedIn) {
+    const storageToken = await AsyncStorage.getItem('jt');
+    if (storageToken && !signedIn) {
       dispatch(localSignIn());
     }
-    setToken(token);
+    setToken(storageToken);
   }
 
   function searchLocation(keyword: string) {
@@ -109,6 +110,16 @@ const MyStack = () => {
         options={{
           presentation: 'fullScreenModal',
           headerTitle: 'Product',
+          headerTintColor: colors.grey1,
+          headerTitleStyle: {fontSize: 16},
+          headerShadowVisible: false,
+        }}></Stack.Screen>
+      <Stack.Screen
+        name="Recipient"
+        component={RecipientScreen}
+        options={{
+          presentation: 'fullScreenModal',
+          headerTitle: 'Recipient',
           headerTintColor: colors.grey1,
           headerTitleStyle: {fontSize: 16},
           headerShadowVisible: false,

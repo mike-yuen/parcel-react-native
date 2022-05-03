@@ -1,6 +1,7 @@
 import {all, call, put, select, takeLatest} from 'redux-saga/effects';
 import {parcelApi, goongApi} from '~/services/api';
 import {RootState} from '.';
+import {addOrder, addOrderError, addOrderSuccess, getOrder, getOrderError, getOrderSuccess} from './slices/orderSlice';
 import {
   addProduct,
   addProductError,
@@ -8,6 +9,7 @@ import {
   updateProduct,
   updateProductSuccess,
 } from './slices/productSlice';
+import {addRecipient, addRecipientError, addRecipientSuccess, saveRecipient} from './slices/recipientSlice';
 import {
   search,
   searchError,
@@ -140,6 +142,77 @@ export function* updateProductSaga(action: any) {
   } catch (error) {}
 }
 
+/**
+ * Recipient Saga
+ */
+export function* addRecipientSaga(action: any) {
+  try {
+    yield put(addRecipientSuccess(action.payload));
+  } catch (error) {
+    yield put(addRecipientError(error));
+  }
+}
+
+export function* saveRecipientSaga(action: any) {
+  try {
+    const {id, name, address} = yield call(parcelApi.createRecipient, action.payload);
+    yield put(addRecipientSuccess({id, name, address}));
+  } catch (error) {
+    yield put(addRecipientError(error));
+  }
+}
+
+/**
+ * Order Saga
+ */
+export function* addOrderSaga(action: any) {
+  try {
+    yield call(saveRecipientSaga, {payload: action.payload.recipientData});
+
+    const {user} = yield select((state: RootState) => state.user);
+    const {recipient} = yield select((state: RootState) => state.recipient);
+    const {products} = yield select((state: RootState) => state.product);
+
+    const order = {
+      status: 0,
+      driverIds: ['f8cd6b87-23b7-473b-b78f-8bab96d908fc'],
+      isDirectPickup: false,
+      isDirectDelivery: false,
+      description: '',
+      paymentSide: 0,
+      paymentStatus: 0,
+      srcWarehouseId: '12d6df4e-ec78-43aa-9543-bc47475fbd46',
+      destWarehouseId: '80949bfe-d653-4789-8877-ab161cde78f1',
+    } as any;
+    order.fee = 10000;
+    order.totalWeight = products.reduce((acc: number, b: any) => acc + parseInt(b.weight), 0);
+    order.value = order.fee * order.totalWeight;
+    order.recipientId = recipient.id;
+    order.userId = user.id;
+
+    const {id} = yield call(parcelApi.createOrder, order);
+
+    if (id) {
+      products.forEach(function* (product: any) {
+        yield call(parcelApi.createSubOrder, {status: 0, name: product.name, weight: product.weight, orderId: id});
+      });
+
+      yield put(addOrderSuccess({id}));
+    }
+  } catch (error) {
+    yield put(addOrderError(error));
+  }
+}
+
+export function* getOrderSaga(action: any) {
+  try {
+    const data: any[] = yield call(parcelApi.getOrder);
+    yield put(getOrderSuccess(data));
+  } catch (error) {
+    yield put(getOrderError(error));
+  }
+}
+
 function* rootSaga() {
   yield all([
     takeLatest(signIn.type, signInSaga),
@@ -154,6 +227,13 @@ function* rootSaga() {
 
     takeLatest(addProduct.type, addProductSaga),
     takeLatest(updateProduct.type, updateProductSaga),
+
+    takeLatest(addRecipient.type, addRecipientSaga),
+    takeLatest(saveRecipient.type, saveRecipientSaga),
+
+    takeLatest(addOrder.type, addOrderSaga),
+
+    takeLatest(getOrder.type, getOrderSaga),
   ]);
 }
 

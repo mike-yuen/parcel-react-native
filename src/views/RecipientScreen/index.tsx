@@ -3,29 +3,26 @@ import React, {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {View} from 'react-native';
 import {Button, Text} from 'react-native-elements';
-import uuid from 'react-native-uuid';
 import {useDispatch, useSelector} from 'react-redux';
 
 import MyInput from '~/components/MyInput';
 import {COLORS} from '~/constants/colors';
 import {RootState} from '~/store';
-import {addProduct, updateProduct} from '~/store/slices/productSlice';
+import {addRecipient} from '~/store/slices/recipientSlice';
 
-const ProductScreen = ({route}: any) => {
+const RecipientScreen = ({route}: any) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const {products} = useSelector((state: RootState) => state.product);
-  const {id} = route.params;
+  const {recipient} = useSelector((state: RootState) => state.recipient);
 
-  const [product, setProduct] = useState({name: '', weight: ''});
+  const [recipientState, setRecipientState] = useState({name: '', address: '', phone: ''});
 
   useEffect(() => {
-    const temp = products.find(product => product.id === id);
-    if (temp) {
-      setProduct(temp);
+    if (recipient.name) {
+      setRecipientState(recipient);
       reset({
-        name: temp.name,
-        weight: temp.weight,
+        name: recipient.name,
+        phone: recipient.phone,
       });
     }
   }, [route]);
@@ -38,11 +35,7 @@ const ProductScreen = ({route}: any) => {
   } = useForm({mode: 'onChange'});
 
   const onSubmit = (data: any) => {
-    if (id) {
-      dispatch(updateProduct({id, ...data}));
-    } else {
-      dispatch(addProduct({id: uuid.v4(), ...data}));
-    }
+    dispatch(addRecipient(data));
     navigation.goBack();
   };
 
@@ -57,22 +50,22 @@ const ProductScreen = ({route}: any) => {
         paddingVertical: 30,
         paddingHorizontal: 20,
       }}>
-      <Text style={{fontWeight: '700', fontSize: 16}}>Product Name</Text>
+      <Text style={{fontWeight: '700', fontSize: 16}}>Recipient Name</Text>
       <MyInput
         name="name"
         control={control}
         rules={{required: true}}
-        placeholder="Product Name"
+        placeholder="Recipient Name"
         containerStyle={{marginTop: 4}}
         inputContainerStyle={{borderRadius: 8}}
       />
 
-      <Text style={{fontWeight: '700', fontSize: 16, marginTop: 16}}>Weight</Text>
+      <Text style={{fontWeight: '700', fontSize: 16, marginTop: 16}}>Phone</Text>
       <MyInput
-        name="weight"
+        name="phone"
         control={control}
         rules={{required: true}}
-        placeholder="Weight"
+        placeholder="Phone"
         keyboardType="numeric"
         containerStyle={{marginTop: 4}}
         inputContainerStyle={{borderRadius: 8}}
@@ -90,4 +83,4 @@ const ProductScreen = ({route}: any) => {
   );
 };
 
-export default ProductScreen;
+export default RecipientScreen;

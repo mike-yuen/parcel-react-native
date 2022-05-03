@@ -1,14 +1,31 @@
+import {Link} from '@react-navigation/native';
 import React from 'react';
 import {ScrollView, View} from 'react-native';
-import {Button, CheckBox, colors, Divider, Icon, ListItem, Switch, Text} from 'react-native-elements';
-import {useSelector} from 'react-redux';
+import {Button, colors, Divider, Icon, ListItem, Switch, Text} from 'react-native-elements';
+import {useDispatch, useSelector} from 'react-redux';
 import {COLORS} from '~/constants/colors';
 import {RootState} from '~/store';
+import {addOrder} from '~/store/slices/orderSlice';
 
 const OrderScreen = ({navigation}: any) => {
+  const dispatch = useDispatch();
   const {user} = useSelector((state: RootState) => state.user);
   const {selectedLocationData} = useSelector((state: RootState) => state.search);
   const {products} = useSelector((state: RootState) => state.product);
+  const {recipient} = useSelector((state: RootState) => state.recipient);
+
+  function handleSubmit() {
+    if (recipient.name && selectedLocationData.address && products.length) {
+      const recipientData = {
+        name: recipient.name,
+        phone: recipient.phone,
+        address: selectedLocationData.address,
+        information: '',
+      };
+
+      dispatch(addOrder({recipientData, products}));
+    }
+  }
 
   return (
     <ScrollView>
@@ -115,24 +132,60 @@ const OrderScreen = ({navigation}: any) => {
               borderBottomWidth: 1,
               borderBottomColor: colors.grey5,
             }}>
-            <View style={{flex: 1}}>
-              {selectedLocationData.address ? (
-                <>
-                  <Text style={{fontSize: 16, fontWeight: '700', color: colors.black}}>
-                    {selectedLocationData.name}
-                  </Text>
-                  <Text style={{fontSize: 14, color: colors.grey2}}>{selectedLocationData.address}</Text>
-                </>
-              ) : (
-                <Text style={{fontSize: 16, color: COLORS.blue}}>Add the address</Text>
-              )}
-            </View>
-            <Icon
-              type="font-awesome"
-              name="chevron-right"
-              size={12}
-              containerStyle={{paddingLeft: 12}}
-              tvParallaxProperties={undefined}></Icon>
+            <Link to={{screen: 'Search', params: {departure: 'Order'}}}>
+              <View style={{flex: 1}}>
+                {selectedLocationData.address ? (
+                  <>
+                    <Text style={{fontSize: 16, fontWeight: '700', color: colors.black}}>
+                      {selectedLocationData.name}
+                    </Text>
+                    <Text style={{fontSize: 14, color: colors.grey2}}>{selectedLocationData.address}</Text>
+                  </>
+                ) : (
+                  <Text style={{fontSize: 16, color: COLORS.blue}}>Add the address</Text>
+                )}
+              </View>
+            </Link>
+            <Link to={{screen: 'Search', params: {departure: 'Order'}}}>
+              <Icon
+                type="font-awesome"
+                name="chevron-right"
+                size={12}
+                containerStyle={{paddingLeft: 12}}
+                tvParallaxProperties={undefined}></Icon>
+            </Link>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingTop: 20,
+              paddingBottom: 16,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.grey5,
+            }}>
+            <Link to={{screen: 'Recipient', params: {departure: 'Order'}}}>
+              <View style={{flex: 1}}>
+                {recipient.name ? (
+                  <>
+                    <Text style={{fontSize: 16, fontWeight: '700', color: colors.black}}>{recipient.name}</Text>
+                    <Text style={{fontSize: 14, color: colors.grey2}}>{recipient.phone}</Text>
+                  </>
+                ) : (
+                  <Text style={{fontSize: 16, color: COLORS.blue}}>Add recipient info</Text>
+                )}
+              </View>
+            </Link>
+            <Link to={{screen: 'Recipient', params: {departure: 'Order'}}}>
+              <Icon
+                type="font-awesome"
+                name="chevron-right"
+                size={12}
+                containerStyle={{paddingLeft: 12}}
+                tvParallaxProperties={undefined}></Icon>
+            </Link>
           </View>
 
           <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16}}>
@@ -226,10 +279,11 @@ const OrderScreen = ({navigation}: any) => {
 
         <View style={{backgroundColor: '#f4f4f4'}}>
           <Button
-            title="Calculate"
+            title="Create Order"
             containerStyle={{marginVertical: 20, paddingHorizontal: 16}}
             buttonStyle={{backgroundColor: COLORS.golden}}
-            titleStyle={{fontSize: 16, color: COLORS.black1, paddingVertical: 4}}></Button>
+            titleStyle={{fontSize: 16, color: COLORS.black1, paddingVertical: 4}}
+            onPress={handleSubmit}></Button>
         </View>
       </View>
     </ScrollView>
