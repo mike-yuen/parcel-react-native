@@ -51,7 +51,7 @@ const ProfileScreen = ({navigation}: any) => {
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Text style={{color: '#878c90', fontSize: 14, marginTop: 6}}>
-                  ID: {user.id.slice(0, 6)}...{user.id.slice(user.id.length - 4, user.id.length)}
+                  {user.id && `ID: ${user.id.slice(0, 6)}...${user.id.slice(user.id.length - 4, user.id.length)}`}
                 </Text>
                 <Icon
                   name="md-copy"

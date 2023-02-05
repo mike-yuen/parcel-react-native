@@ -51,13 +51,19 @@ const _renderItem = ({item, index}: any) => {
 
 const HomeScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
-  const {orderList} = useSelector((state: RootState) => state.order);
+  const {order, orderList} = useSelector((state: RootState) => state.order);
   const insets = useSafeAreaInsets();
   const [activeIndex, setActiveIndex] = React.useState(0);
 
   useEffect(() => {
     dispatch(getOrder());
   }, []);
+
+  useEffect(() => {
+    if (order.id) {
+      dispatch(getOrder());
+    }
+  }, [order]);
 
   return (
     <>

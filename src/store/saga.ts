@@ -71,8 +71,7 @@ export function* signUpSaga(action: any) {
 
     const getUser = (state: RootState) => state.user;
     const {signUpData} = yield select(getUser);
-
-    yield call(signInSaga, {email, password: signUpData.password});
+    yield call(signInSaga, {payload: {email, password: signUpData.password}});
   } catch (error) {
     yield put(signUpError(error));
   }
@@ -193,12 +192,14 @@ export function* addOrderSaga(action: any) {
     const {id} = yield call(parcelApi.createOrder, order);
 
     if (id) {
-      products.forEach(function* (product: any) {
+      for (let product of products) {
+        console.log('product: ', product)
         yield call(parcelApi.createSubOrder, {status: 0, name: product.name, weight: product.weight, orderId: id});
-      });
+      }
 
       yield put(addOrderSuccess({id}));
     }
+    action.payload.navigation.navigate('Home')
   } catch (error) {
     yield put(addOrderError(error));
   }

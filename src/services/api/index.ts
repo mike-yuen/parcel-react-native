@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getClient} from './base.client';
 
-const parcelClient = getClient('http://app.pandamaster.club:8443');
+const parcelClient = getClient('https://b56c-2402-800-63b6-ce3a-3c12-e70d-4240-b9d9.ap.ngrok.io');
+// http://app.pandamaster.club:8443
 const goongClient = getClient('https://rsapi.goong.io');
 const GOONG_API_KEY = 'mjXPVzvQKJmyp6HbVDlczUVpYD59CHXmOShWJdeC';
 

@@ -23,7 +23,7 @@ const OrderScreen = ({navigation}: any) => {
         information: '',
       };
 
-      dispatch(addOrder({recipientData, products}));
+      dispatch(addOrder({recipientData, products, navigation}));
     }
   }
 

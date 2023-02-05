@@ -14,7 +14,7 @@ import AuthScreen from '~/views/AuthScreen';
 import MapScreen from '~/views/MapScreen';
 import ProductScreen from '~/views/ProductScreen';
 import SearchScreen from '~/views/SearchScreen';
-import SigninScreen from '~/views/SigninScreen';
+import SigninScreen from '~/views/SignInScreen';
 import Step1 from '~/views/SignupScreen/Step1';
 import Step2 from '~/views/SignupScreen/Step2';
 import Step3 from '~/views/SignupScreen/Step3';
