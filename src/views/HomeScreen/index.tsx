@@ -1,6 +1,6 @@
 import React, {Fragment, useEffect} from 'react';
 import {Dimensions, ScrollView, View} from 'react-native';
-import {Button, colors, Image, Text} from 'react-native-elements';
+import {Button, colors, Image, ListItem, Text} from 'react-native-elements';
 import Carousel from 'react-native-snap-carousel';
 
 import MyHeader from '~/components/MyHeader';
@@ -10,7 +10,7 @@ import guide1Image from '~/assets/guide-1.png';
 import guide2Image from '~/assets/guide-2.png';
 import {COLORS} from '~/constants/colors';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import MyOrder from '~/components/MyOrder';
+import MyOrderListItem from '~/components/MyOrderListItem';
 import {useDispatch, useSelector} from 'react-redux';
 import {getOrder} from '~/store/slices/orderSlice';
 import {RootState} from '~/store';
@@ -128,9 +128,19 @@ const HomeScreen = ({navigation}: any) => {
 
           {orderList.length ? (
             orderList.map(order => (
-              <View key={order.id} style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                <MyOrder data={{id: order.id, value: order.value}} />
-              </View>
+              <ListItem
+                key={order.id}
+                containerStyle={{padding: 0}}
+                onPress={() =>
+                  navigation.navigate('Detail', {
+                    orderId: order.id,
+                    departure: 'Home',
+                  })
+                }
+                hasTVPreferredFocus={undefined}
+                tvParallaxProperties={undefined}>
+                <MyOrderListItem data={order} />
+              </ListItem>
             ))
           ) : (
             <View style={{alignItems: 'center', justifyContent: 'center'}}>

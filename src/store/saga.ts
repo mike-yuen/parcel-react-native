@@ -193,13 +193,13 @@ export function* addOrderSaga(action: any) {
 
     if (id) {
       for (let product of products) {
-        console.log('product: ', product)
+        console.log('product: ', product);
         yield call(parcelApi.createSubOrder, {status: 0, name: product.name, weight: product.weight, orderId: id});
       }
 
       yield put(addOrderSuccess({id}));
     }
-    action.payload.navigation.navigate('Home')
+    action.payload.navigation.navigate('Home');
   } catch (error) {
     yield put(addOrderError(error));
   }

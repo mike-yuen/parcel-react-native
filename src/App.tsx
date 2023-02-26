@@ -4,7 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator, NativeStackNavigationOptions} from '@react-navigation/native-stack';
 import debounce from 'lodash.debounce';
 import {Provider, useDispatch, useSelector} from 'react-redux';
-import {colors} from 'react-native-elements';
+import {colors, Text} from 'react-native-elements';
 
 import MySearch from '~/components/MySearch';
 import store, {RootState} from '~/store';
@@ -23,6 +23,7 @@ import Step5 from '~/views/SignupScreen/Step5';
 import Step6 from '~/views/SignupScreen/Step6';
 import Main from './Main';
 import RecipientScreen from './views/RecipientScreen';
+import OrderDetailsScreen from './views/OrderDetailsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -103,6 +104,15 @@ const MyStack = () => {
           presentation: 'fullScreenModal',
         }}>
         {props => <SearchScreen {...props} />}
+      </Stack.Screen>
+      <Stack.Screen
+        name="Detail"
+        options={{
+          headerTitle: props => <Text style={{textAlign: 'center', fontSize: 16}}>Order Details</Text>,
+          headerShadowVisible: false,
+          presentation: 'fullScreenModal',
+        }}>
+        {props => <OrderDetailsScreen {...props} />}
       </Stack.Screen>
       <Stack.Screen
         name="Product"
