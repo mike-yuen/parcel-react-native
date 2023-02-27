@@ -15,6 +15,7 @@ export const getClient = (baseURL: string) => {
       if (jt) {
         config.headers!.Authorization = jt;
       }
+      config.headers!['Cache-Control'] = 'no-cache';
       return config;
     },
     function (error) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import {TouchableWithoutFeedback, useWindowDimensions, View} from 'react-native';
 import {Button, colors, Icon, Text} from 'react-native-elements';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import {COLORS} from '~/constants/colors';
 
 const MyOrderListItem = (props: any) => {

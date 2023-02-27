@@ -3,10 +3,14 @@ import {createSlice} from '@reduxjs/toolkit';
 interface OrderState {
   addingOrder: boolean;
   addedOrder: boolean;
+  gettingOrder: boolean;
+  gotOrder: boolean;
   order: {
     id?: string;
     status: number;
     driverIds: [];
+    drivers: any[];
+    recipient: any;
     fee: number;
     isDirectPickup: boolean;
     isDirectDelivery: boolean;
@@ -19,9 +23,10 @@ interface OrderState {
     value: number;
     srcWarehouseId: string;
     destWarehouseId: string;
+    subOrders: any[];
   };
-  gettingOrder: boolean;
-  gotOrder: boolean;
+  gettingOrders: boolean;
+  gotOrders: boolean;
   orderList: any[];
   error: any;
 }
@@ -31,9 +36,11 @@ const orderSlice = createSlice({
   initialState: {
     addingOrder: false,
     addedOrder: false,
-    order: {},
     gettingOrder: false,
     gotOrder: false,
+    order: {},
+    gettingOrders: false,
+    gotOrders: false,
     orderList: [] as any[],
     error: {},
   } as OrderState,
@@ -54,13 +61,28 @@ const orderSlice = createSlice({
       state.error = action.payload;
     },
 
-    getOrder(state) {
+    getOrders(state) {
+      state.gettingOrders = true;
+      state.gotOrders = false;
+    },
+    getOrdersSuccess(state, action) {
+      const ids = new Set(state.orderList.map(o => o.id));
+      state.orderList = [...state.orderList, ...action.payload.filter((n: any) => !ids.has(n.id))];
+      state.gettingOrders = false;
+      state.gotOrders = true;
+    },
+    getOrdersError(state, action) {
+      state.gettingOrders = false;
+      state.gotOrders = false;
+      state.error = action.payload;
+    },
+
+    getOrder(state, action) {
       state.gettingOrder = true;
       state.gotOrder = false;
     },
     getOrderSuccess(state, action) {
-      const ids = new Set(state.orderList.map(o => o.id));
-      state.orderList = [...state.orderList, ...action.payload.filter((n: any) => !ids.has(n.id))];
+      state.order = action.payload;
       state.gettingOrder = false;
       state.gotOrder = true;
     },
@@ -72,5 +94,15 @@ const orderSlice = createSlice({
   },
 });
 
-export const {addOrder, addOrderSuccess, addOrderError, getOrder, getOrderSuccess, getOrderError} = orderSlice.actions;
+export const {
+  addOrder,
+  addOrderSuccess,
+  addOrderError,
+  getOrders,
+  getOrdersSuccess,
+  getOrdersError,
+  getOrder,
+  getOrderSuccess,
+  getOrderError,
+} = orderSlice.actions;
 export default orderSlice.reducer;

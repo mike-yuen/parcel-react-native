@@ -12,7 +12,7 @@ import {COLORS} from '~/constants/colors';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import MyOrderListItem from '~/components/MyOrderListItem';
 import {useDispatch, useSelector} from 'react-redux';
-import {getOrder} from '~/store/slices/orderSlice';
+import {getOrders} from '~/store/slices/orderSlice';
 import {RootState} from '~/store';
 
 const carouselItems = [
@@ -56,12 +56,12 @@ const HomeScreen = ({navigation}: any) => {
   const [activeIndex, setActiveIndex] = React.useState(0);
 
   useEffect(() => {
-    dispatch(getOrder());
+    dispatch(getOrders());
   }, []);
 
   useEffect(() => {
     if (order.id) {
-      dispatch(getOrder());
+      dispatch(getOrders());
     }
   }, [order]);
 

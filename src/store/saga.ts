@@ -1,7 +1,17 @@
 import {all, call, put, select, takeLatest} from 'redux-saga/effects';
 import {parcelApi, goongApi} from '~/services/api';
 import {RootState} from '.';
-import {addOrder, addOrderError, addOrderSuccess, getOrder, getOrderError, getOrderSuccess} from './slices/orderSlice';
+import {
+  addOrder,
+  addOrderError,
+  addOrderSuccess,
+  getOrders,
+  getOrdersSuccess,
+  getOrdersError,
+  getOrder,
+  getOrderError,
+  getOrderSuccess,
+} from './slices/orderSlice';
 import {
   addProduct,
   addProductError,
@@ -205,10 +215,19 @@ export function* addOrderSaga(action: any) {
   }
 }
 
+export function* getOrdersSaga(action: any) {
+  try {
+    const data: any[] = yield call(parcelApi.getOrders);
+    if (data) yield put(getOrdersSuccess(data));
+  } catch (error) {
+    yield put(getOrdersError(error));
+  }
+}
+
 export function* getOrderSaga(action: any) {
   try {
-    const data: any[] = yield call(parcelApi.getOrder);
-    yield put(getOrderSuccess(data));
+    const data: {id: string} = yield call(parcelApi.getOrder, action.payload);
+    if (data) yield put(getOrderSuccess(data));
   } catch (error) {
     yield put(getOrderError(error));
   }
@@ -233,7 +252,7 @@ function* rootSaga() {
     takeLatest(saveRecipient.type, saveRecipientSaga),
 
     takeLatest(addOrder.type, addOrderSaga),
-
+    takeLatest(getOrders.type, getOrdersSaga),
     takeLatest(getOrder.type, getOrderSaga),
   ]);
 }
