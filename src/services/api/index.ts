@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getClient} from './base.client';
 
-const parcelClient = getClient('https://e1f1-171-236-244-169.ap.ngrok.io');
+const parcelClient = getClient('https://13cd-2402-800-63b6-98f2-19e-e375-bbdd-6509.ap.ngrok.io');
 // http://app.pandamaster.club:8443
 const goongClient = getClient('https://rsapi.goong.io');
 const GOONG_API_KEY = 'mjXPVzvQKJmyp6HbVDlczUVpYD59CHXmOShWJdeC';
@@ -57,6 +57,16 @@ export const parcelApi = {
     }
   },
 
+  async estimateFee(body: any) {
+    try {
+      const res = await parcelClient.post('/order', body);
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async createOrder(body: any) {
     try {
       const res = await parcelClient.post('/order', body);
@@ -81,7 +91,6 @@ export const parcelApi = {
     try {
       const res = await parcelClient.get('/order');
       const resBody = res.data;
-      console.log('orders: ', resBody);
       return resBody;
     } catch (err) {
       throw err;

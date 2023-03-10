@@ -1,13 +1,17 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import {Link} from '@react-navigation/native';
 import React, {useEffect} from 'react';
-import {ScrollView, TouchableWithoutFeedback, View} from 'react-native';
-import {Button, colors, Icon, ListItem, Text} from 'react-native-elements';
+import {ScrollView, StyleSheet, TouchableWithoutFeedback, useWindowDimensions, View} from 'react-native';
+import {Button, colors, Icon, Image, ListItem, Text} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
 import {getOrder} from '~/store/slices/orderSlice';
 
+import logoImage from '~/assets/logo2x.png';
+import {COLORS} from '~/constants/colors';
+
 const OrderDetailsScreen = ({navigation, route}: any) => {
+  const dimension = useWindowDimensions();
   const dispatch = useDispatch();
   const {orderId, departure} = route.params;
 
@@ -68,7 +72,12 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               containerStyle={{backgroundColor: 'transparent'}}
               buttonStyle={{backgroundColor: 'transparent'}}
               titleStyle={{color: '#1cbc9f', fontSize: 15}}
-              onPress={() => console.log('View Status')}
+              onPress={() =>
+                navigation.navigate('Status', {
+                  orderId: order.id,
+                  departure: 'Detail',
+                })
+              }
             />
           </View>
           <View style={{marginLeft: 32}}>
@@ -184,16 +193,42 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
           style={{
             flexDirection: 'row',
             flexWrap: 'wrap',
-            paddingHorizontal: 16,
             alignItems: 'center',
             justifyContent: 'space-between',
             backgroundColor: colors.white,
           }}>
           {order.subOrders &&
             order.subOrders.map(subOrder => (
-              <ListItem key={subOrder.id} hasTVPreferredFocus={undefined} tvParallaxProperties={undefined}>
-                <Text>{subOrder.name}</Text>
-                <Text>{subOrder.weight} kg</Text>
+              <ListItem
+                key={subOrder.id}
+                hasTVPreferredFocus={undefined}
+                tvParallaxProperties={undefined}
+                style={{width: dimension.width - 32}}>
+                <View
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderColor: COLORS.golden,
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    height: 50,
+                    width: 50,
+                  }}>
+                  <Image source={logoImage} containerStyle={styles.logoImage} />
+                </View>
+                <View style={{flex: 1}}>
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      fontSize: 16,
+                      fontWeight: '700',
+                      color: COLORS.black,
+                    }}>
+                    {subOrder.name}
+                  </Text>
+                  <Text style={{color: colors.grey2, lineHeight: 22}}>Weight: {subOrder.weight} kg</Text>
+                </View>
               </ListItem>
             ))}
         </View>
@@ -201,5 +236,13 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  logoImage: {
+    width: 35,
+    height: 28,
+    alignSelf: 'center',
+  },
+});
 
 export default OrderDetailsScreen;

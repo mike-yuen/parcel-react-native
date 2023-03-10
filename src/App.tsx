@@ -24,6 +24,7 @@ import Step6 from '~/views/SignupScreen/Step6';
 import Main from './Main';
 import RecipientScreen from './views/RecipientScreen';
 import OrderDetailsScreen from './views/OrderDetailsScreen';
+import OrderStatusScreen from './views/OrderStatusScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -113,6 +114,15 @@ const MyStack = () => {
           presentation: 'fullScreenModal',
         }}>
         {props => <OrderDetailsScreen {...props} />}
+      </Stack.Screen>
+      <Stack.Screen
+        name="Status"
+        options={{
+          headerTitle: props => <Text style={{textAlign: 'center', fontSize: 16}}>Order Status</Text>,
+          headerShadowVisible: false,
+          presentation: 'fullScreenModal',
+        }}>
+        {props => <OrderStatusScreen {...props} />}
       </Stack.Screen>
       <Stack.Screen
         name="Product"
