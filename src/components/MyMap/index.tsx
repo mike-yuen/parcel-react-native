@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {View} from 'react-native';
+import {useWindowDimensions, View} from 'react-native';
+import {Button} from 'react-native-elements';
 import GetLocation, {Location} from 'react-native-get-location';
 import MapView, {Marker} from 'react-native-maps';
 
 const MyMap = (props: any) => {
+  const dimension = useWindowDimensions();
   const [currentLocation, setCurrentLocation] = useState({} as Partial<Location>);
 
   useEffect(() => {
@@ -19,24 +21,32 @@ const MyMap = (props: any) => {
   return (
     <>
       {currentLocation.latitude && currentLocation.longitude ? (
-        <MapView
-          style={{flex: 1}}
-          initialRegion={{
-            latitude: currentLocation.latitude,
-            longitude: currentLocation.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          onPress={e => setCurrentLocation(e.nativeEvent.coordinate)}>
-          <Marker
-            coordinate={{
+        <View style={{position: 'relative', flex: 1}}>
+          <MapView
+            style={{position: 'absolute', width: dimension.width, height: dimension.height}}
+            initialRegion={{
               latitude: currentLocation.latitude,
               longitude: currentLocation.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
             }}
-            title="{marker.title}"
-            description="{marker.description}"
-          />
-        </MapView>
+            onDoublePress={e => setCurrentLocation(e.nativeEvent.coordinate)}>
+            <Marker
+              coordinate={{
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude,
+              }}
+              title="{marker.title}"
+              description="{marker.description}"
+            />
+          </MapView>
+          <Button
+            title={'Confirm'}
+            onPress={() => {
+              console.log('Confirm: ', currentLocation);
+            }}
+            containerStyle={{position: 'absolute', bottom: 0, width: dimension.width, zIndex: 2}}></Button>
+        </View>
       ) : (
         <View></View>
       )}

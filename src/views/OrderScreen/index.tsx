@@ -1,34 +1,71 @@
 import {Link} from '@react-navigation/native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, View} from 'react-native';
 import {Button, colors, Divider, Icon, ListItem, Switch, Text} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
 import {COLORS} from '~/constants/colors';
 import {RootState} from '~/store';
-import {addOrder} from '~/store/slices/orderSlice';
+import {addOrder, createIntentOrder} from '~/store/slices/orderSlice';
 
 const OrderScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
   const {user} = useSelector((state: RootState) => state.user);
-  const {selectedLocationData} = useSelector((state: RootState) => state.search);
+  const {intentOrder} = useSelector((state: RootState) => state.order);
   const {products} = useSelector((state: RootState) => state.product);
   const {recipient} = useSelector((state: RootState) => state.recipient);
+  const {selectedLocationData} = useSelector((state: RootState) => state.search);
 
-  function handleSubmit() {
-    if (recipient.name && selectedLocationData.address && products.length) {
-      const recipientData = {
-        name: recipient.name,
-        phone: recipient.phone,
-        address: selectedLocationData.address,
-        information: '',
+  const [isEstmated, setIsestimated] = useState(false);
+
+  function onEstimateFee() {
+    if (recipient.name && selectedLocationData.location && products.length) {
+      const payload = {
+        recipientName: recipient.name,
+        recipientPhone: recipient.phone,
+        isExpress: true,
+        source: user.location,
+        destination: {
+          type: 'Point',
+          coordinates: [selectedLocationData.location.lat, selectedLocationData.location.lng],
+        },
+        subOrders: [] as any,
       };
-
-      dispatch(addOrder({recipientData, products, navigation}));
+      for (let product of products) {
+        payload.subOrders.push({status: 1, name: product.name, weight: product.weight, provinceCode: 70000});
+      }
+      console.log('createIntentOrder payload: ', payload);
+      dispatch(createIntentOrder(payload));
     }
   }
 
+  function onCreateOrder() {
+    if (recipient.name && intentOrder.fee != null) {
+      const data = {
+        userId: user.id,
+        recipientName: recipient.name,
+        recipientPhone: recipient.phone,
+        isExpress: true,
+        source: user.location,
+        description: '',
+        destination: intentOrder.destination,
+        totalWeight: intentOrder.totalWeight,
+        fee: intentOrder.fee,
+        subOrders: intentOrder.subOrders,
+      };
+      console.log('onCreateOrder payload: ', data);
+      dispatch(addOrder({data, navigation}));
+    }
+  }
+
+  useEffect(() => {
+    if (intentOrder.fee != null) {
+      setIsestimated(true);
+    }
+  }, [intentOrder]);
+
   return (
     <ScrollView>
+      {/* Logo */}
       <View style={{backgroundColor: '#f4f4f4', paddingBottom: 6}}>
         <View style={{paddingHorizontal: 16, paddingTop: 24}}>
           <Text style={{fontSize: 14, color: COLORS.gray}}>Calculate shipping rates</Text>
@@ -45,6 +82,7 @@ const OrderScreen = ({navigation}: any) => {
           borderTopLeftRadius: 30,
           borderTopRightRadius: 30,
         }}>
+        {/* Sender */}
         <View style={{paddingHorizontal: 16, paddingVertical: 16}}>
           <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
             <Text style={{fontSize: 20, fontWeight: '700', color: COLORS.black0}}>Sender information</Text>
@@ -107,6 +145,7 @@ const OrderScreen = ({navigation}: any) => {
 
         <Divider color="#f4f4f4" width={14}></Divider>
 
+        {/* Receiver */}
         <View style={{paddingHorizontal: 16, paddingVertical: 16}}>
           <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
             <Text style={{fontSize: 20, fontWeight: '700', color: COLORS.black0}}>Receiver information</Text>
@@ -187,15 +226,11 @@ const OrderScreen = ({navigation}: any) => {
                 tvParallaxProperties={undefined}></Icon>
             </Link>
           </View>
-
-          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16}}>
-            <Text style={{fontSize: 16, color: COLORS.black0}}>Receive directly from the warehouse</Text>
-            <Switch></Switch>
-          </View>
         </View>
 
         <Divider color="#f4f4f4" width={14}></Divider>
 
+        {/* Products */}
         <View style={{paddingVertical: 16}}>
           <View
             style={{
@@ -277,14 +312,60 @@ const OrderScreen = ({navigation}: any) => {
             ))}
         </View>
 
-        <View style={{backgroundColor: '#f4f4f4'}}>
-          <Button
-            title="Create Order"
-            containerStyle={{marginVertical: 20, paddingHorizontal: 16}}
-            buttonStyle={{backgroundColor: COLORS.golden}}
-            titleStyle={{fontSize: 16, color: COLORS.black1, paddingVertical: 4}}
-            onPress={handleSubmit}></Button>
-        </View>
+        <Divider color="#f4f4f4" width={14}></Divider>
+
+        {/* Estimated Fee */}
+        {isEstmated && (
+          <View style={{paddingHorizontal: 16, paddingVertical: 16}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingBottom: 16,
+                borderBottomWidth: 1,
+                borderBottomColor: colors.grey5,
+              }}>
+              <Text style={{fontSize: 20, fontWeight: '700', color: COLORS.black0}}>Estimated Fee</Text>
+              <Button
+                title="Estimate Again"
+                containerStyle={{borderRadius: 30}}
+                buttonStyle={{backgroundColor: `${COLORS.golden}40`, paddingVertical: 4, borderRadius: 30}}
+                titleStyle={{fontSize: 14, fontWeight: '400', color: COLORS.darkGolden, paddingHorizontal: 8}}
+                onPress={onEstimateFee}></Button>
+            </View>
+
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingTop: 20,
+              }}>
+              <Text style={{color: '#26a999', fontSize: 22, fontWeight: '700'}}>
+                {intentOrder.fee?.toLocaleString('en-US')}
+              </Text>
+              <Text>VNĐ</Text>
+            </View>
+            <Button
+              title="Create an order"
+              containerStyle={{marginVertical: 20}}
+              buttonStyle={{backgroundColor: COLORS.golden}}
+              titleStyle={{fontSize: 16, color: COLORS.black1, paddingVertical: 4}}
+              onPress={onCreateOrder}></Button>
+          </View>
+        )}
+
+        {!isEstmated && (
+          <View style={{backgroundColor: '#f4f4f4'}}>
+            <Button
+              title="Estimate Fee"
+              containerStyle={{marginVertical: 20, paddingHorizontal: 16}}
+              buttonStyle={{backgroundColor: COLORS.golden}}
+              titleStyle={{fontSize: 16, color: COLORS.black1, paddingVertical: 4}}
+              onPress={onEstimateFee}></Button>
+          </View>
+        )}
       </View>
     </ScrollView>
   );

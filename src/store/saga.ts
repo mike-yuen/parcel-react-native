@@ -11,6 +11,10 @@ import {
   getOrder,
   getOrderError,
   getOrderSuccess,
+  createIntentOrder,
+  createIntentOrderSuccess,
+  createIntentOrderError,
+  IOrder,
 } from './slices/orderSlice';
 import {
   addProduct,
@@ -89,9 +93,9 @@ export function* signUpSaga(action: any) {
 
 export function* signOutSaga() {
   try {
-    yield call(parcelApi.signOut);
     yield call(parcelApi.removeStore, 'jt');
     yield put(signOutSuccess());
+    yield call(parcelApi.signOut);
   } catch (error) {}
 }
 
@@ -174,39 +178,21 @@ export function* saveRecipientSaga(action: any) {
 /**
  * Order Saga
  */
+export function* createIntentOrderSaga(action: any) {
+  try {
+    const intentOrder: Partial<IOrder> = yield call(parcelApi.estimateFee, action.payload);
+    yield put(createIntentOrderSuccess(intentOrder));
+  } catch (error) {
+    yield put(createIntentOrderError(error));
+  }
+}
+
 export function* addOrderSaga(action: any) {
   try {
-    yield call(saveRecipientSaga, {payload: action.payload.recipientData});
-
-    const {user} = yield select((state: RootState) => state.user);
-    const {recipient} = yield select((state: RootState) => state.recipient);
-    const {products} = yield select((state: RootState) => state.product);
-
-    const order = {
-      status: 0,
-      driverIds: ['f8cd6b87-23b7-473b-b78f-8bab96d908fc'],
-      isDirectPickup: false,
-      isDirectDelivery: false,
-      description: '',
-      paymentSide: 0,
-      paymentStatus: 0,
-      srcWarehouseId: '12d6df4e-ec78-43aa-9543-bc47475fbd46',
-      destWarehouseId: '80949bfe-d653-4789-8877-ab161cde78f1',
-    } as any;
-    order.fee = 10000;
-    order.totalWeight = products.reduce((acc: number, b: any) => acc + parseInt(b.weight), 0);
-    order.value = order.fee * order.totalWeight;
-    order.recipientId = recipient.id;
-    order.userId = user.id;
-
-    const {id} = yield call(parcelApi.createOrder, order);
-
+    console.log('---------------- addOrderSaga: ', action.payload.data);
+    const {id} = yield call(parcelApi.createOrder, action.payload.data);
+    console.log('================ id: ', id);
     if (id) {
-      for (let product of products) {
-        console.log('product: ', product);
-        yield call(parcelApi.createSubOrder, {status: 0, name: product.name, weight: product.weight, orderId: id});
-      }
-
       yield put(addOrderSuccess({id}));
     }
     action.payload.navigation.navigate('Home');
@@ -251,6 +237,7 @@ function* rootSaga() {
     takeLatest(addRecipient.type, addRecipientSaga),
     takeLatest(saveRecipient.type, saveRecipientSaga),
 
+    takeLatest(createIntentOrder.type, createIntentOrderSaga),
     takeLatest(addOrder.type, addOrderSaga),
     takeLatest(getOrders.type, getOrdersSaga),
     takeLatest(getOrder.type, getOrderSaga),

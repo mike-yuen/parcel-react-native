@@ -8,7 +8,7 @@ const userSlice = createSlice({
 
     settingSignUpData: false,
     setSignUpData: false,
-    signUpData: {},
+    signUpData: {} as any,
 
     signingUp: false,
     signedUp: false,
@@ -21,7 +21,7 @@ const userSlice = createSlice({
       email: '',
       phone: '',
       address: '',
-      location: '',
+      location: {} as any,
     },
 
     error: {},

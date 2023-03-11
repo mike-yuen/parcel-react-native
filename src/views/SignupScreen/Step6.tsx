@@ -1,7 +1,8 @@
 import {Link} from '@react-navigation/native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Button, colors, Text} from 'react-native-elements';
+import GetLocation, {Location} from 'react-native-get-location';
 import {useDispatch, useSelector} from 'react-redux';
 import {COLORS} from '~/constants/colors';
 import {RootState} from '~/store';
@@ -11,9 +12,27 @@ const Step6 = ({navigation}: any) => {
   const {signUpData} = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
+  const [currentLocation, setCurrentLocation] = useState({} as Partial<Location>);
+
   function onDone() {
-    dispatch(signUp(signUpData));
+    const payload = Object.assign({}, signUpData);
+    payload.location = {
+      type: 'Point',
+      coordinates: [currentLocation.latitude, currentLocation.longitude],
+    };
+    console.log('signUpData: ', currentLocation, payload);
+    dispatch(signUp(payload));
   }
+
+  useEffect(() => {
+    GetLocation.getCurrentPosition({enableHighAccuracy: true, timeout: 15000})
+      .then(location => {
+        setCurrentLocation(location);
+      })
+      .catch(() => {
+        setCurrentLocation({} as Location);
+      });
+  }, []);
 
   return (
     <View style={styles.container}>

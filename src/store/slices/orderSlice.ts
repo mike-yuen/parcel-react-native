@@ -1,51 +1,73 @@
 import {createSlice} from '@reduxjs/toolkit';
 
+export interface IOrder {
+  id?: string;
+  status: number;
+  driverIds: [];
+  drivers: any[];
+  recipient: any;
+  fee: number;
+  isExpress: boolean;
+  description: string;
+  paymentSide: number;
+  paymentStatus: number;
+  totalWeight: number;
+  userId: string;
+  recipientId: string;
+  source: any;
+  destination: any;
+  subOrders: any[];
+}
+
 interface OrderState {
+  creatingIntentOrder: boolean;
+  createdIntentOrder: boolean;
+  intentOrder: Partial<IOrder>;
   addingOrder: boolean;
   addedOrder: boolean;
   gettingOrder: boolean;
   gotOrder: boolean;
-  order: {
-    id?: string;
-    status: number;
-    driverIds: [];
-    drivers: any[];
-    recipient: any;
-    fee: number;
-    isDirectPickup: boolean;
-    isDirectDelivery: boolean;
-    description: string;
-    paymentSide: number;
-    paymentStatus: number;
-    totalWeight: number;
-    userId: string;
-    recipientId: string;
-    value: number;
-    srcWarehouseId: string;
-    destWarehouseId: string;
-    subOrders: any[];
-  };
+  order: IOrder;
   gettingOrders: boolean;
   gotOrders: boolean;
-  orderList: any[];
+  orderList: IOrder[];
   error: any;
 }
 
 const orderSlice = createSlice({
   name: 'order',
   initialState: {
+    creatingIntentOrder: false,
+    createdIntentOrder: false,
+    intentOrder: {} as IOrder,
     addingOrder: false,
     addedOrder: false,
     gettingOrder: false,
     gotOrder: false,
-    order: {},
+    order: {} as IOrder,
     gettingOrders: false,
     gotOrders: false,
-    orderList: [] as any[],
+    orderList: [] as IOrder[],
     error: {},
   } as OrderState,
 
   reducers: {
+    createIntentOrder(state, action) {
+      state.creatingIntentOrder = true;
+      state.createdIntentOrder = false;
+    },
+    createIntentOrderSuccess(state, action) {
+      state.intentOrder = Object.assign(state.intentOrder, action.payload);
+      state.creatingIntentOrder = false;
+      state.createdIntentOrder = true;
+    },
+    createIntentOrderError(state, action) {
+      state.creatingIntentOrder = false;
+      state.createdIntentOrder = false;
+      state.error = action.payload;
+    },
+
+    // addOrder
     addOrder(state, action) {
       state.addingOrder = true;
       state.addedOrder = false;
@@ -61,6 +83,7 @@ const orderSlice = createSlice({
       state.error = action.payload;
     },
 
+    // getOrders
     getOrders(state) {
       state.gettingOrders = true;
       state.gotOrders = false;
@@ -77,6 +100,7 @@ const orderSlice = createSlice({
       state.error = action.payload;
     },
 
+    // getOrder
     getOrder(state, action) {
       state.gettingOrder = true;
       state.gotOrder = false;
@@ -95,6 +119,9 @@ const orderSlice = createSlice({
 });
 
 export const {
+  createIntentOrder,
+  createIntentOrderSuccess,
+  createIntentOrderError,
   addOrder,
   addOrderSuccess,
   addOrderError,
