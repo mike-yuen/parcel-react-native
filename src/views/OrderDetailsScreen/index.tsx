@@ -9,6 +9,8 @@ import {getOrder} from '~/store/slices/orderSlice';
 
 import logoImage from '~/assets/logo2x.png';
 import {COLORS} from '~/constants/colors';
+import {ORDER_STATUS} from '~/constants/status';
+import {DateTime} from 'luxon';
 
 const OrderDetailsScreen = ({navigation, route}: any) => {
   const dimension = useWindowDimensions();
@@ -31,19 +33,58 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            backgroundColor: '#26a999',
+            backgroundColor: order.status === ORDER_STATUS.SUCCESS ? '#26a999' : COLORS.golden,
             paddingHorizontal: 16,
             paddingVertical: 18,
           }}>
-          <View>
-            <Text style={{fontSize: 18, fontWeight: '700', color: colors.white}}>Order Completed</Text>
-            <Text style={{fontSize: 16, color: colors.white}}>Thanks for your using ParcelGO!</Text>
-          </View>
-          <Icon name="check-decagram" type="material-community" color={colors.white} tvParallaxProperties={undefined} />
+          {
+            {
+              [ORDER_STATUS.INIT]: (
+                <>
+                  <View>
+                    <Text style={{fontSize: 18, color: colors.grey0}}>Order Placed</Text>
+                    <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
+                  </View>
+                </>
+              ),
+              [ORDER_STATUS.TRANSFERRING]: (
+                <>
+                  <View>
+                    <Text style={{fontSize: 18, color: colors.grey0}}>Order Preparing</Text>
+                    <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
+                  </View>
+                </>
+              ),
+              [ORDER_STATUS.PENDING]: (
+                <>
+                  <View>
+                    <Text style={{fontSize: 18, color: colors.grey0}}>Order Delivering</Text>
+                    <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
+                  </View>
+                </>
+              ),
+              [ORDER_STATUS.SUCCESS]: (
+                <>
+                  <View>
+                    <Text style={{fontSize: 18, color: colors.white}}>Order Completed</Text>
+                    <Text style={{fontSize: 16, color: colors.white}}>Thanks for your using ParcelGO!</Text>
+                  </View>
+                  <Icon
+                    name="check-decagram"
+                    type="material-community"
+                    color={colors.white}
+                    tvParallaxProperties={undefined}
+                  />
+                </>
+              ),
+              [ORDER_STATUS.FAIL]: <></>,
+              [ORDER_STATUS.CANCELED]: <></>,
+            }[order.status as ORDER_STATUS]
+          }
         </View>
 
         {/* Shipping Information */}
-        <View style={{backgroundColor: colors.white, paddingHorizontal: 16, paddingTop: 4, paddingBottom: 12}}>
+        <View style={{backgroundColor: colors.white, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12}}>
           <View
             style={{
               flexDirection: 'row',
@@ -80,10 +121,12 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               }
             />
           </View>
-          <View style={{marginLeft: 32}}>
-            <Text style={{fontSize: 15, color: colors.grey3}}>Motorbike</Text>
-            <Text style={{fontSize: 15, color: colors.grey3}}>{JSON.stringify(order.drivers)} - GAXGPQ8V</Text>
-          </View>
+          {order.drivers && (
+            <View style={{marginLeft: 32}}>
+              <Text style={{fontSize: 15, color: colors.grey3}}>Motorbike</Text>
+              <Text style={{fontSize: 15, color: colors.grey3}}>{JSON.stringify(order.drivers)} - GAXGPQ8V</Text>
+            </View>
+          )}
 
           <View style={{marginTop: 2, marginLeft: 3}}>
             <View
@@ -92,9 +135,22 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
                 alignItems: 'center',
               }}>
               <Icon name="dot-single" type="entypo" size={28} color="#1cbc9f" tvParallaxProperties={undefined} />
-              <Text style={{fontSize: 15, fontWeight: '700', color: '#1cbc9f'}}>Order is completed</Text>
+              <Text style={{fontSize: 15, color: '#1cbc9f'}}>
+                {
+                  {
+                    [ORDER_STATUS.INIT]: 'Order is placed',
+                    [ORDER_STATUS.TRANSFERRING]: 'Order is preparing',
+                    [ORDER_STATUS.PENDING]: 'Order is delivering',
+                    [ORDER_STATUS.SUCCESS]: 'Order is delivered',
+                    [ORDER_STATUS.FAIL]: <></>,
+                    [ORDER_STATUS.CANCELED]: <></>,
+                  }[order.status as ORDER_STATUS]
+                }
+              </Text>
             </View>
-            <Text style={{color: colors.grey3, marginLeft: 28, marginTop: 2}}>15-12-2022 17:10</Text>
+            <Text style={{color: colors.grey3, marginLeft: 28, marginTop: 2}}>
+              {order.createdAt && DateTime.fromISO(order.createdAt).toFormat('dd-MM-yyyy HH:mm')}
+            </Text>
           </View>
         </View>
 
@@ -135,7 +191,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               TouchableComponent={TouchableWithoutFeedback}
               containerStyle={{backgroundColor: 'transparent'}}
               buttonStyle={{backgroundColor: 'transparent'}}
-              titleStyle={{color: '#1cbc9f', fontSize: 15}}
+              titleStyle={{color: 'transparent', fontSize: 15}}
               onPress={() => console.log('View Status')}
             />
           </View>

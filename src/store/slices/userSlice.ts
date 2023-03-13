@@ -22,6 +22,7 @@ const userSlice = createSlice({
       phone: '',
       address: '',
       location: {} as any,
+      roles: [] as any[],
     },
 
     error: {},

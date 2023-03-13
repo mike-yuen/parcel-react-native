@@ -5,26 +5,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
 
 import {COLORS} from '~/constants/colors';
-
-const workflow = [
-  {
-    date: '29 Dec',
-    time: '09:37',
-    title: 'Delivered',
-    desc: 'Order is delivered',
-    icon: 'book-check-outline',
-    active: true,
-  },
-  {date: '29 Dec', time: '08:44', title: 'In transit', desc: 'Order is on the way', icon: 'truck-fast-outline'},
-  {
-    date: '26 Dec',
-    time: '15:21',
-    title: 'Preparing to ship',
-    desc: 'Order is being preparing',
-    icon: 'store-clock-outline',
-  },
-  {date: '26 Dec', time: '14:30', title: 'Order placed', desc: 'Order is placed', icon: 'file-image-plus-outline'},
-];
+import {DateTime} from 'luxon';
+import {ORDER_STATUS} from '~/constants/status';
 
 const OrderStatusScreen = ({navigation, route}: any) => {
   const dimension = useWindowDimensions();
@@ -33,6 +15,41 @@ const OrderStatusScreen = ({navigation, route}: any) => {
 
   const {user} = useSelector((state: RootState) => state.user);
   const {order} = useSelector((state: RootState) => state.order);
+
+  const workflow = [
+    {
+      date: '29 Dec',
+      time: '09:37',
+      title: 'Delivered',
+      desc: 'Order is delivered',
+      icon: 'book-check-outline',
+      active: order.status === ORDER_STATUS.SUCCESS,
+    },
+    {
+      date: '29 Dec',
+      time: '08:44',
+      title: 'In transit',
+      desc: 'Order is on the way',
+      icon: 'truck-fast-outline',
+      active: order.status === ORDER_STATUS.PENDING,
+    },
+    {
+      date: '26 Dec',
+      time: '15:21',
+      title: 'Preparing to ship',
+      desc: 'Order is being preparing',
+      icon: 'store-clock-outline',
+      active: order.status === ORDER_STATUS.TRANSFERRING,
+    },
+    {
+      date: '26 Dec',
+      time: '14:30',
+      title: 'Order placed',
+      desc: 'Order is placed',
+      icon: 'file-image-plus-outline',
+      active: order.status === ORDER_STATUS.INIT,
+    },
+  ];
 
   return (
     <ScrollView>
@@ -57,7 +74,7 @@ const OrderStatusScreen = ({navigation, route}: any) => {
               height: 64,
               borderRadius: 6,
             }}>
-            <Text style={{fontSize: 12, color: colors.grey3}}>2023</Text>
+            <Text style={{fontSize: 12, color: colors.grey3}}>{DateTime.fromISO(order.createdAt).year}</Text>
             <Text
               style={{
                 fontWeight: '700',
@@ -66,9 +83,11 @@ const OrderStatusScreen = ({navigation, route}: any) => {
                 lineHeight: 26,
                 color: COLORS.darkGolden,
               }}>
-              25
+              {DateTime.fromISO(order.createdAt).day}
             </Text>
-            <Text style={{fontSize: 12, lineHeight: 12, textTransform: 'uppercase', color: colors.grey3}}>Feb</Text>
+            <Text style={{fontSize: 12, lineHeight: 12, textTransform: 'uppercase', color: colors.grey3}}>
+              {DateTime.fromISO(order.createdAt).monthShort}
+            </Text>
           </View>
           <View
             style={{
@@ -78,10 +97,13 @@ const OrderStatusScreen = ({navigation, route}: any) => {
               style={{
                 flexDirection: 'row',
               }}>
-              <Text style={{fontSize: 16, fontWeight: '700', marginRight: 4}}>Delivered on</Text>
-              <Text style={{fontSize: 16, fontWeight: '700', color: '#ee4d2d'}}>Thu, 29 Dec 2022</Text>
+              <Text style={{fontSize: 16, fontWeight: '700', marginRight: 4}}>Created at</Text>
+              <Text style={{fontSize: 16, fontWeight: '700', color: '#ee4d2d'}}>
+                {DateTime.fromISO(order.createdAt).toFormat('EEE, dd LLL yyyy')}
+                {/* Thu, 29 Dec 2022 */}
+              </Text>
             </View>
-            <Text style={{fontSize: 14, color: colors.grey2, marginTop: 2}}>Shipped by Chien Do</Text>
+            <Text style={{fontSize: 14, color: colors.grey2, marginTop: 2}}>Recipient: {order.recipient.name}</Text>
           </View>
         </View>
 

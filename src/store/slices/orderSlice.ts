@@ -17,6 +17,7 @@ export interface IOrder {
   source: any;
   destination: any;
   subOrders: any[];
+  createdAt: string;
 }
 
 interface OrderState {
@@ -31,6 +32,8 @@ interface OrderState {
   gettingOrders: boolean;
   gotOrders: boolean;
   orderList: IOrder[];
+  processingOrder: boolean;
+  processedOrder: boolean;
   error: any;
 }
 
@@ -48,6 +51,8 @@ const orderSlice = createSlice({
     gettingOrders: false,
     gotOrders: false,
     orderList: [] as IOrder[],
+    processingOrder: false,
+    processedOrder: false,
     error: {},
   } as OrderState,
 
@@ -115,6 +120,21 @@ const orderSlice = createSlice({
       state.gotOrder = false;
       state.error = action.payload;
     },
+
+    // processOrder
+    processOrder(state, action) {
+      state.processingOrder = true;
+      state.processedOrder = false;
+    },
+    processOrderSuccess(state, action) {
+      state.processingOrder = false;
+      state.processedOrder = true;
+    },
+    processOrderError(state, action) {
+      state.processingOrder = false;
+      state.processedOrder = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -131,5 +151,8 @@ export const {
   getOrder,
   getOrderSuccess,
   getOrderError,
+  processOrder,
+  processOrderSuccess,
+  processOrderError,
 } = orderSlice.actions;
 export default orderSlice.reducer;

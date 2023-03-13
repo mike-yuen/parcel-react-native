@@ -15,6 +15,9 @@ import {
   createIntentOrderSuccess,
   createIntentOrderError,
   IOrder,
+  processOrderSuccess,
+  processOrderError,
+  processOrder,
 } from './slices/orderSlice';
 import {
   addProduct,
@@ -219,6 +222,16 @@ export function* getOrderSaga(action: any) {
   }
 }
 
+export function* processOrderSaga(action: any) {
+  try {
+    const {orderId, nextStatusId} = action.payload;
+    const data: {id: string} = yield call(parcelApi.processOrder, orderId, nextStatusId);
+    if (data) yield put(processOrderSuccess(data));
+  } catch (error) {
+    yield put(processOrderError(error));
+  }
+}
+
 function* rootSaga() {
   yield all([
     takeLatest(signIn.type, signInSaga),
@@ -241,6 +254,7 @@ function* rootSaga() {
     takeLatest(addOrder.type, addOrderSaga),
     takeLatest(getOrders.type, getOrdersSaga),
     takeLatest(getOrder.type, getOrderSaga),
+    takeLatest(processOrder.type, processOrderSaga),
   ]);
 }
 
