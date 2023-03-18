@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {TouchableWithoutFeedback, useWindowDimensions, View} from 'react-native';
 import {Button, colors, Icon, Text} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
@@ -8,17 +8,32 @@ import {DateTime} from 'luxon';
 import {COLORS} from '~/constants/colors';
 import {ORDER_STATUS} from '~/constants/status';
 import {RootState} from '~/store';
-import {processOrder} from '~/store/slices/orderSlice';
+import {getOrders, processOrder} from '~/store/slices/orderSlice';
 
 const MyOrderListItem = (props: any) => {
   const dimension = useWindowDimensions();
   const {data} = props;
   const dispatch = useDispatch();
+  const {processedOrder} = useSelector((state: RootState) => state.order);
   const {user} = useSelector((state: RootState) => state.user);
 
   const onAcceptOrder = () => {
     dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.TRANSFERRING}));
   };
+
+  const onDeliverOrder = () => {
+    dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.PENDING}));
+  };
+
+  const onDeliveredOrder = () => {
+    dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.SUCCESS}));
+  };
+
+  useEffect(() => {
+    if (processedOrder) {
+      dispatch(getOrders());
+    }
+  }, [processedOrder]);
 
   return (
     <View style={{flex: 1, borderTopWidth: 4, borderTopColor: colors.grey4}}>
@@ -203,8 +218,8 @@ const MyOrderListItem = (props: any) => {
             tvParallaxProperties={undefined}
           />
         </View>
-        {/* Action */}
 
+        {/* Action */}
         <View
           style={{
             flexDirection: 'row',
@@ -221,12 +236,50 @@ const MyOrderListItem = (props: any) => {
             </Text>
           </View>
           {user.roles && !!user.roles.length ? (
-            <Button
-              title={'Accept'}
-              buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4, paddingVertical: 4, paddingHorizontal: 12}}
-              titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-              onPress={onAcceptOrder}
-            />
+            {
+              [ORDER_STATUS.INIT]: (
+                <Button
+                  title={'Accept'}
+                  buttonStyle={{
+                    backgroundColor: COLORS.golden,
+                    borderRadius: 4,
+                    paddingVertical: 4,
+                    paddingHorizontal: 12,
+                  }}
+                  titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
+                  onPress={onAcceptOrder}
+                />
+              ),
+              [ORDER_STATUS.TRANSFERRING]: (
+                <Button
+                  title={'Deliver'}
+                  buttonStyle={{
+                    backgroundColor: COLORS.golden,
+                    borderRadius: 4,
+                    paddingVertical: 4,
+                    paddingHorizontal: 12,
+                  }}
+                  titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
+                  onPress={onDeliverOrder}
+                />
+              ),
+              [ORDER_STATUS.PENDING]: (
+                <Button
+                  title={'Delivered?'}
+                  buttonStyle={{
+                    backgroundColor: COLORS.golden,
+                    borderRadius: 4,
+                    paddingVertical: 4,
+                    paddingHorizontal: 12,
+                  }}
+                  titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
+                  onPress={onDeliveredOrder}
+                />
+              ),
+              [ORDER_STATUS.SUCCESS]: <></>,
+              [ORDER_STATUS.FAIL]: <></>,
+              [ORDER_STATUS.CANCELED]: <></>,
+            }[data.status as ORDER_STATUS]
           ) : (
             <Button
               title={'Support'}

@@ -25,6 +25,7 @@ import Main from './Main';
 import RecipientScreen from './views/RecipientScreen';
 import OrderDetailsScreen from './views/OrderDetailsScreen';
 import OrderStatusScreen from './views/OrderStatusScreen';
+import VerifyScreen from './views/VerifyScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -86,6 +87,16 @@ const MyStack = () => {
       ) : (
         <Stack.Screen name="Main" component={Main} options={{headerShown: false}} />
       )}
+      <Stack.Screen
+        name="Verify"
+        component={VerifyScreen}
+        options={{
+          presentation: 'fullScreenModal',
+          headerTitle: 'Email Auth',
+          headerTintColor: colors.grey1,
+          headerTitleStyle: {fontSize: 16},
+          headerShadowVisible: false,
+        }}></Stack.Screen>
       <Stack.Screen
         name="Map"
         component={MapScreen}

@@ -104,8 +104,8 @@ export function* signOutSaga() {
 
 export function* getUserSaga() {
   try {
-    const {id, displayName, email, phone, address, location} = yield call(parcelApi.currentUser);
-    yield put(getUserSuccess({id, displayName, email, phone, address, location}));
+    const {id, displayName, email, phone, address, location, roles} = yield call(parcelApi.currentUser);
+    yield put(getUserSuccess({id, displayName, email, phone, address, location, roles}));
   } catch (error) {
     yield put(getUserError(error));
   }

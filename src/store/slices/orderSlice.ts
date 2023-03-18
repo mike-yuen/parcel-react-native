@@ -94,8 +94,9 @@ const orderSlice = createSlice({
       state.gotOrders = false;
     },
     getOrdersSuccess(state, action) {
-      const ids = new Set(state.orderList.map(o => o.id));
-      state.orderList = [...state.orderList, ...action.payload.filter((n: any) => !ids.has(n.id))];
+      // const ids = new Set(state.orderList.map(o => o.id));
+      // state.orderList = [...state.orderList, ...action.payload.filter((n: any) => !ids.has(n.id))];
+      state.orderList = [...action.payload];
       state.gettingOrders = false;
       state.gotOrders = true;
     },
