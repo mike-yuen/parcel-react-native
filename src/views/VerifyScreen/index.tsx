@@ -1,10 +1,13 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useForm} from 'react-hook-form';
 import {Button, Text, colors} from 'react-native-elements';
 
 import {COLORS} from '~/constants/colors';
 import MyInput from '~/components/MyInput';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '~/store';
+import {getOrder, verifyTrackingOrder} from '~/store/slices/orderSlice';
 
 const VerifyScreen = ({navigation}: any) => {
   const {
@@ -13,11 +16,44 @@ const VerifyScreen = ({navigation}: any) => {
     handleSubmit,
   } = useForm({mode: 'onChange'});
 
+  const dispatch = useDispatch();
+  const {trackingOrderData, verifiedTrackingOrder, verifiedData, gotOrder, order} = useSelector(
+    (state: RootState) => state.order,
+  );
+
+  const onSubmit = (data: {[x: string]: string}) => {
+    const {orderId} = trackingOrderData;
+    const {code} = data;
+    if (orderId && code) {
+      dispatch(verifyTrackingOrder({orderId, code}));
+    }
+  };
+
+  useEffect(() => {
+    console.log('-----------', verifiedTrackingOrder, verifiedData);
+    if (verifiedTrackingOrder && verifiedData.orderId) {
+      console.log("let's get order");
+      dispatch(getOrder(verifiedData.orderId));
+    }
+  }, [verifiedTrackingOrder]);
+
+  useEffect(() => {
+    console.log('gotOrder: ', gotOrder, order);
+    if (gotOrder && order.id) {
+      navigation.navigate('Detail', {
+        orderId: order.id,
+        departure: 'Verify',
+      });
+    }
+  }, [gotOrder]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>Verification</Text>
 
-      <Text style={{marginTop: 15, marginBottom: 5}}>{`Code will be sent to {email}`}</Text>
+      <Text style={{marginTop: 15, marginBottom: 5}}>{`Code will be sent to ${
+        trackingOrderData && trackingOrderData.email ? trackingOrderData.email : 'your email'
+      }`}</Text>
       <MyInput
         name="code"
         control={control}
@@ -31,7 +67,7 @@ const VerifyScreen = ({navigation}: any) => {
         containerStyle={{marginTop: 30, marginBottom: 40}}
         buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
         titleStyle={{color: COLORS.black1, marginVertical: 2}}
-        onPress={() => {}}
+        onPress={handleSubmit(onSubmit)}
       />
     </View>
   );

@@ -7,6 +7,8 @@ import logoImage from '~/assets/logo2x.png';
 import googleImage from '~/assets/google.png';
 import {COLORS} from '~/constants/colors';
 import MyInput from '~/components/MyInput';
+import {useDispatch} from 'react-redux';
+import {trackOrder} from '~/store/slices/orderSlice';
 
 class Google extends React.Component {
   render() {
@@ -17,10 +19,19 @@ class Google extends React.Component {
 const AuthScreen = ({navigation}: any) => {
   const {
     control,
-    reset,
     formState: {isValid},
     handleSubmit,
   } = useForm({mode: 'onChange'});
+
+  const dispatch = useDispatch();
+
+  const onTrackOrder = (data: any) => {
+    const {orderId} = data;
+    if (orderId) {
+      dispatch(trackOrder({orderId}));
+      navigation.navigate('Verify');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -33,7 +44,7 @@ const AuthScreen = ({navigation}: any) => {
       <View>
         <View>
           <MyInput
-            name="order-id"
+            name="orderId"
             control={control}
             rules={{required: true}}
             placeholder="Your order ID"
@@ -45,7 +56,7 @@ const AuthScreen = ({navigation}: any) => {
             containerStyle={{marginTop: 10, marginBottom: 40}}
             buttonStyle={{backgroundColor: COLORS.gray0, borderRadius: 4}}
             titleStyle={{color: COLORS.black1, marginVertical: 2}}
-            onPress={() => navigation.navigate('Verify')}
+            onPress={handleSubmit(onTrackOrder)}
           />
         </View>
 

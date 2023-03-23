@@ -18,6 +18,12 @@ import {
   processOrderSuccess,
   processOrderError,
   processOrder,
+  trackOrderSuccess,
+  trackOrderError,
+  trackOrder,
+  verifyTrackingOrderSuccess,
+  verifyTrackingOrderError,
+  verifyTrackingOrder,
 } from './slices/orderSlice';
 import {
   addProduct,
@@ -192,9 +198,7 @@ export function* createIntentOrderSaga(action: any) {
 
 export function* addOrderSaga(action: any) {
   try {
-    console.log('---------------- addOrderSaga: ', action.payload.data);
     const {id} = yield call(parcelApi.createOrder, action.payload.data);
-    console.log('================ id: ', id);
     if (id) {
       yield put(addOrderSuccess({id}));
     }
@@ -232,6 +236,26 @@ export function* processOrderSaga(action: any) {
   }
 }
 
+export function* trackOrderSaga(action: any) {
+  try {
+    const {orderId} = action.payload;
+    const data: {email: string; orderId: string} = yield call(parcelApi.trackOrder, orderId);
+    if (data) yield put(trackOrderSuccess(data));
+  } catch (error) {
+    yield put(trackOrderError(error));
+  }
+}
+
+export function* verifyTrackingOrderSaga(action: any) {
+  try {
+    const {orderId, code} = action.payload;
+    const data: {orderId: string} = yield call(parcelApi.verifyTrackingOrder, orderId, code);
+    yield put(verifyTrackingOrderSuccess(data));
+  } catch (error) {
+    yield put(verifyTrackingOrderError(error));
+  }
+}
+
 function* rootSaga() {
   yield all([
     takeLatest(signIn.type, signInSaga),
@@ -255,6 +279,8 @@ function* rootSaga() {
     takeLatest(getOrders.type, getOrdersSaga),
     takeLatest(getOrder.type, getOrderSaga),
     takeLatest(processOrder.type, processOrderSaga),
+    takeLatest(trackOrder.type, trackOrderSaga),
+    takeLatest(verifyTrackingOrder.type, verifyTrackingOrderSaga),
   ]);
 }
 

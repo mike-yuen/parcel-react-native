@@ -34,6 +34,12 @@ interface OrderState {
   orderList: IOrder[];
   processingOrder: boolean;
   processedOrder: boolean;
+  trackingOrder: boolean;
+  trackedOrder: boolean;
+  trackingOrderData: {orderId: string; email: string};
+  verifyingTrackingOrder: boolean;
+  verifiedTrackingOrder: boolean;
+  verifiedData: {orderId: string};
   error: any;
 }
 
@@ -53,6 +59,12 @@ const orderSlice = createSlice({
     orderList: [] as IOrder[],
     processingOrder: false,
     processedOrder: false,
+    trackingOrder: false,
+    trackedOrder: false,
+    trackingOrderData: {} as {orderId: string; email: string},
+    verifyingTrackingOrder: false,
+    verifiedTrackingOrder: false,
+    verifiedData: {} as {orderId: string},
     error: {},
   } as OrderState,
 
@@ -136,6 +148,38 @@ const orderSlice = createSlice({
       state.processedOrder = false;
       state.error = action.payload;
     },
+
+    // trackOrder
+    trackOrder(state, action) {
+      state.trackingOrder = true;
+      state.trackedOrder = false;
+    },
+    trackOrderSuccess(state, action) {
+      state.trackingOrderData = action.payload;
+      state.trackingOrder = false;
+      state.trackedOrder = true;
+    },
+    trackOrderError(state, action) {
+      state.trackingOrder = false;
+      state.trackedOrder = false;
+      state.error = action.payload;
+    },
+
+    // verifyTrackingOrder
+    verifyTrackingOrder(state, action) {
+      state.verifyingTrackingOrder = true;
+      state.verifiedTrackingOrder = false;
+    },
+    verifyTrackingOrderSuccess(state, action) {
+      state.verifiedData = action.payload;
+      state.verifyingTrackingOrder = false;
+      state.verifiedTrackingOrder = true;
+    },
+    verifyTrackingOrderError(state, action) {
+      state.verifyingTrackingOrder = false;
+      state.verifiedTrackingOrder = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -155,5 +199,11 @@ export const {
   processOrder,
   processOrderSuccess,
   processOrderError,
+  trackOrder,
+  trackOrderSuccess,
+  trackOrderError,
+  verifyTrackingOrder,
+  verifyTrackingOrderSuccess,
+  verifyTrackingOrderError,
 } = orderSlice.actions;
 export default orderSlice.reducer;
