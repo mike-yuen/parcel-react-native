@@ -159,7 +159,7 @@ const HomeScreen = ({navigation}: any) => {
                 containerStyle={{marginTop: 14, marginBottom: 20}}
                 buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
                 titleStyle={{color: COLORS.black1, fontSize: 14, marginVertical: 0, marginHorizontal: 20}}
-                onPress={() => navigation.navigate('Order')}
+                onPress={() => navigation.navigate('Payment')} // Order
               />
             </View>
           )}

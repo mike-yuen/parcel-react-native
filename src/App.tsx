@@ -26,10 +26,15 @@ import RecipientScreen from './views/RecipientScreen';
 import OrderDetailsScreen from './views/OrderDetailsScreen';
 import OrderStatusScreen from './views/OrderStatusScreen';
 import VerifyScreen from './views/VerifyScreen';
+import {initStripe} from '@stripe/stripe-react-native';
+import PaymentScreen from './views/PaymentScreen';
 
 const Stack = createNativeStackNavigator();
 
 const MyStack = () => {
+  const STRIPE_PUBLISHABLE_KEY =
+    'pk_test_51Mn0NXKJyU3LBZTd55O8WhojcOoXPvqj9UjUFjV4u9E9cyHv6DRvKDt80H2hSwmoaECJx2iZQ1FiWZsNrhnqIrBb00COwefzFK';
+
   const signupOptions: NativeStackNavigationOptions = {
     headerTitle: 'Register Account',
     headerTintColor: colors.grey1,
@@ -71,6 +76,12 @@ const MyStack = () => {
     debounceSearchLocation();
   }, [keyword]);
 
+  useEffect(() => {
+    initStripe({
+      publishableKey: STRIPE_PUBLISHABLE_KEY,
+    });
+  }, []);
+
   return (
     <Stack.Navigator initialRouteName="Auth">
       {!token ? (
@@ -83,20 +94,81 @@ const MyStack = () => {
           <Stack.Screen name="SignupStep4" component={Step4} options={signupOptions} />
           <Stack.Screen name="SignupStep5" component={Step5} options={signupOptions} />
           <Stack.Screen name="SignupStep6" component={Step6} options={signupOptions} />
+
+          <Stack.Screen
+            name="Verify"
+            component={VerifyScreen}
+            options={{
+              presentation: 'fullScreenModal',
+              headerTitle: 'Email Auth',
+              headerTintColor: colors.grey1,
+              headerTitleStyle: {fontSize: 16},
+              headerShadowVisible: false,
+            }}></Stack.Screen>
+          <Stack.Screen
+            name="Detail"
+            options={{
+              headerTitle: props => <Text style={{textAlign: 'center', fontSize: 16}}>Order Details</Text>,
+              headerShadowVisible: false,
+              presentation: 'fullScreenModal',
+            }}>
+            {props => <OrderDetailsScreen {...props} />}
+          </Stack.Screen>
+          <Stack.Screen
+            name="Status"
+            options={{
+              headerTitle: props => <Text style={{textAlign: 'center', fontSize: 16}}>Order Status</Text>,
+              headerShadowVisible: false,
+              presentation: 'fullScreenModal',
+            }}>
+            {props => <OrderStatusScreen {...props} />}
+          </Stack.Screen>
         </>
       ) : (
-        <Stack.Screen name="Main" component={Main} options={{headerShown: false}} />
+        <>
+          <Stack.Screen name="Main" component={Main} options={{headerShown: false}} />
+
+          <Stack.Screen
+            name="Search"
+            options={{
+              headerTitle: props => <MySearch {...props} onChange={(data: string) => setKeyword(data)} />,
+              headerShadowVisible: false,
+              presentation: 'fullScreenModal',
+            }}>
+            {props => <SearchScreen {...props} />}
+          </Stack.Screen>
+          <Stack.Screen
+            name="Product"
+            component={ProductScreen}
+            options={{
+              presentation: 'fullScreenModal',
+              headerTitle: 'Product',
+              headerTintColor: colors.grey1,
+              headerTitleStyle: {fontSize: 16},
+              headerShadowVisible: false,
+            }}></Stack.Screen>
+          <Stack.Screen
+            name="Recipient"
+            component={RecipientScreen}
+            options={{
+              presentation: 'fullScreenModal',
+              headerTitle: 'Recipient',
+              headerTintColor: colors.grey1,
+              headerTitleStyle: {fontSize: 16},
+              headerShadowVisible: false,
+            }}></Stack.Screen>
+          <Stack.Screen
+            name="Payment"
+            component={PaymentScreen}
+            options={{
+              presentation: 'fullScreenModal',
+              headerTitle: 'Payment',
+              headerTintColor: colors.grey1,
+              headerTitleStyle: {fontSize: 16},
+              headerShadowVisible: false,
+            }}></Stack.Screen>
+        </>
       )}
-      <Stack.Screen
-        name="Verify"
-        component={VerifyScreen}
-        options={{
-          presentation: 'fullScreenModal',
-          headerTitle: 'Email Auth',
-          headerTintColor: colors.grey1,
-          headerTitleStyle: {fontSize: 16},
-          headerShadowVisible: false,
-        }}></Stack.Screen>
       <Stack.Screen
         name="Map"
         component={MapScreen}
@@ -108,53 +180,6 @@ const MyStack = () => {
           headerShadowVisible: false,
         }}
       />
-      <Stack.Screen
-        name="Search"
-        options={{
-          headerTitle: props => <MySearch {...props} onChange={(data: string) => setKeyword(data)} />,
-          headerShadowVisible: false,
-          presentation: 'fullScreenModal',
-        }}>
-        {props => <SearchScreen {...props} />}
-      </Stack.Screen>
-      <Stack.Screen
-        name="Detail"
-        options={{
-          headerTitle: props => <Text style={{textAlign: 'center', fontSize: 16}}>Order Details</Text>,
-          headerShadowVisible: false,
-          presentation: 'fullScreenModal',
-        }}>
-        {props => <OrderDetailsScreen {...props} />}
-      </Stack.Screen>
-      <Stack.Screen
-        name="Status"
-        options={{
-          headerTitle: props => <Text style={{textAlign: 'center', fontSize: 16}}>Order Status</Text>,
-          headerShadowVisible: false,
-          presentation: 'fullScreenModal',
-        }}>
-        {props => <OrderStatusScreen {...props} />}
-      </Stack.Screen>
-      <Stack.Screen
-        name="Product"
-        component={ProductScreen}
-        options={{
-          presentation: 'fullScreenModal',
-          headerTitle: 'Product',
-          headerTintColor: colors.grey1,
-          headerTitleStyle: {fontSize: 16},
-          headerShadowVisible: false,
-        }}></Stack.Screen>
-      <Stack.Screen
-        name="Recipient"
-        component={RecipientScreen}
-        options={{
-          presentation: 'fullScreenModal',
-          headerTitle: 'Recipient',
-          headerTintColor: colors.grey1,
-          headerTitleStyle: {fontSize: 16},
-          headerShadowVisible: false,
-        }}></Stack.Screen>
     </Stack.Navigator>
   );
 };
