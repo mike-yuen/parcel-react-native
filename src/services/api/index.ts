@@ -161,6 +161,18 @@ export const parcelApi = {
       throw err;
     }
   },
+
+  async createIntentPayment() {
+    try {
+      const res = await parcelClient.post('/payment/intent-payment', {
+        fee: 160000,
+      });
+      const resBody = res.data;
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
 };
 
 export const goongApi = {
