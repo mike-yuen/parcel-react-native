@@ -24,6 +24,7 @@ import {
   verifyTrackingOrderSuccess,
   verifyTrackingOrderError,
   verifyTrackingOrder,
+  getTrackingOrderDetail,
 } from './slices/orderSlice';
 import {
   addProduct,
@@ -226,6 +227,15 @@ export function* getOrderSaga(action: any) {
   }
 }
 
+export function* getTrackingOrderDetailSaga(action: any) {
+  try {
+    const data: {id: string} = yield call(parcelApi.getTrackingOrderDetail, action.payload);
+    if (data) yield put(getOrderSuccess(data));
+  } catch (error) {
+    yield put(getOrderError(error));
+  }
+}
+
 export function* processOrderSaga(action: any) {
   try {
     const {orderId, nextStatusId} = action.payload;
@@ -278,6 +288,7 @@ function* rootSaga() {
     takeLatest(addOrder.type, addOrderSaga),
     takeLatest(getOrders.type, getOrdersSaga),
     takeLatest(getOrder.type, getOrderSaga),
+    takeLatest(getTrackingOrderDetail.type, getTrackingOrderDetailSaga),
     takeLatest(processOrder.type, processOrderSaga),
     takeLatest(trackOrder.type, trackOrderSaga),
     takeLatest(verifyTrackingOrder.type, verifyTrackingOrderSaga),

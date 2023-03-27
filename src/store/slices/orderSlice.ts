@@ -134,6 +134,12 @@ const orderSlice = createSlice({
       state.error = action.payload;
     },
 
+    // getTrackingOrderDetail
+    getTrackingOrderDetail(state, action) {
+      state.gettingOrder = true;
+      state.gotOrder = false;
+    },
+
     // processOrder
     processOrder(state, action) {
       state.processingOrder = true;
@@ -196,6 +202,7 @@ export const {
   getOrder,
   getOrderSuccess,
   getOrderError,
+  getTrackingOrderDetail,
   processOrder,
   processOrderSuccess,
   processOrderError,

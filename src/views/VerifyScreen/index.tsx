@@ -7,11 +7,12 @@ import {COLORS} from '~/constants/colors';
 import MyInput from '~/components/MyInput';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '~/store';
-import {getOrder, verifyTrackingOrder} from '~/store/slices/orderSlice';
+import {getTrackingOrderDetail, verifyTrackingOrder} from '~/store/slices/orderSlice';
 
 const VerifyScreen = ({navigation}: any) => {
   const {
     control,
+    getValues,
     formState: {isValid},
     handleSubmit,
   } = useForm({mode: 'onChange'});
@@ -30,16 +31,14 @@ const VerifyScreen = ({navigation}: any) => {
   };
 
   useEffect(() => {
-    console.log('-----------', verifiedTrackingOrder, verifiedData);
     if (verifiedTrackingOrder && verifiedData.orderId) {
-      console.log("let's get order");
-      dispatch(getOrder(verifiedData.orderId));
+      dispatch(getTrackingOrderDetail(verifiedData.orderId));
     }
   }, [verifiedTrackingOrder]);
 
   useEffect(() => {
-    console.log('gotOrder: ', gotOrder, order);
-    if (gotOrder && order.id) {
+    const code = getValues('code');
+    if (gotOrder && order.id && !!code) {
       navigation.navigate('Detail', {
         orderId: order.id,
         departure: 'Verify',
