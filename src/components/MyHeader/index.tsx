@@ -34,7 +34,6 @@ const MyHeader = ({navigation}: any) => {
           leftIconContainerStyle={{marginVertical: 0, paddingVertical: 0}}
           rightIconContainerStyle={{marginVertical: 0, paddingVertical: 0}}
           errorStyle={{display: 'none'}}
-          autoCompleteType={false}
           autoFocus={false}
         />
       </View>
@@ -46,7 +45,6 @@ const MyHeader = ({navigation}: any) => {
           color="#9397b0"
           containerStyle={{margin: 8, marginLeft: 16}}
           onPress={() => console.log('Notification')}
-          tvParallaxProperties={undefined}
         />
         <Icon
           name="notifications"
@@ -55,7 +53,6 @@ const MyHeader = ({navigation}: any) => {
           color="#9397b0"
           containerStyle={{margin: 8}}
           onPress={() => console.log('Notification')}
-          tvParallaxProperties={undefined}
         />
         <Icon
           name="plus"
@@ -64,7 +61,6 @@ const MyHeader = ({navigation}: any) => {
           color="#9397b0"
           containerStyle={{margin: 8, marginRight: 0}}
           onPress={() => console.log('Notification')}
-          tvParallaxProperties={undefined}
         />
       </View>
     </View>

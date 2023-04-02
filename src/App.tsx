@@ -26,7 +26,6 @@ import RecipientScreen from './views/RecipientScreen';
 import OrderDetailsScreen from './views/OrderDetailsScreen';
 import OrderStatusScreen from './views/OrderStatusScreen';
 import VerifyScreen from './views/VerifyScreen';
-import {initStripe} from '@stripe/stripe-react-native';
 import PaymentScreen from './views/PaymentScreen';
 
 const Stack = createNativeStackNavigator();
@@ -76,11 +75,11 @@ const MyStack = () => {
     debounceSearchLocation();
   }, [keyword]);
 
-  useEffect(() => {
-    initStripe({
-      publishableKey: STRIPE_PUBLISHABLE_KEY,
-    });
-  }, []);
+  // useEffect(() => {
+  //   initStripe({
+  //     publishableKey: STRIPE_PUBLISHABLE_KEY,
+  //   });
+  // });
 
   return (
     <Stack.Navigator initialRouteName="Auth">
@@ -105,24 +104,6 @@ const MyStack = () => {
               headerTitleStyle: {fontSize: 16},
               headerShadowVisible: false,
             }}></Stack.Screen>
-          <Stack.Screen
-            name="Detail"
-            options={{
-              headerTitle: props => <Text style={{textAlign: 'center', fontSize: 16}}>Order Details</Text>,
-              headerShadowVisible: false,
-              presentation: 'fullScreenModal',
-            }}>
-            {props => <OrderDetailsScreen {...props} />}
-          </Stack.Screen>
-          <Stack.Screen
-            name="Status"
-            options={{
-              headerTitle: props => <Text style={{textAlign: 'center', fontSize: 16}}>Order Status</Text>,
-              headerShadowVisible: false,
-              presentation: 'fullScreenModal',
-            }}>
-            {props => <OrderStatusScreen {...props} />}
-          </Stack.Screen>
         </>
       ) : (
         <>
@@ -180,6 +161,24 @@ const MyStack = () => {
           headerShadowVisible: false,
         }}
       />
+      <Stack.Screen
+        name="Detail"
+        options={{
+          headerTitle: props => <Text style={{textAlign: 'center', fontSize: 16}}>Order Details</Text>,
+          headerShadowVisible: false,
+          presentation: 'fullScreenModal',
+        }}>
+        {props => <OrderDetailsScreen {...props} />}
+      </Stack.Screen>
+      <Stack.Screen
+        name="Status"
+        options={{
+          headerTitle: props => <Text style={{textAlign: 'center', fontSize: 16}}>Order Status</Text>,
+          headerShadowVisible: false,
+          presentation: 'fullScreenModal',
+        }}>
+        {props => <OrderStatusScreen {...props} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 };

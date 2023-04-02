@@ -1,14 +1,20 @@
 import {Link} from '@react-navigation/native';
+import {initStripe, useStripe} from '@stripe/stripe-react-native';
 import React, {useEffect, useState} from 'react';
 import {ScrollView, View} from 'react-native';
 import {Button, colors, Divider, Icon, ListItem, Switch, Text} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
 import {COLORS} from '~/constants/colors';
+import {parcelApi} from '~/services/api';
 import {RootState} from '~/store';
 import {addOrder, createIntentOrder} from '~/store/slices/orderSlice';
 
 const OrderScreen = ({navigation}: any) => {
+  const STRIPE_PUBLISHABLE_KEY =
+    'pk_test_51Mn0NXKJyU3LBZTd55O8WhojcOoXPvqj9UjUFjV4u9E9cyHv6DRvKDt80H2hSwmoaECJx2iZQ1FiWZsNrhnqIrBb00COwefzFK';
+
   const dispatch = useDispatch();
+  const {initPaymentSheet, presentPaymentSheet} = useStripe();
   const {user} = useSelector((state: RootState) => state.user);
   const {intentOrder} = useSelector((state: RootState) => state.order);
   const {products} = useSelector((state: RootState) => state.product);
@@ -16,6 +22,7 @@ const OrderScreen = ({navigation}: any) => {
   const {selectedLocationData} = useSelector((state: RootState) => state.search);
 
   const [isEstmated, setIsestimated] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   function onEstimateFee() {
     if (recipient.name && selectedLocationData.location && products.length) {
@@ -40,28 +47,76 @@ const OrderScreen = ({navigation}: any) => {
 
   function onCreateOrder() {
     if (recipient.name && intentOrder.fee != null) {
-      const data = {
-        userId: user.id,
-        recipientName: recipient.name,
-        recipientPhone: recipient.phone,
-        isExpress: true,
-        source: user.location,
-        description: '',
-        destination: intentOrder.destination,
-        totalWeight: intentOrder.totalWeight,
-        fee: intentOrder.fee,
-        subOrders: intentOrder.subOrders,
-      };
-      console.log('onCreateOrder payload: ', data);
-      dispatch(addOrder({data, navigation}));
+      if (true) {
+        const data = {
+          userId: user.id,
+          recipientName: recipient.name,
+          recipientPhone: recipient.phone,
+          isExpress: true,
+          source: user.location,
+          description: '',
+          destination: intentOrder.destination,
+          totalWeight: intentOrder.totalWeight,
+          fee: intentOrder.fee,
+          subOrders: intentOrder.subOrders,
+        };
+        console.log('onCreateOrder payload: ', data);
+        dispatch(addOrder({data, navigation}));
+      } else {
+        openPaymentSheet();
+      }
     }
   }
+
+  const fetchPaymentSheetParams = async () => {
+    const response = await parcelApi.createIntentPayment();
+    const {paymentIntent, ephemeralKey, customer} = response;
+    return {
+      paymentIntent,
+      ephemeralKey,
+      customer,
+    };
+  };
+
+  const initializePaymentSheet = async () => {
+    const {paymentIntent, ephemeralKey, customer} = await fetchPaymentSheetParams();
+
+    const {error} = await initPaymentSheet({
+      merchantDisplayName: 'Example, Inc.',
+      customerId: customer,
+      customerEphemeralKeySecret: ephemeralKey,
+      paymentIntentClientSecret: paymentIntent,
+      // Set `allowsDelayedPaymentMethods` to true if your business can handle payment
+      //methods that complete payment after a delay, like SEPA Debit and Sofort.
+      // allowsDelayedPaymentMethods: true,
+      // defaultBillingDetails: {
+      //   name: 'Jane Doe',
+      // },
+    });
+    if (!error) {
+      setLoading(true);
+    }
+  };
+
+  const openPaymentSheet = async () => {
+    const {error} = await presentPaymentSheet();
+  };
 
   useEffect(() => {
     if (intentOrder.fee != null) {
       setIsestimated(true);
     }
   }, [intentOrder]);
+
+  useEffect(() => {
+    const runStripe = async () => {
+      await initStripe({
+        publishableKey: STRIPE_PUBLISHABLE_KEY,
+      });
+      initializePaymentSheet();
+    };
+    runStripe();
+  });
 
   return (
     <ScrollView>
@@ -93,12 +148,7 @@ const OrderScreen = ({navigation}: any) => {
               <Text style={{fontSize: 16, fontWeight: '700', color: colors.black}}>{user.address}</Text>
               <Text style={{fontSize: 14, color: colors.grey2}}>{user.address}</Text>
             </View>
-            <Icon
-              type="font-awesome"
-              name="chevron-right"
-              size={12}
-              containerStyle={{paddingLeft: 12}}
-              tvParallaxProperties={undefined}></Icon>
+            <Icon type="font-awesome" name="chevron-right" size={12} containerStyle={{paddingLeft: 12}}></Icon>
           </View>
 
           <View
@@ -178,7 +228,9 @@ const OrderScreen = ({navigation}: any) => {
                     <Text style={{fontSize: 16, fontWeight: '700', color: colors.black}}>
                       {selectedLocationData.name}
                     </Text>
-                    <Text style={{fontSize: 14, color: colors.grey2}}>{selectedLocationData.address}</Text>
+                    <Text numberOfLines={1} style={{fontSize: 14, color: colors.grey2}}>
+                      {selectedLocationData.address}
+                    </Text>
                   </>
                 ) : (
                   <Text style={{fontSize: 16, color: COLORS.blue}}>Add the address</Text>
@@ -186,12 +238,7 @@ const OrderScreen = ({navigation}: any) => {
               </View>
             </Link>
             <Link to={{screen: 'Search', params: {departure: 'Order'}}}>
-              <Icon
-                type="font-awesome"
-                name="chevron-right"
-                size={12}
-                containerStyle={{paddingLeft: 12}}
-                tvParallaxProperties={undefined}></Icon>
+              <Icon type="font-awesome" name="chevron-right" size={12} containerStyle={{paddingLeft: 12}}></Icon>
             </Link>
           </View>
 
@@ -218,12 +265,7 @@ const OrderScreen = ({navigation}: any) => {
               </View>
             </Link>
             <Link to={{screen: 'Recipient', params: {departure: 'Order'}}}>
-              <Icon
-                type="font-awesome"
-                name="chevron-right"
-                size={12}
-                containerStyle={{paddingLeft: 12}}
-                tvParallaxProperties={undefined}></Icon>
+              <Icon type="font-awesome" name="chevron-right" size={12} containerStyle={{paddingLeft: 12}}></Icon>
             </Link>
           </View>
         </View>
@@ -287,7 +329,6 @@ const OrderScreen = ({navigation}: any) => {
                         name="edit"
                         color={COLORS.darkGolden}
                         size={20}
-                        tvParallaxProperties={undefined}
                         containerStyle={{marginRight: 16}}
                       />
                       <View

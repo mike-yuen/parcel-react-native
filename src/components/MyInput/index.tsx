@@ -52,7 +52,6 @@ const MyInput = (props: any) => {
       ])}
       inputStyle={{fontSize: 14, height: 36}}
       errorStyle={{display: 'none'}}
-      autoCompleteType={false}
       onFocus={onFocus}
       onBlur={onBlur}
     />

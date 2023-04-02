@@ -26,7 +26,6 @@ const MySearch = ({onChange}: any) => {
         leftIconContainerStyle={{marginVertical: 0, paddingVertical: 0}}
         rightIconContainerStyle={{marginVertical: 0, paddingVertical: 0}}
         errorStyle={{display: 'none'}}
-        autoCompleteType={false}
         autoFocus={false}
         onChangeText={value => onChange(value)}
       />
