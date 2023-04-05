@@ -4,11 +4,19 @@ import {useForm} from 'react-hook-form';
 import {View} from 'react-native';
 import {Button, Text} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
+import {yupResolver} from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 import MyInput from '~/components/MyInput';
 import {COLORS} from '~/constants/colors';
 import {RootState} from '~/store';
 import {addRecipient} from '~/store/slices/recipientSlice';
+
+const schema = yup
+  .object({
+    email: yup.string().email().required(),
+  })
+  .required();
 
 const RecipientScreen = ({route}: any) => {
   const dispatch = useDispatch();
@@ -32,7 +40,7 @@ const RecipientScreen = ({route}: any) => {
     reset,
     formState: {isValid},
     handleSubmit,
-  } = useForm({mode: 'onChange'});
+  } = useForm({resolver: yupResolver(schema), mode: 'onChange'});
 
   const onSubmit = (data: any) => {
     dispatch(addRecipient(data));
@@ -56,6 +64,16 @@ const RecipientScreen = ({route}: any) => {
         control={control}
         rules={{required: true}}
         placeholder="Recipient Name"
+        containerStyle={{marginTop: 4}}
+        inputContainerStyle={{borderRadius: 8}}
+      />
+
+      <Text style={{fontWeight: '700', fontSize: 16, marginTop: 16}}>Email</Text>
+      <MyInput
+        name="email"
+        control={control}
+        rules={{required: true}}
+        placeholder="Email"
         containerStyle={{marginTop: 4}}
         inputContainerStyle={{borderRadius: 8}}
       />

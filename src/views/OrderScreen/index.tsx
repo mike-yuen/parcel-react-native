@@ -30,6 +30,7 @@ const OrderScreen = ({navigation}: any) => {
         recipientName: recipient.name,
         recipientPhone: recipient.phone,
         isExpress: true,
+        packageType: products[0].type,
         source: user.location,
         destination: {
           type: 'Point',
@@ -38,7 +39,13 @@ const OrderScreen = ({navigation}: any) => {
         subOrders: [] as any,
       };
       for (let product of products) {
-        payload.subOrders.push({status: 1, name: product.name, weight: product.weight, provinceCode: 70000});
+        payload.subOrders.push({
+          status: 1,
+          name: product.name,
+          weight: product.weight,
+          dimension: product.dimension,
+          type: product.type,
+        });
       }
       console.log('createIntentOrder payload: ', payload);
       dispatch(createIntentOrder(payload));
@@ -51,7 +58,9 @@ const OrderScreen = ({navigation}: any) => {
         const data = {
           userId: user.id,
           recipientName: recipient.name,
+          recipientMail: recipient.email,
           recipientPhone: recipient.phone,
+          packageType: intentOrder.packageType,
           isExpress: true,
           source: user.location,
           description: '',

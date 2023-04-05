@@ -3,7 +3,15 @@ import {createSlice} from '@reduxjs/toolkit';
 interface RecipientState {
   addingRecipient: boolean;
   addedRecipient: boolean;
-  recipient: {id?: string; name: string; address: string; location: any; phone: string; information: string};
+  recipient: {
+    id?: string;
+    name: string;
+    email: string;
+    address: string;
+    location: any;
+    phone: string;
+    information: string;
+  };
   error: any;
 }
 

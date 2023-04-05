@@ -1,3 +1,4 @@
+import './ignoreWarnings';
 import React, {useCallback, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer} from '@react-navigation/native';
@@ -27,6 +28,7 @@ import OrderDetailsScreen from './views/OrderDetailsScreen';
 import OrderStatusScreen from './views/OrderStatusScreen';
 import VerifyScreen from './views/VerifyScreen';
 import PaymentScreen from './views/PaymentScreen';
+import WarehouseScreen from './views/WarehouseScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -75,12 +77,6 @@ const MyStack = () => {
     debounceSearchLocation();
   }, [keyword]);
 
-  // useEffect(() => {
-  //   initStripe({
-  //     publishableKey: STRIPE_PUBLISHABLE_KEY,
-  //   });
-  // });
-
   return (
     <Stack.Navigator initialRouteName="Auth">
       {!token ? (
@@ -108,7 +104,6 @@ const MyStack = () => {
       ) : (
         <>
           <Stack.Screen name="Main" component={Main} options={{headerShown: false}} />
-
           <Stack.Screen
             name="Search"
             options={{

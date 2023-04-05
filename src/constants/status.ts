@@ -16,3 +16,11 @@ export enum SUB_ORDER_STATUS {
   FAIL = 6,
   SUCCESS = 7,
 }
+
+export enum SUB_ORDER_TYPE {
+  FOODS = 1,
+  CLOTHES = 2,
+  ELECTRIC = 3,
+  FRAGILE = 4,
+  OTHERS = 5,
+}

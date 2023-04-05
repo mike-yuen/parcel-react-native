@@ -1,9 +1,19 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {SUB_ORDER_TYPE} from '~/constants/status';
 
 interface ProductState {
   addingProduct: boolean;
   addedProduct: boolean;
-  products: {id: string; name: string; weight: string}[];
+  products: {
+    id: string;
+    name: string;
+    weight: string;
+    dimension: string;
+    type: SUB_ORDER_TYPE;
+    l: string;
+    h: string;
+    w: string;
+  }[];
   error: any;
 }
 

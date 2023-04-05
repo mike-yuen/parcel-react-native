@@ -1,4 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {SUB_ORDER_TYPE} from '~/constants/status';
 
 export interface IOrder {
   id?: string;
@@ -9,6 +10,7 @@ export interface IOrder {
   fee: number;
   isExpress: boolean;
   description: string;
+  packageType: SUB_ORDER_TYPE;
   paymentSide: number;
   paymentStatus: number;
   totalWeight: number;

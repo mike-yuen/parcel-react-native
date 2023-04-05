@@ -159,49 +159,25 @@ const MyOrderListItem = (props: any) => {
               {
                 [ORDER_STATUS.INIT]: (
                   <>
-                    <Icon
-                      name="truck-delivery"
-                      type="material-community"
-                      size={18}
-                      color={colors.grey4}
-                      tvParallaxProperties={undefined}
-                    />
+                    <Icon name="truck-delivery" type="material-community" size={18} color={colors.grey4} />
                     <Text style={{marginLeft: 8, fontSize: 14, color: colors.grey4}}>Order is placed</Text>
                   </>
                 ),
                 [ORDER_STATUS.TRANSFERRING]: (
                   <>
-                    <Icon
-                      name="truck-delivery"
-                      type="material-community"
-                      size={18}
-                      color={COLORS.darkGolden}
-                      tvParallaxProperties={undefined}
-                    />
+                    <Icon name="truck-delivery" type="material-community" size={18} color={COLORS.darkGolden} />
                     <Text style={{marginLeft: 8, fontSize: 14, color: COLORS.darkGolden}}>Order is preparing</Text>
                   </>
                 ),
                 [ORDER_STATUS.PENDING]: (
                   <>
-                    <Icon
-                      name="truck-fast"
-                      type="material-community"
-                      size={18}
-                      color={COLORS.darkGolden}
-                      tvParallaxProperties={undefined}
-                    />
+                    <Icon name="truck-fast" type="material-community" size={18} color={COLORS.darkGolden} />
                     <Text style={{marginLeft: 8, fontSize: 14, color: COLORS.darkGolden}}>Order is delivering</Text>
                   </>
                 ),
                 [ORDER_STATUS.SUCCESS]: (
                   <>
-                    <Icon
-                      name="truck-check"
-                      type="material-community"
-                      size={18}
-                      color="#1cbc9f"
-                      tvParallaxProperties={undefined}
-                    />
+                    <Icon name="truck-check" type="material-community" size={18} color="#1cbc9f" />
                     <Text style={{marginLeft: 8, fontSize: 14, color: '#1cbc9f'}}>Order is delivered</Text>
                   </>
                 ),
@@ -210,13 +186,7 @@ const MyOrderListItem = (props: any) => {
               }[data.status as ORDER_STATUS]
             }
           </View>
-          <Icon
-            name="chevron-right"
-            type="material-community"
-            size={22}
-            color={colors.grey3}
-            tvParallaxProperties={undefined}
-          />
+          <Icon name="chevron-right" type="material-community" size={22} color={colors.grey3} />
         </View>
 
         {/* Action */}
