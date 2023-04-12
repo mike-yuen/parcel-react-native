@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
-import {View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import {Button, CheckBox, Text} from 'react-native-elements';
 import uuid from 'react-native-uuid';
 import {useDispatch, useSelector} from 'react-redux';
@@ -56,7 +56,7 @@ const ProductScreen = ({route}: any) => {
   };
 
   return (
-    <View
+    <ScrollView
       style={{
         backgroundColor: '#fff',
         flex: 1,
@@ -176,7 +176,7 @@ const ProductScreen = ({route}: any) => {
         onPress={handleSubmit(onSubmit)}
         disabled={!isValid}
       />
-    </View>
+    </ScrollView>
   );
 };
 

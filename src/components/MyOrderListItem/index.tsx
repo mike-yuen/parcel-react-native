@@ -6,9 +6,10 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import {DateTime} from 'luxon';
 
 import {COLORS} from '~/constants/colors';
-import {ORDER_STATUS} from '~/constants/status';
+import {ORDER_STATUS, SUB_ORDER_TYPE} from '~/constants/status';
 import {RootState} from '~/store';
 import {getOrders, processOrder} from '~/store/slices/orderSlice';
+import {ROLE} from '~/constants/role';
 
 const MyOrderListItem = (props: any) => {
   const dimension = useWindowDimensions();
@@ -28,6 +29,8 @@ const MyOrderListItem = (props: any) => {
   const onDeliveredOrder = () => {
     dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.SUCCESS}));
   };
+
+  const onOpenDriverModal = () => {};
 
   useEffect(() => {
     if (processedOrder) {
@@ -137,7 +140,26 @@ const MyOrderListItem = (props: any) => {
           </View>
           <View>
             <Text style={{textAlign: 'right', color: COLORS.gray, marginBottom: 2, fontSize: 12}}>Total</Text>
-            <Text style={{fontWeight: '700'}}>{data.fee && `${data.fee.toLocaleString('en-US')}đ`}</Text>
+            <Text style={{textAlign: 'right', fontWeight: '700'}}>
+              {data.fee && `${data.fee.toLocaleString('en-US')}đ`}
+            </Text>
+            <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+              <Text style={{fontSize: 14, color: colors.grey3}}>Type: </Text>
+              {
+                {
+                  [SUB_ORDER_TYPE.CLOTHES]: <Text style={{fontSize: 14}}>Clothes</Text>,
+                  [SUB_ORDER_TYPE.ELECTRIC]: <Text style={{fontSize: 14}}>Electric</Text>,
+                  [SUB_ORDER_TYPE.FOODS]: <Text style={{fontSize: 14}}>Foods</Text>,
+                  [SUB_ORDER_TYPE.FRAGILE]: (
+                    <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                      <Icon type="material-community" name="glass-fragile" color={'purple'} size={16}></Icon>
+                      <Text style={{fontSize: 14, color: colors.grey3}}>Fragile</Text>
+                    </View>
+                  ),
+                  [SUB_ORDER_TYPE.OTHERS]: <Text style={{fontSize: 14}}>Others</Text>,
+                }[data.packageType as SUB_ORDER_TYPE]
+              }
+            </View>
           </View>
         </View>
         {/* Sub-order */}
@@ -150,6 +172,7 @@ const MyOrderListItem = (props: any) => {
             justifyContent: 'space-between',
             borderBottomWidth: 1,
             borderColor: colors.grey5,
+            paddingVertical: 6,
           }}>
           <View
             style={{flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', paddingTop: 8, paddingBottom: 10}}>
@@ -186,30 +209,13 @@ const MyOrderListItem = (props: any) => {
               }[data.status as ORDER_STATUS]
             }
           </View>
-          <Icon name="chevron-right" type="material-community" size={22} color={colors.grey3} />
-        </View>
 
-        {/* Action */}
-        <View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            width: dimension.width - 32,
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingVertical: 8,
-          }}>
-          <View
-            style={{flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', paddingTop: 8, paddingBottom: 10}}>
-            <Text style={{fontSize: 14, color: colors.grey4}}>
-              {user.roles && !!user.roles.length ? "You're assigned this order" : 'You need our support?'}
-            </Text>
-          </View>
+          {/* Actions */}
           {user.roles && !!user.roles.length ? (
             {
-              [ORDER_STATUS.INIT]: (
+              [ORDER_STATUS.INIT]: Object.values(user.roles).includes(ROLE.ADMIN) ? (
                 <Button
-                  title={'Accept'}
+                  title={'Assign driver'}
                   buttonStyle={{
                     backgroundColor: COLORS.golden,
                     borderRadius: 4,
@@ -217,8 +223,10 @@ const MyOrderListItem = (props: any) => {
                     paddingHorizontal: 12,
                   }}
                   titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-                  onPress={onAcceptOrder}
+                  onPress={onOpenDriverModal}
                 />
+              ) : (
+                <></>
               ),
               [ORDER_STATUS.TRANSFERRING]: (
                 <Button
@@ -252,7 +260,7 @@ const MyOrderListItem = (props: any) => {
             }[data.status as ORDER_STATUS]
           ) : (
             <Button
-              title={'Support'}
+              title={'Need our Support'}
               buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4, paddingVertical: 4, paddingHorizontal: 12}}
               titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
               onPress={() => console.log('Support')}
