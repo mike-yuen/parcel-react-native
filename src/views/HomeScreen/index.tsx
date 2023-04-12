@@ -14,6 +14,7 @@ import MyOrderListItem from '~/components/MyOrderListItem';
 import {useDispatch, useSelector} from 'react-redux';
 import {getOrders} from '~/store/slices/orderSlice';
 import {RootState} from '~/store';
+import {getDrivers} from '~/store/slices/driverSlice';
 
 const carouselItems = [
   {
@@ -57,6 +58,7 @@ const HomeScreen = ({navigation}: any) => {
 
   useEffect(() => {
     dispatch(getOrders());
+    dispatch(getDrivers());
   }, []);
 
   useEffect(() => {
@@ -126,8 +128,8 @@ const HomeScreen = ({navigation}: any) => {
 
           {/* <Text>{JSON.stringify(orderList)}</Text> */}
 
-          {orderList.length ? (
-            orderList.map(order => (
+          {orderList.data && orderList.data.length ? (
+            orderList.data.map(order => (
               <ListItem
                 key={order.id}
                 containerStyle={{padding: 0}}
@@ -136,9 +138,7 @@ const HomeScreen = ({navigation}: any) => {
                     orderId: order.id,
                     departure: 'Home',
                   })
-                }
-                hasTVPreferredFocus={undefined}
-                tvParallaxProperties={undefined}>
+                }>
                 <MyOrderListItem data={order} />
               </ListItem>
             ))

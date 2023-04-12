@@ -12,7 +12,7 @@ import {SUB_ORDER_TYPE} from '~/constants/status';
 import {RootState} from '~/store';
 import {addProduct, updateProduct} from '~/store/slices/productSlice';
 
-const ProductScreen = ({route}: any) => {
+const DriverScreen = ({route}: any) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const {products} = useSelector((state: RootState) => state.product);
@@ -180,4 +180,4 @@ const ProductScreen = ({route}: any) => {
   );
 };
 
-export default ProductScreen;
+export default DriverScreen;

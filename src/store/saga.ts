@@ -59,6 +59,8 @@ import {
   getUserError,
   getUser,
 } from './slices/userSlice';
+import {getWarehouses, getWarehousesError, getWarehousesSuccess} from './slices/warehouseSlice';
+import {getDrivers, getDriversError, getDriversSuccess} from './slices/driverSlice';
 
 export function* signInSaga(action: any) {
   try {
@@ -266,6 +268,24 @@ export function* verifyTrackingOrderSaga(action: any) {
   }
 }
 
+export function* getWarehousesSaga(action: any) {
+  try {
+    const data: any[] = yield call(parcelApi.getWarehouses);
+    yield put(getWarehousesSuccess(data));
+  } catch (error) {
+    yield put(getWarehousesError(error));
+  }
+}
+
+export function* getDriversSaga(action: any) {
+  try {
+    const data: any[] = yield call(parcelApi.getDrivers);
+    yield put(getDriversSuccess(data));
+  } catch (error) {
+    yield put(getDriversError(error));
+  }
+}
+
 function* rootSaga() {
   yield all([
     takeLatest(signIn.type, signInSaga),
@@ -292,6 +312,10 @@ function* rootSaga() {
     takeLatest(processOrder.type, processOrderSaga),
     takeLatest(trackOrder.type, trackOrderSaga),
     takeLatest(verifyTrackingOrder.type, verifyTrackingOrderSaga),
+
+    takeLatest(getWarehouses.type, getWarehousesSaga),
+
+    takeLatest(getDrivers.type, getDriversSaga),
   ]);
 }
 

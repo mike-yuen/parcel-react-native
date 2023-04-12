@@ -69,12 +69,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
                     <Text style={{fontSize: 18, color: colors.white}}>Order Completed</Text>
                     <Text style={{fontSize: 16, color: colors.white}}>Thanks for your using ParcelGO!</Text>
                   </View>
-                  <Icon
-                    name="check-decagram"
-                    type="material-community"
-                    color={colors.white}
-                    tvParallaxProperties={undefined}
-                  />
+                  <Icon name="check-decagram" type="material-community" color={colors.white} />
                 </>
               ),
               [ORDER_STATUS.FAIL]: <></>,
@@ -96,13 +91,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
                 flexDirection: 'row',
                 alignItems: 'center',
               }}>
-              <Icon
-                name="truck-delivery"
-                type="material-community"
-                size={20}
-                color={colors.grey1}
-                tvParallaxProperties={undefined}
-              />
+              <Icon name="truck-delivery" type="material-community" size={20} color={colors.grey1} />
               <Text style={{fontSize: 17, fontWeight: '700', color: colors.grey0, marginLeft: 10}}>
                 Shipping Information
               </Text>
@@ -134,7 +123,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
                 flexDirection: 'row',
                 alignItems: 'center',
               }}>
-              <Icon name="dot-single" type="entypo" size={28} color="#1cbc9f" tvParallaxProperties={undefined} />
+              <Icon name="dot-single" type="entypo" size={28} color="#1cbc9f" />
               <Text style={{fontSize: 15, color: '#1cbc9f'}}>
                 {
                   {
@@ -175,13 +164,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
                 flexDirection: 'row',
                 alignItems: 'center',
               }}>
-              <Icon
-                name="location-outline"
-                type="ionicon"
-                size={20}
-                color={colors.grey1}
-                tvParallaxProperties={undefined}
-              />
+              <Icon name="location-outline" type="ionicon" size={20} color={colors.grey1} />
               <Text style={{fontSize: 17, fontWeight: '700', color: colors.grey0, marginLeft: 10}}>
                 Delivery Address
               </Text>
@@ -255,11 +238,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
           }}>
           {order.subOrders &&
             order.subOrders.map(subOrder => (
-              <ListItem
-                key={subOrder.id}
-                hasTVPreferredFocus={undefined}
-                tvParallaxProperties={undefined}
-                style={{width: dimension.width - 32}}>
+              <ListItem key={subOrder.id} style={{width: dimension.width - 32}}>
                 <View
                   style={{
                     display: 'flex',

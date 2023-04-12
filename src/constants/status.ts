@@ -18,7 +18,7 @@ export enum SUB_ORDER_STATUS {
 }
 
 export enum SUB_ORDER_TYPE {
-  FOODS = 1,
+  FOOD = 1,
   CLOTHES = 2,
   ELECTRIC = 3,
   FRAGILE = 4,

@@ -33,7 +33,7 @@ interface OrderState {
   order: IOrder;
   gettingOrders: boolean;
   gotOrders: boolean;
-  orderList: IOrder[];
+  orderList: {data: IOrder[]};
   processingOrder: boolean;
   processedOrder: boolean;
   trackingOrder: boolean;
@@ -58,7 +58,7 @@ const orderSlice = createSlice({
     order: {} as IOrder,
     gettingOrders: false,
     gotOrders: false,
-    orderList: [] as IOrder[],
+    orderList: {data: []},
     processingOrder: false,
     processedOrder: false,
     trackingOrder: false,
@@ -110,7 +110,7 @@ const orderSlice = createSlice({
     getOrdersSuccess(state, action) {
       // const ids = new Set(state.orderList.map(o => o.id));
       // state.orderList = [...state.orderList, ...action.payload.filter((n: any) => !ids.has(n.id))];
-      state.orderList = [...action.payload];
+      state.orderList = action.payload;
       state.gettingOrders = false;
       state.gotOrders = true;
     },

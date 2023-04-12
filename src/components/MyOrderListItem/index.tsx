@@ -143,20 +143,39 @@ const MyOrderListItem = (props: any) => {
             <Text style={{textAlign: 'right', fontWeight: '700'}}>
               {data.fee && `${data.fee.toLocaleString('en-US')}đ`}
             </Text>
-            <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
-              <Text style={{fontSize: 14, color: colors.grey3}}>Type: </Text>
+            <View style={{flexDirection: 'row', alignItems: 'baseline', marginTop: 2}}>
               {
                 {
-                  [SUB_ORDER_TYPE.CLOTHES]: <Text style={{fontSize: 14}}>Clothes</Text>,
-                  [SUB_ORDER_TYPE.ELECTRIC]: <Text style={{fontSize: 14}}>Electric</Text>,
-                  [SUB_ORDER_TYPE.FOODS]: <Text style={{fontSize: 14}}>Foods</Text>,
+                  [SUB_ORDER_TYPE.CLOTHES]: (
+                    <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                      <Icon type="ionicon" name="ios-shirt" color={'blue'} size={16}></Icon>
+                      <Text style={{fontSize: 14, color: colors.grey3}}>Clothes</Text>
+                    </View>
+                  ),
+                  [SUB_ORDER_TYPE.ELECTRIC]: (
+                    <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                      <Icon type="ionicon" name="game-controller" color={'green'} size={16}></Icon>
+                      <Text style={{fontSize: 14, color: colors.grey3}}>Electric</Text>
+                    </View>
+                  ),
+                  [SUB_ORDER_TYPE.FOOD]: (
+                    <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                      <Icon type="ionicon" name="ios-fast-food" color={'orange'} size={16}></Icon>
+                      <Text style={{fontSize: 14, color: colors.grey3}}>Food</Text>
+                    </View>
+                  ),
                   [SUB_ORDER_TYPE.FRAGILE]: (
                     <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
                       <Icon type="material-community" name="glass-fragile" color={'purple'} size={16}></Icon>
                       <Text style={{fontSize: 14, color: colors.grey3}}>Fragile</Text>
                     </View>
                   ),
-                  [SUB_ORDER_TYPE.OTHERS]: <Text style={{fontSize: 14}}>Others</Text>,
+                  [SUB_ORDER_TYPE.OTHERS]: (
+                    <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                      <Icon type="foundation" name="social-dropbox" color={'red'} size={16}></Icon>
+                      <Text style={{fontSize: 14, color: colors.grey3}}>Others</Text>
+                    </View>
+                  ),
                 }[data.packageType as SUB_ORDER_TYPE]
               }
             </View>
@@ -213,7 +232,7 @@ const MyOrderListItem = (props: any) => {
           {/* Actions */}
           {user.roles && !!user.roles.length ? (
             {
-              [ORDER_STATUS.INIT]: Object.values(user.roles).includes(ROLE.ADMIN) ? (
+              [ORDER_STATUS.INIT]: user.roles.some(role => role.role === ROLE.ADMIN) ? (
                 <Button
                   title={'Assign driver'}
                   buttonStyle={{

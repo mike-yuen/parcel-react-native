@@ -173,6 +173,38 @@ export const parcelApi = {
       throw err;
     }
   },
+
+  async getWarehouses() {
+    try {
+      const res = await parcelClient.get('/warehouse', {
+        params: {
+          pageSize: 100,
+          pageNumber: 0,
+        },
+      });
+      const resBody = res.data;
+      console.log('warehouse: ', resBody);
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async getDrivers() {
+    try {
+      const res = await parcelClient.get('/driver', {
+        params: {
+          pageSize: 100,
+          pageNumber: 0,
+        },
+      });
+      const resBody = res.data;
+      console.log('drivers: ', resBody);
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
 };
 
 export const goongApi = {
