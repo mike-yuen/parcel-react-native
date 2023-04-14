@@ -29,13 +29,11 @@ import OrderStatusScreen from './views/OrderStatusScreen';
 import VerifyScreen from './views/VerifyScreen';
 import PaymentScreen from './views/PaymentScreen';
 import WarehouseScreen from './views/WarehouseScreen';
+import DriverScreen from './views/DriverScreen';
 
 const Stack = createNativeStackNavigator();
 
 const MyStack = () => {
-  const STRIPE_PUBLISHABLE_KEY =
-    'pk_test_51Mn0NXKJyU3LBZTd55O8WhojcOoXPvqj9UjUFjV4u9E9cyHv6DRvKDt80H2hSwmoaECJx2iZQ1FiWZsNrhnqIrBb00COwefzFK';
-
   const signupOptions: NativeStackNavigationOptions = {
     headerTitle: 'Register Account',
     headerTintColor: colors.grey1,
@@ -139,6 +137,16 @@ const MyStack = () => {
             options={{
               presentation: 'fullScreenModal',
               headerTitle: 'Payment',
+              headerTintColor: colors.grey1,
+              headerTitleStyle: {fontSize: 16},
+              headerShadowVisible: false,
+            }}></Stack.Screen>
+          <Stack.Screen
+            name="Driver"
+            component={DriverScreen}
+            options={{
+              presentation: 'fullScreenModal',
+              headerTitle: 'Driver list',
               headerTintColor: colors.grey1,
               headerTitleStyle: {fontSize: 16},
               headerShadowVisible: false,

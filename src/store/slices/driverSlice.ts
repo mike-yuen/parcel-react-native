@@ -4,7 +4,7 @@ interface DriverState {
   gettingDrivers: boolean;
   gotDrivers: boolean;
   drivers: {
-    data: {id: string; user: any; vehicle: any; status: number};
+    data: {id: string; user: any; vehicle: any; licenses: any; status: number}[];
   };
   error: any;
 }
@@ -15,7 +15,7 @@ const driverSlice = createSlice({
     gettingDrivers: false,
     gotDrivers: false,
     drivers: {
-      data: {},
+      data: [],
     },
 
     error: {},

@@ -3,6 +3,7 @@ import {TouchableWithoutFeedback, useWindowDimensions, View} from 'react-native'
 import {Button, colors, Icon, Text} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
 import Clipboard from '@react-native-clipboard/clipboard';
+import {useNavigation} from '@react-navigation/native';
 import {DateTime} from 'luxon';
 
 import {COLORS} from '~/constants/colors';
@@ -15,6 +16,7 @@ const MyOrderListItem = (props: any) => {
   const dimension = useWindowDimensions();
   const {data} = props;
   const dispatch = useDispatch();
+  const navigation = useNavigation() as any;
   const {processedOrder} = useSelector((state: RootState) => state.order);
   const {user} = useSelector((state: RootState) => state.user);
 
@@ -30,7 +32,9 @@ const MyOrderListItem = (props: any) => {
     dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.SUCCESS}));
   };
 
-  const onOpenDriverModal = () => {};
+  const onGoToDriverScreen = (orderId: string) => {
+    navigation.navigate('Driver', {orderId: orderId});
+  };
 
   useEffect(() => {
     if (processedOrder) {
@@ -242,7 +246,7 @@ const MyOrderListItem = (props: any) => {
                     paddingHorizontal: 12,
                   }}
                   titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-                  onPress={onOpenDriverModal}
+                  onPress={() => onGoToDriverScreen(data.id)}
                 />
               ) : (
                 <></>
