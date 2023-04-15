@@ -36,6 +36,8 @@ interface OrderState {
   orderList: {data: IOrder[]};
   processingOrder: boolean;
   processedOrder: boolean;
+  assigningDriverToOrders: boolean;
+  assignedDriverToOrders: boolean;
   trackingOrder: boolean;
   trackedOrder: boolean;
   trackingOrderData: {orderId: string; email: string};
@@ -61,6 +63,8 @@ const orderSlice = createSlice({
     orderList: {data: []},
     processingOrder: false,
     processedOrder: false,
+    assigningDriverToOrders: false,
+    assignedDriverToOrders: false,
     trackingOrder: false,
     trackedOrder: false,
     trackingOrderData: {} as {orderId: string; email: string},
@@ -103,7 +107,7 @@ const orderSlice = createSlice({
     },
 
     // getOrders
-    getOrders(state) {
+    getOrders(state, action) {
       state.gettingOrders = true;
       state.gotOrders = false;
     },
@@ -154,6 +158,21 @@ const orderSlice = createSlice({
     processOrderError(state, action) {
       state.processingOrder = false;
       state.processedOrder = false;
+      state.error = action.payload;
+    },
+
+    // assignDriverToOrders
+    assignDriverToOrders(state, action) {
+      state.assigningDriverToOrders = true;
+      state.assignedDriverToOrders = false;
+    },
+    assignDriverToOrdersSuccess(state, action) {
+      state.assigningDriverToOrders = false;
+      state.assignedDriverToOrders = true;
+    },
+    assignDriverToOrdersError(state, action) {
+      state.assigningDriverToOrders = false;
+      state.assignedDriverToOrders = false;
       state.error = action.payload;
     },
 
@@ -208,6 +227,9 @@ export const {
   processOrder,
   processOrderSuccess,
   processOrderError,
+  assignDriverToOrders,
+  assignDriverToOrdersSuccess,
+  assignDriverToOrdersError,
   trackOrder,
   trackOrderSuccess,
   trackOrderError,

@@ -25,6 +25,9 @@ import {
   verifyTrackingOrderError,
   verifyTrackingOrder,
   getTrackingOrderDetail,
+  assignDriverToOrdersSuccess,
+  assignDriverToOrdersError,
+  assignDriverToOrders,
 } from './slices/orderSlice';
 import {
   addProduct,
@@ -213,7 +216,8 @@ export function* addOrderSaga(action: any) {
 
 export function* getOrdersSaga(action: any) {
   try {
-    const data: any[] = yield call(parcelApi.getOrders);
+    const {statusIds} = action.payload;
+    const data: any[] = yield call(parcelApi.getOrders, statusIds);
     if (data) yield put(getOrdersSuccess(data));
   } catch (error) {
     yield put(getOrdersError(error));
@@ -245,6 +249,16 @@ export function* processOrderSaga(action: any) {
     if (data) yield put(processOrderSuccess(data));
   } catch (error) {
     yield put(processOrderError(error));
+  }
+}
+
+export function* assignDriverToOrdersSaga(action: any) {
+  try {
+    const {userId, orderId} = action.payload;
+    const data: {id: string} = yield call(parcelApi.assignDriverToOrders, userId, orderId);
+    if (data) yield put(assignDriverToOrdersSuccess(data));
+  } catch (error) {
+    yield put(assignDriverToOrdersError(error));
   }
 }
 
@@ -310,6 +324,7 @@ function* rootSaga() {
     takeLatest(getOrder.type, getOrderSaga),
     takeLatest(getTrackingOrderDetail.type, getTrackingOrderDetailSaga),
     takeLatest(processOrder.type, processOrderSaga),
+    takeLatest(assignDriverToOrders.type, assignDriverToOrdersSaga),
     takeLatest(trackOrder.type, trackOrderSaga),
     takeLatest(verifyTrackingOrder.type, verifyTrackingOrderSaga),
 

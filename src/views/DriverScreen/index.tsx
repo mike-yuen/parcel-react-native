@@ -9,6 +9,7 @@ import {RootState} from '~/store';
 
 import driverImage from '~/assets/driver-placeholder.png';
 import {VEHICLE_TYPES} from '~/constants/driver';
+import {assignDriverToOrders} from '~/store/slices/orderSlice';
 
 const DriverScreen = ({route}: any) => {
   const dispatch = useDispatch();
@@ -27,8 +28,9 @@ const DriverScreen = ({route}: any) => {
     }
   };
 
-  const onSubmit = (data: any) => {
-    navigation.goBack();
+  const onSubmit = (userId: string) => {
+    dispatch(assignDriverToOrders({userId, orderId}));
+    setTimeout(() => navigation.goBack(), 100);
   };
 
   return (
@@ -63,7 +65,7 @@ const DriverScreen = ({route}: any) => {
                   title="Assign"
                   buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4, paddingVertical: 3}}
                   titleStyle={{fontSize: 14, color: COLORS.black1}}
-                  onPress={onSubmit}
+                  onPress={() => onSubmit(driver.user.id)}
                 />
               </View>
             </View>

@@ -38,7 +38,7 @@ const MyOrderListItem = (props: any) => {
 
   useEffect(() => {
     if (processedOrder) {
-      dispatch(getOrders());
+      dispatch(getOrders({}));
     }
   }, [processedOrder]);
 

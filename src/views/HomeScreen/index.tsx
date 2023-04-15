@@ -15,6 +15,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getOrders} from '~/store/slices/orderSlice';
 import {RootState} from '~/store';
 import {getDrivers} from '~/store/slices/driverSlice';
+import {ROLE} from '~/constants/role';
+import {ORDER_STATUS} from '~/constants/status';
 
 const carouselItems = [
   {
@@ -52,18 +54,21 @@ const _renderItem = ({item, index}: any) => {
 
 const HomeScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
+  const {user} = useSelector((state: RootState) => state.user);
   const {order, orderList} = useSelector((state: RootState) => state.order);
   const insets = useSafeAreaInsets();
   const [activeIndex, setActiveIndex] = React.useState(0);
 
   useEffect(() => {
-    dispatch(getOrders());
+    if (user.roles.some(role => role.role === ROLE.ADMIN)) {
+      dispatch(getOrders({statusIds: [ORDER_STATUS.INIT]}));
+    }
     dispatch(getDrivers());
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (order.id) {
-      dispatch(getOrders());
+      dispatch(getOrders({}));
     }
   }, [order]);
 
@@ -159,7 +164,7 @@ const HomeScreen = ({navigation}: any) => {
                 containerStyle={{marginTop: 14, marginBottom: 20}}
                 buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
                 titleStyle={{color: COLORS.black1, fontSize: 14, marginVertical: 0, marginHorizontal: 20}}
-                onPress={() => navigation.navigate('Payment')} // Order
+                onPress={() => navigation.navigate('Order')}
               />
             </View>
           )}

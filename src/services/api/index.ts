@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getClient} from './base.client';
+import qs from 'qs';
 
 const parcelClient = getClient('http://10.0.2.2:8443');
 // http://app.pandamaster.club:8443
@@ -88,9 +89,19 @@ export const parcelApi = {
     }
   },
 
-  async getOrders() {
+  async getOrders(statusIds?: any[]) {
+    const params: {[x: string]: any} = {
+      pageSize: 100,
+      pageNumber: 0,
+    };
+    if (statusIds) params.statusIds = statusIds;
     try {
-      const res = await parcelClient.get('/order');
+      const res = await parcelClient.get('/order', {
+        params,
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        },
+      });
       const resBody = res.data;
       console.log('orders: ', resBody);
       return resBody;
@@ -118,6 +129,21 @@ export const parcelApi = {
       });
       const resBody = res.data;
       console.log('processOrder', resBody);
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async assignDriverToOrders(userId: string, orderId: string) {
+    try {
+      const res = await parcelClient.post('/order/process-orders', {
+        userId,
+        warehouseId: '',
+        orderIds: [orderId],
+      });
+      const resBody = res.data;
+      console.log('assignDriverToOrders', resBody);
       return resBody;
     } catch (err) {
       throw err;
