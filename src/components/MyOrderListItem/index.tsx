@@ -251,7 +251,7 @@ const MyOrderListItem = (props: any) => {
               ) : (
                 <></>
               ),
-              [ORDER_STATUS.TRANSFERRING]: (
+              [ORDER_STATUS.TRANSFERRING]: user.roles.some(role => role.role === ROLE.DRIVER) ? (
                 <Button
                   title={'Deliver'}
                   buttonStyle={{
@@ -263,8 +263,10 @@ const MyOrderListItem = (props: any) => {
                   titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
                   onPress={onDeliverOrder}
                 />
+              ) : (
+                <></>
               ),
-              [ORDER_STATUS.PENDING]: (
+              [ORDER_STATUS.PENDING]: user.roles.some(role => role.role === ROLE.DRIVER) ? (
                 <Button
                   title={'Delivered?'}
                   buttonStyle={{
@@ -276,6 +278,8 @@ const MyOrderListItem = (props: any) => {
                   titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
                   onPress={onDeliveredOrder}
                 />
+              ) : (
+                <></>
               ),
               [ORDER_STATUS.SUCCESS]: <></>,
               [ORDER_STATUS.FAIL]: <></>,

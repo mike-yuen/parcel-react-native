@@ -1,15 +1,22 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import {Button, CheckBox, Image, Text, colors} from 'react-native-elements';
+import {Button, CheckBox, Icon, Image, Text, colors} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {COLORS} from '~/constants/colors';
 import {RootState} from '~/store';
 
-import driverImage from '~/assets/driver-placeholder.png';
+import driver1 from '~/assets/driver-1.jpg';
+import driver2 from '~/assets/driver-2.jpg';
+import driver3 from '~/assets/driver-3.jpg';
+import driver4 from '~/assets/driver-4.jpg';
+import driver5 from '~/assets/driver-5.jpg';
+
 import {VEHICLE_TYPES} from '~/constants/driver';
 import {assignDriverToOrders} from '~/store/slices/orderSlice';
+
+const driverImages = [driver1, driver2, driver3, driver4, driver5];
 
 const DriverScreen = ({route}: any) => {
   const dispatch = useDispatch();
@@ -20,11 +27,22 @@ const DriverScreen = ({route}: any) => {
   const getVehicleType = (type: VEHICLE_TYPES) => {
     switch (type) {
       case VEHICLE_TYPES.BIKE:
-        return 'Bike';
+        return 'motorbike';
       case VEHICLE_TYPES.TRUCK:
-        return 'Truck';
+        return 'truck';
       case VEHICLE_TYPES.REFRIGERATED:
-        return 'Refrigerated';
+        return 'truck-snowflake';
+    }
+  };
+
+  const getVehicleColor = (type: VEHICLE_TYPES) => {
+    switch (type) {
+      case VEHICLE_TYPES.BIKE:
+        return 'lightgreen';
+      case VEHICLE_TYPES.TRUCK:
+        return 'orange';
+      case VEHICLE_TYPES.REFRIGERATED:
+        return 'lightblue';
     }
   };
 
@@ -41,11 +59,12 @@ const DriverScreen = ({route}: any) => {
         flexDirection: 'column',
         borderTopWidth: 1,
         borderColor: '#ccc',
-        paddingVertical: 30,
+        paddingVertical: 20,
         paddingHorizontal: 20,
       }}>
+      <Text style={{fontSize: 16, fontWeight: '700', paddingBottom: 20}}>Drivers of our company</Text>
       {drivers.data.length &&
-        drivers.data.map(driver => (
+        drivers.data.map((driver, index) => (
           <View
             key={driver.id}
             style={{
@@ -53,10 +72,10 @@ const DriverScreen = ({route}: any) => {
               justifyContent: 'space-between',
               borderBottomWidth: 1,
               borderBottomColor: colors.grey5,
-              paddingBottom: 12,
+              paddingVertical: 12,
             }}>
             <View style={{flexDirection: 'row'}}>
-              <Image source={driverImage} containerStyle={{width: 50, height: 50, borderRadius: 8}}></Image>
+              <Image source={driverImages[index % 5]} containerStyle={{width: 50, height: 50, borderRadius: 8}}></Image>
               <View style={{marginLeft: 14}}>
                 <Text style={{flex: 1, fontWeight: '700', fontSize: 14, textTransform: 'uppercase'}}>
                   {driver.user.displayName}
@@ -72,14 +91,18 @@ const DriverScreen = ({route}: any) => {
 
             <View>
               <Text style={{flex: 1, fontSize: 14, color: colors.grey3}}>Vehicle</Text>
-              <Text style={{fontSize: 14, fontWeight: '700', marginBottom: 4}}>{`${getVehicleType(
-                driver.vehicle.type,
-              )} [${driver.vehicle.number}]`}</Text>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Icon
+                  name={getVehicleType(driver.vehicle.type)}
+                  color={getVehicleColor(driver.vehicle.type)}
+                  type="material-community"></Icon>
+                <Text style={{fontSize: 14, fontWeight: '700', marginLeft: 4}}>[{driver.vehicle.number}]</Text>
+              </View>
             </View>
 
             <View>
               <Text style={{flex: 1, fontSize: 14, color: colors.grey3}}>License</Text>
-              <Text style={{fontSize: 14, fontWeight: '700', marginBottom: 4}}>{driver.licenses[0].name}</Text>
+              <Text style={{fontSize: 14, fontWeight: '700'}}>{driver.licenses[0].name}</Text>
             </View>
           </View>
         ))}

@@ -167,6 +167,7 @@ const orderSlice = createSlice({
       state.assignedDriverToOrders = false;
     },
     assignDriverToOrdersSuccess(state, action) {
+      state.order = Object.assign(state.order, action.payload[0]);
       state.assigningDriverToOrders = false;
       state.assignedDriverToOrders = true;
     },

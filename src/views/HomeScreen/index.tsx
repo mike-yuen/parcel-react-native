@@ -1,6 +1,7 @@
-import React, {Fragment, useEffect} from 'react';
-import {Dimensions, ScrollView, View} from 'react-native';
-import {Button, colors, Image, ListItem, Text} from 'react-native-elements';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, Dimensions, ScrollView, TouchableOpacity, View} from 'react-native';
+import {Button, colors, Icon, Image, ListItem, Text} from 'react-native-elements';
+import Modal from 'react-native-modal';
 import Carousel from 'react-native-snap-carousel';
 
 import MyHeader from '~/components/MyHeader';
@@ -31,6 +32,14 @@ const carouselItems = [
   },
 ];
 
+const statusItems = [
+  {icon: {name: 'list', type: 'entypo'}, key: 0, text: 'All'},
+  {icon: {name: 'cogs', type: 'material-community'}, key: ORDER_STATUS.INIT, text: 'In progress'},
+  {icon: {name: 'package', type: 'material-community'}, key: ORDER_STATUS.TRANSFERRING, text: 'Ready to delivery'},
+  {icon: {name: 'truck-fast', type: 'material-community'}, key: ORDER_STATUS.PENDING, text: 'Delivering'},
+  {icon: {name: 'truck-check', type: 'material-community'}, key: ORDER_STATUS.SUCCESS, text: 'Delivered'},
+];
+
 const _renderItem = ({item, index}: any) => {
   return (
     <View
@@ -55,22 +64,60 @@ const _renderItem = ({item, index}: any) => {
 const HomeScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
   const {user} = useSelector((state: RootState) => state.user);
-  const {order, orderList} = useSelector((state: RootState) => state.order);
+  const {gotOrders, order, orderList} = useSelector((state: RootState) => state.order);
   const insets = useSafeAreaInsets();
-  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const [isLoading, setLoading] = useState(true);
+  const [isFilterVisible, setFilterVisible] = useState(false);
+  const [tempStatus, setTempStatus] = useState<null | ORDER_STATUS | 0>(null); // 0: All
+  const [currentStatus, setCurrentStatus] = useState<null | ORDER_STATUS | 0>(null); // 0: All
+
+  const onOpenFilter = () => {
+    setFilterVisible(true);
+  };
+
+  const onCloseFilter = () => {
+    setTempStatus(currentStatus);
+    setFilterVisible(false);
+  };
+
+  const onApplyFilter = () => {
+    setFilterVisible(false);
+    setCurrentStatus(tempStatus);
+  };
 
   useEffect(() => {
-    if (user.roles.some(role => role.role === ROLE.ADMIN)) {
-      dispatch(getOrders({statusIds: [ORDER_STATUS.INIT]}));
+    if (!!user) {
+      if (user.roles.some(role => role.role === ROLE.ADMIN)) {
+        setTempStatus(ORDER_STATUS.INIT);
+        setCurrentStatus(ORDER_STATUS.INIT);
+      } else if (user.roles.some(role => role.role === ROLE.DRIVER)) {
+        setTempStatus(ORDER_STATUS.TRANSFERRING);
+        setCurrentStatus(ORDER_STATUS.TRANSFERRING);
+      } else if (user.roles.some(role => role.role === ROLE.USER)) {
+        setTempStatus(0);
+        setCurrentStatus(0);
+      }
+      dispatch(getDrivers());
     }
-    dispatch(getDrivers());
   }, [user]);
 
   useEffect(() => {
     if (order.id) {
-      dispatch(getOrders({}));
+      currentStatus !== 0 ? dispatch(getOrders({statusIds: [currentStatus]})) : dispatch(getOrders({}));
+      dispatch(getDrivers());
     }
   }, [order]);
+
+  useEffect(() => {
+    setLoading(true);
+    currentStatus !== 0 ? dispatch(getOrders({statusIds: [currentStatus]})) : dispatch(getOrders({}));
+  }, [currentStatus]);
+
+  useEffect(() => {
+    if (gotOrders) setLoading(false);
+  }, [gotOrders]);
 
   return (
     <>
@@ -86,7 +133,6 @@ const HomeScreen = ({navigation}: any) => {
           renderItem={_renderItem}
           loop
           loopClonesPerSide={1}
-          autoplay
           enableMomentum={false}
           lockScrollWhileSnapping
           onSnapToItem={(index: number) => setActiveIndex(index)}
@@ -96,44 +142,92 @@ const HomeScreen = ({navigation}: any) => {
 
           <View style={{flexDirection: 'row', justifyContent: 'space-between', marginVertical: 14}}>
             <View style={{flexDirection: 'row'}}>
-              <Button
-                title="All"
-                containerStyle={{width: 60, borderRadius: 30}}
-                buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
-                titleStyle={{color: '#24252a', fontSize: 14, fontWeight: '600'}}
-              />
+              {currentStatus != null && (
+                <Button
+                  title={statusItems.find(item => item.key === currentStatus)?.text}
+                  containerStyle={{borderRadius: 30, marginRight: 10}}
+                  buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
+                  titleStyle={{color: '#24252a', fontSize: 14, fontWeight: '600', paddingHorizontal: 10}}
+                />
+              )}
               <Button
                 icon={{
                   type: 'antdesign',
-                  name: 'star',
-                  size: 18,
-                  color: '#b6bdc7',
-                  style: {marginTop: 1, marginBottom: 2},
-                }}
-                containerStyle={{width: 60, borderRadius: 30, marginLeft: 10}}
-                buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
-              />
-            </View>
-            <View style={{flexDirection: 'row'}}>
-              <Button
-                title="Hot"
-                icon={{
-                  type: 'antdesign',
-                  name: 'arrowdown',
+                  name: 'filter',
                   size: 18,
                   color: '#24252a',
+                  style: {marginTop: 1, marginBottom: 2},
                 }}
-                iconRight
-                containerStyle={{width: 70, borderRadius: 30, marginLeft: 10}}
+                containerStyle={{width: 60, borderRadius: 30}}
                 buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
-                titleStyle={{color: '#24252a', fontSize: 14, fontWeight: '600', marginLeft: 4}}
+                onPress={onOpenFilter}
               />
             </View>
+            {user.roles.some(role => role.role === ROLE.ADMIN) && (
+              <View style={{flexDirection: 'row'}}>
+                <Button
+                  title="Bulk assign"
+                  containerStyle={{borderRadius: 30, marginLeft: 10}}
+                  buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
+                  titleStyle={{color: '#24252a', fontSize: 14, fontWeight: '600', marginLeft: 4}}
+                />
+              </View>
+            )}
           </View>
 
-          {/* <Text>{JSON.stringify(orderList)}</Text> */}
+          <Modal
+            isVisible={isFilterVisible}
+            backdropOpacity={0.5}
+            onBackdropPress={onCloseFilter}
+            style={{margin: 0, justifyContent: 'flex-end'}}>
+            <View style={{flex: 0.62, backgroundColor: 'white', borderTopLeftRadius: 20, borderTopRightRadius: 20}}>
+              <Text style={{textAlign: 'center', marginTop: 8, paddingVertical: 10, fontSize: 17, fontWeight: '700'}}>
+                Parcel filter
+              </Text>
 
-          {orderList.data && orderList.data.length ? (
+              <Text style={{textTransform: 'uppercase', paddingHorizontal: 24, color: colors.grey3, marginBottom: 12}}>
+                Status
+              </Text>
+              {statusItems.map(statusItem => (
+                <ListItem
+                  key={statusItem.text}
+                  containerStyle={{paddingHorizontal: 24, paddingVertical: 8}}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                  onPress={() => setTempStatus(statusItem.key)}>
+                  <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+                    <Icon
+                      type={statusItem.icon.type}
+                      name={statusItem.icon.name}
+                      size={20}
+                      color={COLORS.golden}
+                      style={{borderWidth: 2, borderColor: colors.grey5, borderRadius: 6, padding: 4}}></Icon>
+                    <Text style={{marginLeft: 12, fontSize: 16}}>{statusItem.text}</Text>
+                  </View>
+
+                  {statusItem.key === tempStatus && (
+                    <Icon type={'entypo'} name={'check'} size={20} color={'green'}></Icon>
+                  )}
+                </ListItem>
+              ))}
+
+              <View style={{paddingHorizontal: 24, marginTop: 10}}>
+                <Button
+                  title="Apply"
+                  buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+                  titleStyle={{color: COLORS.black1, marginVertical: 2}}
+                  onPress={onApplyFilter}
+                />
+              </View>
+            </View>
+          </Modal>
+
+          {isLoading ? (
+            <ActivityIndicator size="large" />
+          ) : orderList.data && orderList.data.length ? (
             orderList.data.map(order => (
               <ListItem
                 key={order.id}
@@ -159,13 +253,15 @@ const HomeScreen = ({navigation}: any) => {
                 }}
               />
               <Text style={{fontSize: 12, color: '#8c8f96', marginTop: 6}}>No parcels found</Text>
-              <Button
-                title="Create new request"
-                containerStyle={{marginTop: 14, marginBottom: 20}}
-                buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
-                titleStyle={{color: COLORS.black1, fontSize: 14, marginVertical: 0, marginHorizontal: 20}}
-                onPress={() => navigation.navigate('Order')}
-              />
+              {user.roles.length === 1 && user.roles[0].role === ROLE.USER && (
+                <Button
+                  title="Create new request"
+                  containerStyle={{marginTop: 14, marginBottom: 20}}
+                  buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+                  titleStyle={{color: COLORS.black1, fontSize: 14, marginVertical: 0, marginHorizontal: 20}}
+                  onPress={() => navigation.navigate('Order')}
+                />
+              )}
             </View>
           )}
         </View>
