@@ -95,6 +95,7 @@ export const parcelApi = {
       pageNumber: 0,
     };
     if (statusIds) params.statusIds = statusIds;
+    console.log('orders statusIds: ', statusIds);
     try {
       const res = await parcelClient.get('/order', {
         params,
@@ -103,7 +104,7 @@ export const parcelApi = {
         },
       });
       const resBody = res.data;
-      console.log('orders: ', resBody);
+      console.log('orders: ', resBody.count);
       return resBody;
     } catch (err) {
       throw err;

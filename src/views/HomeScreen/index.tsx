@@ -105,14 +105,18 @@ const HomeScreen = ({navigation}: any) => {
 
   useEffect(() => {
     if (order.id) {
-      currentStatus !== 0 ? dispatch(getOrders({statusIds: [currentStatus]})) : dispatch(getOrders({}));
-      dispatch(getDrivers());
+      if (currentStatus != null) {
+        currentStatus !== 0 ? dispatch(getOrders({statusIds: [currentStatus]})) : dispatch(getOrders({}));
+        // dispatch(getDrivers());
+      }
     }
   }, [order]);
 
   useEffect(() => {
     setLoading(true);
-    currentStatus !== 0 ? dispatch(getOrders({statusIds: [currentStatus]})) : dispatch(getOrders({}));
+    if (currentStatus != null) {
+      currentStatus !== 0 ? dispatch(getOrders({statusIds: [currentStatus]})) : dispatch(getOrders({}));
+    }
   }, [currentStatus]);
 
   useEffect(() => {
