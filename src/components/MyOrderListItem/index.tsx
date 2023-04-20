@@ -36,12 +36,6 @@ const MyOrderListItem = (props: any) => {
     navigation.navigate('Driver', {orderId: orderId});
   };
 
-  useEffect(() => {
-    if (processedOrder) {
-      dispatch(getOrders({}));
-    }
-  }, [processedOrder]);
-
   return (
     <View style={{flex: 1, borderTopWidth: 4, borderTopColor: colors.grey4}}>
       <View

@@ -14,15 +14,17 @@ const OrderScreen = ({navigation}: any) => {
     'pk_test_51Mn0NXKJyU3LBZTd55O8WhojcOoXPvqj9UjUFjV4u9E9cyHv6DRvKDt80H2hSwmoaECJx2iZQ1FiWZsNrhnqIrBb00COwefzFK';
 
   const dispatch = useDispatch();
-  const {initPaymentSheet, presentPaymentSheet} = useStripe();
+  const {initPaymentSheet, presentPaymentSheet, retrievePaymentIntent} = useStripe();
   const {user} = useSelector((state: RootState) => state.user);
   const {intentOrder} = useSelector((state: RootState) => state.order);
   const {products} = useSelector((state: RootState) => state.product);
   const {recipient} = useSelector((state: RootState) => state.recipient);
   const {selectedLocationData} = useSelector((state: RootState) => state.search);
 
-  const [isEstmated, setIsestimated] = useState(false);
+  const [isEstmated, setIsEstimated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isExpress, setIsExpress] = useState(false);
+  const toggleExpress = () => setIsExpress(previousState => !previousState);
 
   function onEstimateFee() {
     if (recipient.name && selectedLocationData.location && products.length) {
@@ -54,14 +56,14 @@ const OrderScreen = ({navigation}: any) => {
 
   function onCreateOrder() {
     if (recipient.name && intentOrder.fee != null) {
-      if (true) {
+      if (false) {
         const data = {
           userId: user.id,
           recipientName: recipient.name,
           recipientMail: recipient.email,
           recipientPhone: recipient.phone,
           packageType: intentOrder.packageType,
-          isExpress: true,
+          isExpress: isExpress,
           source: user.location,
           description: '',
           destination: intentOrder.destination,
@@ -78,54 +80,49 @@ const OrderScreen = ({navigation}: any) => {
   }
 
   const fetchPaymentSheetParams = async () => {
-    const response = await parcelApi.createIntentPayment();
-    const {paymentIntent, ephemeralKey, customer} = response;
-    return {
-      paymentIntent,
-      ephemeralKey,
-      customer,
-    };
-  };
-
-  const initializePaymentSheet = async () => {
-    const {paymentIntent, ephemeralKey, customer} = await fetchPaymentSheetParams();
-
-    const {error} = await initPaymentSheet({
-      merchantDisplayName: 'Example, Inc.',
-      customerId: customer,
-      customerEphemeralKeySecret: ephemeralKey,
-      paymentIntentClientSecret: paymentIntent,
-      // Set `allowsDelayedPaymentMethods` to true if your business can handle payment
-      //methods that complete payment after a delay, like SEPA Debit and Sofort.
-      // allowsDelayedPaymentMethods: true,
-      // defaultBillingDetails: {
-      //   name: 'Jane Doe',
-      // },
-    });
-    if (!error) {
-      setLoading(true);
+    if (intentOrder.fee) {
+      const response = await parcelApi.createIntentPayment(intentOrder.fee);
+      const {paymentIntent, ephemeralKey, customer} = response;
+      return {
+        paymentIntent,
+        ephemeralKey,
+        customer,
+      };
     }
+    return null;
   };
 
   const openPaymentSheet = async () => {
-    const {error} = await presentPaymentSheet();
+    const result = await fetchPaymentSheetParams();
+    if (result) {
+      const {paymentIntent, ephemeralKey, customer} = result;
+
+      const {error} = await initPaymentSheet({
+        merchantDisplayName: 'ParcelGO, Inc.',
+        customerId: customer,
+        customerEphemeralKeySecret: ephemeralKey,
+        paymentIntentClientSecret: paymentIntent,
+      });
+      if (!error) {
+        const {error} = await presentPaymentSheet();
+        if (error) {
+          console.log('error: ', error);
+        } else {
+          // redirect
+        }
+      }
+    }
   };
 
   useEffect(() => {
     if (intentOrder.fee != null) {
-      setIsestimated(true);
+      setIsEstimated(true);
     }
   }, [intentOrder]);
 
   useEffect(() => {
-    const runStripe = async () => {
-      await initStripe({
-        publishableKey: STRIPE_PUBLISHABLE_KEY,
-      });
-      initializePaymentSheet();
-    };
-    runStripe();
-  });
+    initStripe({publishableKey: STRIPE_PUBLISHABLE_KEY});
+  }, []);
 
   return (
     <ScrollView>
@@ -197,8 +194,13 @@ const OrderScreen = ({navigation}: any) => {
           </View>
 
           <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 22}}>
-            <Text style={{fontSize: 16, color: COLORS.black0}}>Send directly to the warehouse</Text>
-            <Switch></Switch>
+            <Text style={{fontSize: 16, color: COLORS.black0}}>Express delivery</Text>
+            <Switch
+              trackColor={{false: '#767577', true: COLORS.darkGolden}}
+              thumbColor={isExpress ? COLORS.golden : '#f4f3f4'}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleExpress}
+              value={isExpress}></Switch>
           </View>
         </View>
 

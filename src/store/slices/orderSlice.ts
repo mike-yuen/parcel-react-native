@@ -152,6 +152,7 @@ const orderSlice = createSlice({
       state.processedOrder = false;
     },
     processOrderSuccess(state, action) {
+      state.order = Object.assign(state.order, action.payload);
       state.processingOrder = false;
       state.processedOrder = true;
     },

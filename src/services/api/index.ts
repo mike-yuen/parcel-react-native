@@ -189,10 +189,10 @@ export const parcelApi = {
     }
   },
 
-  async createIntentPayment() {
+  async createIntentPayment(fee: number) {
     try {
       const res = await parcelClient.post('/payment/intent-payment', {
-        fee: 160000,
+        fee,
       });
       const resBody = res.data;
       return resBody;
