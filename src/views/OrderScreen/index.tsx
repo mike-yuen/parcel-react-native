@@ -16,14 +16,17 @@ const OrderScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
   const {initPaymentSheet, presentPaymentSheet, retrievePaymentIntent} = useStripe();
   const {user} = useSelector((state: RootState) => state.user);
-  const {intentOrder} = useSelector((state: RootState) => state.order);
+  const {intentOrder, order} = useSelector((state: RootState) => state.order);
   const {products} = useSelector((state: RootState) => state.product);
   const {recipient} = useSelector((state: RootState) => state.recipient);
   const {selectedLocationData} = useSelector((state: RootState) => state.search);
 
   const [isEstmated, setIsEstimated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pressedCreatedOrder, setPressedCreateOrder] = useState(false);
   const [isExpress, setIsExpress] = useState(false);
+  const [isOnlinePayment, setIsOnlinePayment] = useState(true);
+
   const toggleExpress = () => setIsExpress(previousState => !previousState);
 
   function onEstimateFee() {
@@ -55,36 +58,40 @@ const OrderScreen = ({navigation}: any) => {
   }
 
   function onCreateOrder() {
+    setPressedCreateOrder(true);
     if (recipient.name && intentOrder.fee != null) {
-      if (false) {
-        const data = {
-          userId: user.id,
-          recipientName: recipient.name,
-          recipientMail: recipient.email,
-          recipientPhone: recipient.phone,
-          packageType: intentOrder.packageType,
-          isExpress: isExpress,
-          source: user.location,
-          description: '',
-          destination: intentOrder.destination,
-          totalWeight: intentOrder.totalWeight,
-          fee: intentOrder.fee,
-          subOrders: intentOrder.subOrders,
-        };
-        console.log('onCreateOrder payload: ', data);
+      const data = {
+        userId: user.id,
+        recipientName: recipient.name,
+        recipientMail: recipient.email,
+        recipientPhone: recipient.phone,
+        packageType: intentOrder.packageType,
+        isExpress: isExpress,
+        source: user.location,
+        description: '',
+        destination: intentOrder.destination,
+        totalWeight: intentOrder.totalWeight,
+        fee: intentOrder.fee,
+        subOrders: intentOrder.subOrders,
+      };
+      console.log('onCreateOrder payload: ', data);
+      // add check condition
+      if (!isOnlinePayment) {
         dispatch(addOrder({data, navigation}));
       } else {
-        openPaymentSheet();
+        dispatch(addOrder({data}));
       }
     }
   }
 
   const fetchPaymentSheetParams = async () => {
-    if (intentOrder.fee) {
-      const response = await parcelApi.createIntentPayment(intentOrder.fee);
-      const {paymentIntent, ephemeralKey, customer} = response;
+    console.log('fetchPaymentSheetParams: ', order.id, intentOrder.fee);
+    if (order.id && intentOrder.fee) {
+      const response = await parcelApi.createIntentPayment(order.id, intentOrder.fee);
+      console.log('==============', response);
+      const {clientSecret, ephemeralKey, customer} = response;
       return {
-        paymentIntent,
+        clientSecret,
         ephemeralKey,
         customer,
       };
@@ -95,20 +102,20 @@ const OrderScreen = ({navigation}: any) => {
   const openPaymentSheet = async () => {
     const result = await fetchPaymentSheetParams();
     if (result) {
-      const {paymentIntent, ephemeralKey, customer} = result;
+      const {clientSecret, ephemeralKey, customer} = result;
 
       const {error} = await initPaymentSheet({
         merchantDisplayName: 'ParcelGO, Inc.',
         customerId: customer,
         customerEphemeralKeySecret: ephemeralKey,
-        paymentIntentClientSecret: paymentIntent,
+        paymentIntentClientSecret: clientSecret,
       });
       if (!error) {
         const {error} = await presentPaymentSheet();
         if (error) {
           console.log('error: ', error);
         } else {
-          // redirect
+          navigation.navigate('Home');
         }
       }
     }
@@ -123,6 +130,13 @@ const OrderScreen = ({navigation}: any) => {
   useEffect(() => {
     initStripe({publishableKey: STRIPE_PUBLISHABLE_KEY});
   }, []);
+
+  useEffect(() => {
+    if (order.id && isOnlinePayment && pressedCreatedOrder) {
+      setPressedCreateOrder(false);
+      openPaymentSheet();
+    }
+  }, [order]);
 
   return (
     <ScrollView>

@@ -136,12 +136,27 @@ export const parcelApi = {
     }
   },
 
+  async cancelOrder(orderId: string, comment?: string) {
+    try {
+      const res = await parcelClient.post('/order/cancel', {
+        orderId,
+        comment,
+      });
+      const resBody = res.data;
+      console.log('cancelOrder', resBody);
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async assignDriverToOrders(userId: string, orderId: string) {
     try {
       const res = await parcelClient.post('/order/process-orders', {
         userId,
         warehouseId: '',
         orderIds: [orderId],
+        // vehicleId,
       });
       const resBody = res.data;
       console.log('assignDriverToOrders', resBody);
@@ -189,9 +204,10 @@ export const parcelApi = {
     }
   },
 
-  async createIntentPayment(fee: number) {
+  async createIntentPayment(orderId: string, fee: number) {
     try {
-      const res = await parcelClient.post('/payment/intent-payment', {
+      const res = await parcelClient.post('/order/create-intent-payment', {
+        orderId,
         fee,
       });
       const resBody = res.data;

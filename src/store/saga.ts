@@ -28,6 +28,9 @@ import {
   assignDriverToOrdersSuccess,
   assignDriverToOrdersError,
   assignDriverToOrders,
+  cancelOrderSuccess,
+  cancelOrderError,
+  cancelOrder,
 } from './slices/orderSlice';
 import {
   addProduct,
@@ -208,7 +211,7 @@ export function* addOrderSaga(action: any) {
     if (id) {
       yield put(addOrderSuccess({id}));
     }
-    action.payload.navigation.navigate('Home');
+    if (action.payload.navigation) action.payload.navigation.navigate('Home');
   } catch (error) {
     yield put(addOrderError(error));
   }
@@ -249,6 +252,16 @@ export function* processOrderSaga(action: any) {
     if (data) yield put(processOrderSuccess(data));
   } catch (error) {
     yield put(processOrderError(error));
+  }
+}
+
+export function* cancelOrderSaga(action: any) {
+  try {
+    const {orderId, comment} = action.payload;
+    const data: {id: string} = yield call(parcelApi.cancelOrder, orderId, comment);
+    if (data) yield put(cancelOrderSuccess(data));
+  } catch (error) {
+    yield put(cancelOrderError(error));
   }
 }
 
@@ -324,6 +337,7 @@ function* rootSaga() {
     takeLatest(getOrder.type, getOrderSaga),
     takeLatest(getTrackingOrderDetail.type, getTrackingOrderDetailSaga),
     takeLatest(processOrder.type, processOrderSaga),
+    takeLatest(cancelOrder.type, cancelOrderSaga),
     takeLatest(assignDriverToOrders.type, assignDriverToOrdersSaga),
     takeLatest(trackOrder.type, trackOrderSaga),
     takeLatest(verifyTrackingOrder.type, verifyTrackingOrderSaga),

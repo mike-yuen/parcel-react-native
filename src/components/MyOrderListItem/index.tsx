@@ -9,7 +9,7 @@ import {DateTime} from 'luxon';
 import {COLORS} from '~/constants/colors';
 import {ORDER_STATUS, SUB_ORDER_TYPE} from '~/constants/status';
 import {RootState} from '~/store';
-import {getOrders, processOrder} from '~/store/slices/orderSlice';
+import {cancelOrder, getOrders, processOrder} from '~/store/slices/orderSlice';
 import {ROLE} from '~/constants/role';
 
 const MyOrderListItem = (props: any) => {
@@ -21,15 +21,19 @@ const MyOrderListItem = (props: any) => {
   const {user} = useSelector((state: RootState) => state.user);
 
   const onAcceptOrder = () => {
-    dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.TRANSFERRING}));
+    dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.AWAITING_PICKUP}));
   };
 
   const onDeliverOrder = () => {
-    dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.PENDING}));
+    dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.TRANSFERRING}));
   };
 
   const onDeliveredOrder = () => {
     dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.SUCCESS}));
+  };
+
+  const onUserCancelOrder = () => {
+    dispatch(cancelOrder({orderId: data.id, comment: ''}));
   };
 
   const onGoToDriverScreen = (orderId: string) => {
@@ -200,16 +204,18 @@ const MyOrderListItem = (props: any) => {
                 [ORDER_STATUS.INIT]: (
                   <>
                     <Icon name="truck-delivery" type="material-community" size={18} color={colors.grey4} />
-                    <Text style={{marginLeft: 8, fontSize: 14, color: colors.grey4}}>Order is placed</Text>
+                    <Text style={{marginLeft: 8, fontSize: 14, color: colors.grey4}}>Order is processing</Text>
+                  </>
+                ),
+                [ORDER_STATUS.AWAITING_PICKUP]: (
+                  <>
+                    <Icon name="truck-delivery" type="material-community" size={18} color={COLORS.darkGolden} />
+                    <Text style={{marginLeft: 8, fontSize: 14, color: COLORS.darkGolden}}>
+                      Order is awaiting pickup
+                    </Text>
                   </>
                 ),
                 [ORDER_STATUS.TRANSFERRING]: (
-                  <>
-                    <Icon name="truck-delivery" type="material-community" size={18} color={COLORS.darkGolden} />
-                    <Text style={{marginLeft: 8, fontSize: 14, color: COLORS.darkGolden}}>Order is preparing</Text>
-                  </>
-                ),
-                [ORDER_STATUS.PENDING]: (
                   <>
                     <Icon name="truck-fast" type="material-community" size={18} color={COLORS.darkGolden} />
                     <Text style={{marginLeft: 8, fontSize: 14, color: COLORS.darkGolden}}>Order is delivering</Text>
@@ -222,71 +228,93 @@ const MyOrderListItem = (props: any) => {
                   </>
                 ),
                 [ORDER_STATUS.FAIL]: <></>,
-                [ORDER_STATUS.CANCELED]: <></>,
+                [ORDER_STATUS.CANCELED]: (
+                  <>
+                    <Icon name="truck-delivery" type="material-community" size={18} color={colors.grey4} />
+                    <Text style={{marginLeft: 8, fontSize: 14, color: colors.grey4}}>Order is canceled</Text>
+                  </>
+                ),
               }[data.status as ORDER_STATUS]
             }
           </View>
 
           {/* Actions */}
-          {user.roles && !!user.roles.length ? (
-            {
-              [ORDER_STATUS.INIT]: user.roles.some(role => role.role === ROLE.ADMIN) ? (
+          {user.roles && !!user.roles.length
+            ? {
+                [ORDER_STATUS.INIT]: user.roles.some(role => role.role === ROLE.ADMIN) ? (
+                  <Button
+                    title={'Assign driver'}
+                    buttonStyle={{
+                      backgroundColor: COLORS.golden,
+                      borderRadius: 4,
+                      paddingVertical: 4,
+                      paddingHorizontal: 12,
+                    }}
+                    titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
+                    onPress={() => onGoToDriverScreen(data.id)}
+                  />
+                ) : user.roles.some(role => role.role === ROLE.USER) ? (
+                  <Button
+                    title={'Cancel'}
+                    buttonStyle={{
+                      backgroundColor: colors.grey5,
+                      borderRadius: 4,
+                      paddingVertical: 4,
+                      paddingHorizontal: 12,
+                    }}
+                    titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
+                    onPress={onUserCancelOrder}
+                  />
+                ) : (
+                  <></>
+                ),
+                [ORDER_STATUS.AWAITING_PICKUP]: user.roles.some(role => role.role === ROLE.DRIVER) ? (
+                  <Button
+                    title={'Pick up'}
+                    buttonStyle={{
+                      backgroundColor: COLORS.golden,
+                      borderRadius: 4,
+                      paddingVertical: 4,
+                      paddingHorizontal: 12,
+                    }}
+                    titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
+                    onPress={onDeliverOrder}
+                  />
+                ) : (
+                  <></>
+                ),
+                [ORDER_STATUS.TRANSFERRING]: user.roles.some(role => role.role === ROLE.DRIVER) ? (
+                  <Button
+                    title={'Confirm delivery'}
+                    buttonStyle={{
+                      backgroundColor: COLORS.golden,
+                      borderRadius: 4,
+                      paddingVertical: 4,
+                      paddingHorizontal: 12,
+                    }}
+                    titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
+                    onPress={onDeliveredOrder}
+                  />
+                ) : (
+                  <></>
+                ),
+                [ORDER_STATUS.SUCCESS]: <></>,
+                [ORDER_STATUS.FAIL]: <></>,
+                [ORDER_STATUS.CANCELED]: <></>,
+              }[data.status as ORDER_STATUS]
+            : data.status === ORDER_STATUS.INIT && (
                 <Button
-                  title={'Assign driver'}
+                  title={'Cancel'}
                   buttonStyle={{
-                    backgroundColor: COLORS.golden,
+                    backgroundColor: colors.grey5,
                     borderRadius: 4,
                     paddingVertical: 4,
                     paddingHorizontal: 12,
                   }}
                   titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-                  onPress={() => onGoToDriverScreen(data.id)}
+                  onPress={onUserCancelOrder}
                 />
-              ) : (
-                <></>
-              ),
-              [ORDER_STATUS.TRANSFERRING]: user.roles.some(role => role.role === ROLE.DRIVER) ? (
-                <Button
-                  title={'Deliver'}
-                  buttonStyle={{
-                    backgroundColor: COLORS.golden,
-                    borderRadius: 4,
-                    paddingVertical: 4,
-                    paddingHorizontal: 12,
-                  }}
-                  titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-                  onPress={onDeliverOrder}
-                />
-              ) : (
-                <></>
-              ),
-              [ORDER_STATUS.PENDING]: user.roles.some(role => role.role === ROLE.DRIVER) ? (
-                <Button
-                  title={'Delivered?'}
-                  buttonStyle={{
-                    backgroundColor: COLORS.golden,
-                    borderRadius: 4,
-                    paddingVertical: 4,
-                    paddingHorizontal: 12,
-                  }}
-                  titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-                  onPress={onDeliveredOrder}
-                />
-              ) : (
-                <></>
-              ),
-              [ORDER_STATUS.SUCCESS]: <></>,
-              [ORDER_STATUS.FAIL]: <></>,
-              [ORDER_STATUS.CANCELED]: <></>,
-            }[data.status as ORDER_STATUS]
-          ) : (
-            <Button
-              title={'Need our Support'}
-              buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4, paddingVertical: 4, paddingHorizontal: 12}}
-              titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-              onPress={() => console.log('Support')}
-            />
-          )}
+              )}
         </View>
       </View>
     </View>

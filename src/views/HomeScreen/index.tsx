@@ -18,6 +18,7 @@ import {RootState} from '~/store';
 import {getDrivers} from '~/store/slices/driverSlice';
 import {ROLE} from '~/constants/role';
 import {ORDER_STATUS} from '~/constants/status';
+import {launchCamera} from 'react-native-image-picker';
 
 const carouselItems = [
   {
@@ -34,9 +35,9 @@ const carouselItems = [
 
 const statusItems = [
   {icon: {name: 'list', type: 'entypo'}, key: 0, text: 'All'},
-  {icon: {name: 'cogs', type: 'material-community'}, key: ORDER_STATUS.INIT, text: 'In progress'},
-  {icon: {name: 'package', type: 'material-community'}, key: ORDER_STATUS.TRANSFERRING, text: 'Ready to delivery'},
-  {icon: {name: 'truck-fast', type: 'material-community'}, key: ORDER_STATUS.PENDING, text: 'Delivering'},
+  {icon: {name: 'cogs', type: 'material-community'}, key: ORDER_STATUS.INIT, text: 'Processing'},
+  {icon: {name: 'package', type: 'material-community'}, key: ORDER_STATUS.AWAITING_PICKUP, text: 'Awaiting pickup'},
+  {icon: {name: 'truck-fast', type: 'material-community'}, key: ORDER_STATUS.TRANSFERRING, text: 'Delivering'},
   {icon: {name: 'truck-check', type: 'material-community'}, key: ORDER_STATUS.SUCCESS, text: 'Delivered'},
 ];
 
@@ -85,6 +86,11 @@ const HomeScreen = ({navigation}: any) => {
   const onApplyFilter = () => {
     setFilterVisible(false);
     setCurrentStatus(tempStatus);
+  };
+
+  const takeAPhoto = async () => {
+    const result = await launchCamera({mediaType: 'photo'});
+    console.log('-----------', result);
   };
 
   useEffect(() => {
@@ -263,7 +269,8 @@ const HomeScreen = ({navigation}: any) => {
                   containerStyle={{marginTop: 14, marginBottom: 20}}
                   buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
                   titleStyle={{color: COLORS.black1, fontSize: 14, marginVertical: 0, marginHorizontal: 20}}
-                  onPress={() => navigation.navigate('Order')}
+                  // onPress={() => navigation.navigate('Order')}
+                  onPress={takeAPhoto}
                 />
               )}
             </View>

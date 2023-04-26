@@ -36,6 +36,8 @@ interface OrderState {
   orderList: {data: IOrder[]};
   processingOrder: boolean;
   processedOrder: boolean;
+  cancelingOrder: boolean;
+  canceledOrder: boolean;
   assigningDriverToOrders: boolean;
   assignedDriverToOrders: boolean;
   trackingOrder: boolean;
@@ -63,6 +65,8 @@ const orderSlice = createSlice({
     orderList: {data: []},
     processingOrder: false,
     processedOrder: false,
+    cancelingOrder: false,
+    canceledOrder: false,
     assigningDriverToOrders: false,
     assignedDriverToOrders: false,
     trackingOrder: false,
@@ -162,6 +166,22 @@ const orderSlice = createSlice({
       state.error = action.payload;
     },
 
+    // cancelOrder
+    cancelOrder(state, action) {
+      state.cancelingOrder = true;
+      state.canceledOrder = false;
+    },
+    cancelOrderSuccess(state, action) {
+      state.order = Object.assign(state.order, action.payload);
+      state.cancelingOrder = false;
+      state.canceledOrder = true;
+    },
+    cancelOrderError(state, action) {
+      state.cancelingOrder = false;
+      state.canceledOrder = false;
+      state.error = action.payload;
+    },
+
     // assignDriverToOrders
     assignDriverToOrders(state, action) {
       state.assigningDriverToOrders = true;
@@ -229,6 +249,9 @@ export const {
   processOrder,
   processOrderSuccess,
   processOrderError,
+  cancelOrder,
+  cancelOrderSuccess,
+  cancelOrderError,
   assignDriverToOrders,
   assignDriverToOrdersSuccess,
   assignDriverToOrdersError,
