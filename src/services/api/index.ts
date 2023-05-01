@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getClient} from './base.client';
 import qs from 'qs';
+import axios from 'axios';
 
 const parcelClient = getClient('http://10.0.2.2:8443');
 // http://app.pandamaster.club:8443
@@ -244,6 +245,29 @@ export const parcelApi = {
       const resBody = res.data;
       console.log('drivers: ', resBody);
       return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async uploadOrderImage(formData: any) {
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: `http://10.0.2.2:8443/order/order-image`,
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        transformRequest: () => {
+          return formData;
+        },
+      });
+
+      if (response) {
+        const resBody = response.data;
+        return resBody;
+      }
     } catch (err) {
       throw err;
     }

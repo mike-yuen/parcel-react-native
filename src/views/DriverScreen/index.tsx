@@ -91,13 +91,15 @@ const DriverScreen = ({route}: any) => {
 
             <View>
               <Text style={{flex: 1, fontSize: 14, color: colors.grey3}}>Vehicle</Text>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Icon
-                  name={getVehicleType(driver.vehicle.type)}
-                  color={getVehicleColor(driver.vehicle.type)}
-                  type="material-community"></Icon>
-                <Text style={{fontSize: 14, fontWeight: '700', marginLeft: 4}}>[{driver.vehicle.number}]</Text>
-              </View>
+              {driver.vehicle && (
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Icon
+                    name={getVehicleType(driver.vehicle.type)}
+                    color={getVehicleColor(driver.vehicle.type)}
+                    type="material-community"></Icon>
+                  <Text style={{fontSize: 14, fontWeight: '700', marginLeft: 4}}>[{driver.vehicle.number}]</Text>
+                </View>
+              )}
             </View>
 
             <View>

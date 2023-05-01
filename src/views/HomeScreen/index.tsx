@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, Dimensions, ScrollView, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Dimensions, ScrollView, View} from 'react-native';
 import {Button, colors, Icon, Image, ListItem, Text} from 'react-native-elements';
 import Modal from 'react-native-modal';
 import Carousel from 'react-native-snap-carousel';
@@ -18,7 +18,6 @@ import {RootState} from '~/store';
 import {getDrivers} from '~/store/slices/driverSlice';
 import {ROLE} from '~/constants/role';
 import {ORDER_STATUS} from '~/constants/status';
-import {launchCamera} from 'react-native-image-picker';
 
 const carouselItems = [
   {
@@ -88,19 +87,14 @@ const HomeScreen = ({navigation}: any) => {
     setCurrentStatus(tempStatus);
   };
 
-  const takeAPhoto = async () => {
-    const result = await launchCamera({mediaType: 'photo'});
-    console.log('-----------', result);
-  };
-
   useEffect(() => {
     if (!!user) {
       if (user.roles.some(role => role.role === ROLE.ADMIN)) {
         setTempStatus(ORDER_STATUS.INIT);
         setCurrentStatus(ORDER_STATUS.INIT);
       } else if (user.roles.some(role => role.role === ROLE.DRIVER)) {
-        setTempStatus(ORDER_STATUS.TRANSFERRING);
-        setCurrentStatus(ORDER_STATUS.TRANSFERRING);
+        setTempStatus(ORDER_STATUS.AWAITING_PICKUP);
+        setCurrentStatus(ORDER_STATUS.AWAITING_PICKUP);
       } else if (user.roles.some(role => role.role === ROLE.USER)) {
         setTempStatus(0);
         setCurrentStatus(0);
@@ -269,8 +263,7 @@ const HomeScreen = ({navigation}: any) => {
                   containerStyle={{marginTop: 14, marginBottom: 20}}
                   buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
                   titleStyle={{color: COLORS.black1, fontSize: 14, marginVertical: 0, marginHorizontal: 20}}
-                  // onPress={() => navigation.navigate('Order')}
-                  onPress={takeAPhoto}
+                  onPress={() => navigation.navigate('Order')}
                 />
               )}
             </View>

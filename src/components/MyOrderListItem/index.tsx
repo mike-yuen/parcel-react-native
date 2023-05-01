@@ -1,15 +1,17 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {TouchableWithoutFeedback, useWindowDimensions, View} from 'react-native';
-import {Button, colors, Icon, Text} from 'react-native-elements';
+import {Button, colors, Icon, Image, Text} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {useNavigation} from '@react-navigation/native';
 import {DateTime} from 'luxon';
+import {launchCamera} from 'react-native-image-picker';
+import Modal from 'react-native-modal';
 
 import {COLORS} from '~/constants/colors';
 import {ORDER_STATUS, SUB_ORDER_TYPE} from '~/constants/status';
 import {RootState} from '~/store';
-import {cancelOrder, getOrders, processOrder} from '~/store/slices/orderSlice';
+import {cancelOrder, getOrders, processOrder, uploadImage} from '~/store/slices/orderSlice';
 import {ROLE} from '~/constants/role';
 
 const MyOrderListItem = (props: any) => {
@@ -20,13 +22,24 @@ const MyOrderListItem = (props: any) => {
   const {processedOrder} = useSelector((state: RootState) => state.order);
   const {user} = useSelector((state: RootState) => state.user);
 
-  const onAcceptOrder = () => {
-    dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.AWAITING_PICKUP}));
+  const [isPhotoModalVisible, setPhotoModalVisible] = useState(false);
+  const [uploadFile, setUploadFile] = useState<any>(null);
+
+  const onOpenPhotoModal = () => {
+    setPhotoModalVisible(true);
   };
 
-  const onDeliverOrder = () => {
-    dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.TRANSFERRING}));
+  const onClosePhotoModal = () => {
+    setPhotoModalVisible(false);
   };
+
+  // const onAcceptOrder = () => {
+  //   dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.AWAITING_PICKUP}));
+  // };
+
+  // const onDeliverOrder = () => {
+  //   dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.TRANSFERRING}));
+  // };
 
   const onDeliveredOrder = () => {
     dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.SUCCESS}));
@@ -39,6 +52,30 @@ const MyOrderListItem = (props: any) => {
   const onGoToDriverScreen = (orderId: string) => {
     navigation.navigate('Driver', {orderId: orderId});
   };
+
+  const takeAPhoto = async () => {
+    const result = await launchCamera({mediaType: 'photo'});
+    if (result.assets) {
+      const image = result.assets[0];
+
+      setUploadFile(image);
+    }
+  };
+
+  const onPickUp = () => {
+    if (uploadFile) {
+      const formData = new FormData();
+      formData.append('orderId', data.id);
+      formData.append('file', {
+        uri: uploadFile.uri,
+        name: uploadFile.fileName,
+        type: uploadFile.type,
+      });
+      dispatch(uploadImage({formData, orderId: data.id, status: data.status}));
+    }
+  };
+
+  const onDriverRejectOrder = () => {};
 
   return (
     <View style={{flex: 1, borderTopWidth: 4, borderTopColor: colors.grey4}}>
@@ -269,17 +306,31 @@ const MyOrderListItem = (props: any) => {
                   <></>
                 ),
                 [ORDER_STATUS.AWAITING_PICKUP]: user.roles.some(role => role.role === ROLE.DRIVER) ? (
-                  <Button
-                    title={'Pick up'}
-                    buttonStyle={{
-                      backgroundColor: COLORS.golden,
-                      borderRadius: 4,
-                      paddingVertical: 4,
-                      paddingHorizontal: 12,
-                    }}
-                    titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-                    onPress={onDeliverOrder}
-                  />
+                  <View style={{flexDirection: 'row'}}>
+                    <Button
+                      title={'Reject'}
+                      buttonStyle={{
+                        backgroundColor: colors.grey5,
+                        borderRadius: 4,
+                        paddingVertical: 4,
+                        paddingHorizontal: 12,
+                      }}
+                      titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
+                      onPress={onDriverRejectOrder}
+                    />
+                    <Button
+                      title={'Pick up'}
+                      buttonStyle={{
+                        backgroundColor: COLORS.golden,
+                        borderRadius: 4,
+                        paddingVertical: 4,
+                        paddingHorizontal: 12,
+                        marginLeft: 6,
+                      }}
+                      titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
+                      onPress={onOpenPhotoModal}
+                    />
+                  </View>
                 ) : (
                   <></>
                 ),
@@ -317,6 +368,57 @@ const MyOrderListItem = (props: any) => {
               )}
         </View>
       </View>
+
+      <Modal
+        isVisible={isPhotoModalVisible}
+        backdropOpacity={0.5}
+        onBackdropPress={onClosePhotoModal}
+        style={{margin: 0, justifyContent: 'flex-end'}}>
+        <View style={{flex: 0.62, backgroundColor: 'white', borderTopLeftRadius: 20, borderTopRightRadius: 20}}>
+          <Text style={{textAlign: 'center', marginTop: 8, paddingVertical: 10, fontSize: 17, fontWeight: '700'}}>
+            Take photo of parcel
+          </Text>
+          <Text style={{textAlign: 'center', paddingHorizontal: 24, color: colors.grey3, marginBottom: 12}}>
+            Please take the parcel photo for confirmation
+          </Text>
+          <View style={{width: '100%', height: 200, paddingHorizontal: 24, marginTop: 12}}>
+            {uploadFile && uploadFile.uri ? (
+              <>
+                <Image
+                  source={{uri: uploadFile.uri}}
+                  style={{
+                    width: '100%',
+                    height: 200,
+                    resizeMode: 'contain',
+                  }}></Image>
+                <Button
+                  title={'Confirm pickup'}
+                  containerStyle={{marginTop: 24}}
+                  buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+                  titleStyle={{color: COLORS.black1, marginVertical: 2}}
+                  onPress={onPickUp}></Button>
+              </>
+            ) : (
+              <View
+                style={{
+                  justifyContent: 'center',
+                  height: '100%',
+                  borderWidth: 2,
+                  borderStyle: 'dashed',
+                  borderColor: colors.grey5,
+                  borderRadius: 18,
+                }}>
+                <Button
+                  title={'Open camera'}
+                  icon={{name: 'ios-camera-outline', type: 'ionicon', size: 60, color: colors.grey4}}
+                  buttonStyle={{flexDirection: 'column', height: '100%', backgroundColor: 'transparent'}}
+                  titleStyle={{color: colors.grey4}}
+                  onPress={takeAPhoto}></Button>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

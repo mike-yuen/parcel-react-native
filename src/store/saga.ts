@@ -31,6 +31,9 @@ import {
   cancelOrderSuccess,
   cancelOrderError,
   cancelOrder,
+  uploadImageSuccess,
+  uploadImageError,
+  uploadImage,
 } from './slices/orderSlice';
 import {
   addProduct,
@@ -67,6 +70,7 @@ import {
 } from './slices/userSlice';
 import {getWarehouses, getWarehousesError, getWarehousesSuccess} from './slices/warehouseSlice';
 import {getDrivers, getDriversError, getDriversSuccess} from './slices/driverSlice';
+import {ORDER_STATUS} from '~/constants/status';
 
 export function* signInSaga(action: any) {
   try {
@@ -313,6 +317,24 @@ export function* getDriversSaga(action: any) {
   }
 }
 
+export function* uploadOrderImageSaga(action: any) {
+  try {
+    yield call(parcelApi.uploadOrderImage, action.payload.formData);
+
+    if (action.payload.status === ORDER_STATUS.AWAITING_PICKUP) {
+      yield call(processOrderSaga, {
+        payload: {orderId: action.payload.orderId, nextStatusId: ORDER_STATUS.TRANSFERRING},
+      });
+    } else if (action.payload.status === ORDER_STATUS.TRANSFERRING) {
+      yield call(processOrderSaga, {
+        payload: {orderId: action.payload.orderId, nextStatusId: ORDER_STATUS.SUCCESS},
+      });
+    }
+  } catch (error) {
+    yield put(uploadImageError(error));
+  }
+}
+
 function* rootSaga() {
   yield all([
     takeLatest(signIn.type, signInSaga),
@@ -341,6 +363,7 @@ function* rootSaga() {
     takeLatest(assignDriverToOrders.type, assignDriverToOrdersSaga),
     takeLatest(trackOrder.type, trackOrderSaga),
     takeLatest(verifyTrackingOrder.type, verifyTrackingOrderSaga),
+    takeLatest(uploadImage.type, uploadOrderImageSaga),
 
     takeLatest(getWarehouses.type, getWarehousesSaga),
 

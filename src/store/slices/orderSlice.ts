@@ -46,6 +46,8 @@ interface OrderState {
   verifyingTrackingOrder: boolean;
   verifiedTrackingOrder: boolean;
   verifiedData: {orderId: string};
+  uploadingImage: boolean;
+  uploadedImage: boolean;
   error: any;
 }
 
@@ -75,6 +77,8 @@ const orderSlice = createSlice({
     verifyingTrackingOrder: false,
     verifiedTrackingOrder: false,
     verifiedData: {} as {orderId: string},
+    uploadingImage: false,
+    uploadedImage: false,
     error: {},
   } as OrderState,
 
@@ -229,6 +233,21 @@ const orderSlice = createSlice({
       state.verifiedTrackingOrder = false;
       state.error = action.payload;
     },
+
+    // uploadImage
+    uploadImage(state, action) {
+      state.uploadingImage = true;
+      state.uploadedImage = false;
+    },
+    uploadImageSuccess(state, action) {
+      state.uploadingImage = false;
+      state.uploadedImage = true;
+    },
+    uploadImageError(state, action) {
+      state.uploadingImage = false;
+      state.uploadedImage = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -261,5 +280,8 @@ export const {
   verifyTrackingOrder,
   verifyTrackingOrderSuccess,
   verifyTrackingOrderError,
+  uploadImage,
+  uploadImageSuccess,
+  uploadImageError,
 } = orderSlice.actions;
 export default orderSlice.reducer;
