@@ -31,7 +31,7 @@ const OrderStatusScreen = ({navigation, route}: any) => {
       title: 'In transit',
       desc: 'Order is on the way',
       icon: 'truck-fast-outline',
-      active: order.status === ORDER_STATUS.PENDING,
+      active: order.status === ORDER_STATUS.TRANSFERRING,
     },
     {
       date: '26 Dec',
@@ -39,7 +39,7 @@ const OrderStatusScreen = ({navigation, route}: any) => {
       title: 'Preparing to ship',
       desc: 'Order is being preparing',
       icon: 'store-clock-outline',
-      active: order.status === ORDER_STATUS.TRANSFERRING,
+      active: order.status === ORDER_STATUS.AWAITING_PICKUP,
     },
     {
       date: '26 Dec',
@@ -163,7 +163,6 @@ const OrderStatusScreen = ({navigation, route}: any) => {
                       type="material-community"
                       color={stage.active ? colors.white : colors.grey4}
                       size={18}
-                      tvParallaxProperties={undefined}
                       style={{
                         textAlign: 'center',
                         justifyContent: 'center',

@@ -39,6 +39,7 @@ const OrderScreen = ({navigation}: any) => {
         source: user.location,
         destination: {
           type: 'Point',
+          address: selectedLocationData.address,
           coordinates: [selectedLocationData.location.lat, selectedLocationData.location.lng],
         },
         subOrders: [] as any,

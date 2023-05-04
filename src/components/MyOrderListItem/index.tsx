@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {TouchableWithoutFeedback, useWindowDimensions, View} from 'react-native';
-import {Button, colors, Icon, Image, Text} from 'react-native-elements';
+import {Button, colors, Icon, Image, Input, Text} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
+import {useForm} from 'react-hook-form';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {useNavigation} from '@react-navigation/native';
 import {DateTime} from 'luxon';
@@ -13,6 +14,7 @@ import {ORDER_STATUS, SUB_ORDER_TYPE} from '~/constants/status';
 import {RootState} from '~/store';
 import {cancelOrder, getOrders, processOrder, uploadImage} from '~/store/slices/orderSlice';
 import {ROLE} from '~/constants/role';
+import MyInput from '../MyInput';
 
 const MyOrderListItem = (props: any) => {
   const dimension = useWindowDimensions();
@@ -22,7 +24,10 @@ const MyOrderListItem = (props: any) => {
   const {processedOrder} = useSelector((state: RootState) => state.order);
   const {user} = useSelector((state: RootState) => state.user);
 
+  const {control, handleSubmit} = useForm();
+
   const [isPhotoModalVisible, setPhotoModalVisible] = useState(false);
+  const [isRejectModalVisible, setRejectModalVisible] = useState(false);
   const [uploadFile, setUploadFile] = useState<any>(null);
 
   const onOpenPhotoModal = () => {
@@ -33,6 +38,14 @@ const MyOrderListItem = (props: any) => {
     setPhotoModalVisible(false);
   };
 
+  const onOpenRejectModal = () => {
+    setRejectModalVisible(true);
+  };
+
+  const onCloseRejectModal = () => {
+    setRejectModalVisible(false);
+  };
+
   // const onAcceptOrder = () => {
   //   dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.AWAITING_PICKUP}));
   // };
@@ -41,13 +54,9 @@ const MyOrderListItem = (props: any) => {
   //   dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.TRANSFERRING}));
   // };
 
-  const onDeliveredOrder = () => {
-    dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.SUCCESS}));
-  };
-
-  const onUserCancelOrder = () => {
-    dispatch(cancelOrder({orderId: data.id, comment: ''}));
-  };
+  // const onDeliveredOrder = () => {
+  //   dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.SUCCESS}));
+  // };
 
   const onGoToDriverScreen = (orderId: string) => {
     navigation.navigate('Driver', {orderId: orderId});
@@ -62,7 +71,7 @@ const MyOrderListItem = (props: any) => {
     }
   };
 
-  const onPickUp = () => {
+  const onUploadConfirmPhoto = () => {
     if (uploadFile) {
       const formData = new FormData();
       formData.append('orderId', data.id);
@@ -72,10 +81,19 @@ const MyOrderListItem = (props: any) => {
         type: uploadFile.type,
       });
       dispatch(uploadImage({formData, orderId: data.id, status: data.status}));
+      setUploadFile(null);
     }
   };
 
-  const onDriverRejectOrder = () => {};
+  const onRejectOrder = (formData: {[x: string]: string}) => {
+    if (formData && formData.comment) {
+      console.log('comment: ', formData);
+      user.roles.some(role => [ROLE.ADMIN, ROLE.USER].includes(role.role))
+        ? dispatch(cancelOrder({orderId: data.id, comment: formData.comment}))
+        : dispatch(processOrder({orderId: data.id, nextStatusId: ORDER_STATUS.INIT}));
+      onCloseRejectModal();
+    }
+  };
 
   return (
     <View style={{flex: 1, borderTopWidth: 4, borderTopColor: colors.grey4}}>
@@ -300,7 +318,7 @@ const MyOrderListItem = (props: any) => {
                       paddingHorizontal: 12,
                     }}
                     titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-                    onPress={onUserCancelOrder}
+                    onPress={onOpenRejectModal}
                   />
                 ) : (
                   <></>
@@ -316,7 +334,7 @@ const MyOrderListItem = (props: any) => {
                         paddingHorizontal: 12,
                       }}
                       titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-                      onPress={onDriverRejectOrder}
+                      onPress={onOpenRejectModal}
                     />
                     <Button
                       title={'Pick up'}
@@ -336,15 +354,16 @@ const MyOrderListItem = (props: any) => {
                 ),
                 [ORDER_STATUS.TRANSFERRING]: user.roles.some(role => role.role === ROLE.DRIVER) ? (
                   <Button
-                    title={'Confirm delivery'}
+                    title={'Delivery'}
                     buttonStyle={{
                       backgroundColor: COLORS.golden,
                       borderRadius: 4,
                       paddingVertical: 4,
                       paddingHorizontal: 12,
+                      marginLeft: 6,
                     }}
                     titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-                    onPress={onDeliveredOrder}
+                    onPress={onOpenPhotoModal}
                   />
                 ) : (
                   <></>
@@ -363,11 +382,42 @@ const MyOrderListItem = (props: any) => {
                     paddingHorizontal: 12,
                   }}
                   titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
-                  onPress={onUserCancelOrder}
+                  onPress={onOpenRejectModal}
                 />
               )}
         </View>
       </View>
+
+      <Modal
+        isVisible={isRejectModalVisible}
+        backdropOpacity={0.5}
+        onBackdropPress={onCloseRejectModal}
+        style={{margin: 0, justifyContent: 'flex-end'}}>
+        <View style={{flex: 0.4, backgroundColor: 'white', borderTopLeftRadius: 20, borderTopRightRadius: 20}}>
+          <Text style={{textAlign: 'center', marginTop: 16, paddingVertical: 10, fontSize: 17, fontWeight: '700'}}>
+            Are you sure?
+          </Text>
+          <Text style={{textAlign: 'center', paddingHorizontal: 24, color: colors.grey3, marginBottom: 12}}>
+            Please tell us the reason why you are rejecting it
+          </Text>
+          <View style={{width: '100%', height: 200, paddingHorizontal: 24, marginTop: 12}}>
+            <MyInput
+              name="comment"
+              control={control}
+              rules={{required: true}}
+              placeholder="Reason why"
+              containerStyle={{marginTop: 4}}
+              inputContainerStyle={{borderRadius: 8}}
+            />
+            <Button
+              title={'Reject order'}
+              containerStyle={{marginTop: 24}}
+              buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
+              titleStyle={{color: COLORS.black1, marginVertical: 2}}
+              onPress={handleSubmit(onRejectOrder)}></Button>
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         isVisible={isPhotoModalVisible}
@@ -392,11 +442,11 @@ const MyOrderListItem = (props: any) => {
                     resizeMode: 'contain',
                   }}></Image>
                 <Button
-                  title={'Confirm pickup'}
+                  title={data.status === ORDER_STATUS.TRANSFERRING ? 'Confirm delivery' : 'Confirm pickup'}
                   containerStyle={{marginTop: 24}}
                   buttonStyle={{backgroundColor: COLORS.golden, borderRadius: 4}}
                   titleStyle={{color: COLORS.black1, marginVertical: 2}}
-                  onPress={onPickUp}></Button>
+                  onPress={onUploadConfirmPhoto}></Button>
               </>
             ) : (
               <View

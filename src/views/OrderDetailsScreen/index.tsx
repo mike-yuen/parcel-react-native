@@ -42,7 +42,15 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               [ORDER_STATUS.INIT]: (
                 <>
                   <View>
-                    <Text style={{fontSize: 18, color: colors.grey0}}>Order Placed</Text>
+                    <Text style={{fontSize: 18, color: colors.grey0}}>Order is processing</Text>
+                    <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
+                  </View>
+                </>
+              ),
+              [ORDER_STATUS.AWAITING_PICKUP]: (
+                <>
+                  <View>
+                    <Text style={{fontSize: 18, color: colors.grey0}}>Order is awaiting pickup</Text>
                     <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
                   </View>
                 </>
@@ -50,15 +58,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               [ORDER_STATUS.TRANSFERRING]: (
                 <>
                   <View>
-                    <Text style={{fontSize: 18, color: colors.grey0}}>Order Preparing</Text>
-                    <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
-                  </View>
-                </>
-              ),
-              [ORDER_STATUS.PENDING]: (
-                <>
-                  <View>
-                    <Text style={{fontSize: 18, color: colors.grey0}}>Order Delivering</Text>
+                    <Text style={{fontSize: 18, color: colors.grey0}}>Order is delivering</Text>
                     <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
                   </View>
                 </>
@@ -66,7 +66,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               [ORDER_STATUS.SUCCESS]: (
                 <>
                   <View>
-                    <Text style={{fontSize: 18, color: colors.white}}>Order Completed</Text>
+                    <Text style={{fontSize: 18, color: colors.white}}>Order is completed</Text>
                     <Text style={{fontSize: 16, color: colors.white}}>Thanks for your using ParcelGO!</Text>
                   </View>
                   <Icon name="check-decagram" type="material-community" color={colors.white} />
@@ -127,9 +127,9 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               <Text style={{fontSize: 15, color: '#1cbc9f'}}>
                 {
                   {
-                    [ORDER_STATUS.INIT]: 'Order is placed',
-                    [ORDER_STATUS.TRANSFERRING]: 'Order is preparing',
-                    [ORDER_STATUS.PENDING]: 'Order is delivering',
+                    [ORDER_STATUS.INIT]: 'Order is processing',
+                    [ORDER_STATUS.AWAITING_PICKUP]: 'Order is awaiting pickup',
+                    [ORDER_STATUS.TRANSFERRING]: 'Order is delivering',
                     [ORDER_STATUS.SUCCESS]: 'Order is delivered',
                     [ORDER_STATUS.FAIL]: <></>,
                     [ORDER_STATUS.CANCELED]: <></>,
@@ -179,9 +179,9 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
             />
           </View>
           <View style={{marginLeft: 32}}>
+            {order.recipient && <Text style={{fontSize: 15, color: '#1cbc9f'}}>{order.recipient.address}</Text>}
             {order.recipient && <Text style={{fontSize: 15, color: colors.grey3}}>{order.recipient.name}</Text>}
             {order.recipient && <Text style={{fontSize: 15, color: colors.grey3}}>{order.recipient.phone}</Text>}
-            {order.recipient && <Text style={{fontSize: 15, color: colors.grey3}}>{order.recipient.address}</Text>}
           </View>
         </View>
 

@@ -252,6 +252,7 @@ export function* getTrackingOrderDetailSaga(action: any) {
 export function* processOrderSaga(action: any) {
   try {
     const {orderId, nextStatusId} = action.payload;
+    console.log('processOrderSaga: ', orderId, nextStatusId);
     const data: {id: string} = yield call(parcelApi.processOrder, orderId, nextStatusId);
     if (data) yield put(processOrderSuccess(data));
   } catch (error) {
