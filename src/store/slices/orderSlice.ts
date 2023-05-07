@@ -20,6 +20,7 @@ export interface IOrder {
   destination: any;
   subOrders: any[];
   createdAt: string;
+  warehouse?: any;
 }
 
 interface OrderState {
@@ -248,6 +249,11 @@ const orderSlice = createSlice({
       state.uploadedImage = false;
       state.error = action.payload;
     },
+
+    resetOrder(state) {
+      state.intentOrder = {} as Partial<IOrder>;
+      state.order = {} as IOrder;
+    },
   },
 });
 
@@ -283,5 +289,6 @@ export const {
   uploadImage,
   uploadImageSuccess,
   uploadImageError,
+  resetOrder,
 } = orderSlice.actions;
 export default orderSlice.reducer;

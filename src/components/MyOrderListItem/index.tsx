@@ -85,6 +85,8 @@ const MyOrderListItem = (props: any) => {
     }
   };
 
+  const onImport = () => {};
+
   const onRejectOrder = (formData: {[x: string]: string}) => {
     if (formData && formData.comment) {
       console.log('comment: ', formData);
@@ -270,6 +272,12 @@ const MyOrderListItem = (props: any) => {
                     </Text>
                   </>
                 ),
+                [ORDER_STATUS.IN_STOCK]: (
+                  <>
+                    <Icon name="warehouse" type="material-community" size={18} color={COLORS.darkGolden} />
+                    <Text style={{marginLeft: 8, fontSize: 14, color: COLORS.darkGolden}}>Order is in stock</Text>
+                  </>
+                ),
                 [ORDER_STATUS.TRANSFERRING]: (
                   <>
                     <Icon name="truck-fast" type="material-community" size={18} color={COLORS.darkGolden} />
@@ -347,6 +355,36 @@ const MyOrderListItem = (props: any) => {
                       }}
                       titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
                       onPress={onOpenPhotoModal}
+                    />
+                  </View>
+                ) : user.roles.some(role => role.role === ROLE.ADMIN) ? (
+                  <Button
+                    title={'Import'}
+                    buttonStyle={{
+                      backgroundColor: COLORS.golden,
+                      borderRadius: 4,
+                      paddingVertical: 4,
+                      paddingHorizontal: 12,
+                      marginLeft: 6,
+                    }}
+                    titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
+                    onPress={onImport}
+                  />
+                ) : (
+                  <></>
+                ),
+                [ORDER_STATUS.IN_STOCK]: user.roles.some(role => role.role === ROLE.ADMIN) ? (
+                  <View style={{flexDirection: 'row'}}>
+                    <Button
+                      title={'Assign driver'}
+                      buttonStyle={{
+                        backgroundColor: COLORS.golden,
+                        borderRadius: 4,
+                        paddingVertical: 4,
+                        paddingHorizontal: 12,
+                      }}
+                      titleStyle={{fontSize: 14, color: colors.black, marginVertical: 2}}
+                      onPress={() => onGoToDriverScreen(data.id)}
                     />
                   </View>
                 ) : (

@@ -7,7 +7,10 @@ import {useDispatch, useSelector} from 'react-redux';
 import {COLORS} from '~/constants/colors';
 import {parcelApi} from '~/services/api';
 import {RootState} from '~/store';
-import {addOrder, createIntentOrder} from '~/store/slices/orderSlice';
+import {addOrder, createIntentOrder, resetOrder} from '~/store/slices/orderSlice';
+import {resetProducts} from '~/store/slices/productSlice';
+import {resetRecipient} from '~/store/slices/recipientSlice';
+import {resetSelectedLocation} from '~/store/slices/searchSlice';
 
 const OrderScreen = ({navigation}: any) => {
   const STRIPE_PUBLISHABLE_KEY =
@@ -34,7 +37,7 @@ const OrderScreen = ({navigation}: any) => {
       const payload = {
         recipientName: recipient.name,
         recipientPhone: recipient.phone,
-        isExpress: true,
+        isExpress: isExpress,
         packageType: products[0].type,
         source: user.location,
         destination: {
@@ -61,6 +64,8 @@ const OrderScreen = ({navigation}: any) => {
   function onCreateOrder() {
     setPressedCreateOrder(true);
     if (recipient.name && intentOrder.fee != null) {
+      console.log('createIntentOrder response: ', intentOrder);
+      console.log('something: ', isExpress, intentOrder.warehouse?.id);
       const data = {
         userId: user.id,
         recipientName: recipient.name,
@@ -74,6 +79,7 @@ const OrderScreen = ({navigation}: any) => {
         totalWeight: intentOrder.totalWeight,
         fee: intentOrder.fee,
         subOrders: intentOrder.subOrders,
+        warehouseId: intentOrder.warehouse ? intentOrder.warehouse?.id : null,
       };
       console.log('onCreateOrder payload: ', data);
       // add check condition
@@ -116,10 +122,21 @@ const OrderScreen = ({navigation}: any) => {
         if (error) {
           console.log('error: ', error);
         } else {
+          onResetScreen();
           navigation.navigate('Home');
         }
       }
     }
+  };
+
+  const onResetScreen = () => {
+    // reset
+    dispatch(resetSelectedLocation());
+    dispatch(resetRecipient());
+    dispatch(resetProducts());
+    dispatch(resetOrder());
+    setIsExpress(false);
+    setIsEstimated(false);
   };
 
   useEffect(() => {

@@ -42,8 +42,12 @@ const recipientSlice = createSlice({
     },
 
     saveRecipient(state, action) {},
+    resetRecipient(state) {
+      state.recipient = {} as any;
+    },
   },
 });
 
-export const {addRecipient, addRecipientSuccess, addRecipientError, saveRecipient} = recipientSlice.actions;
+export const {addRecipient, addRecipientSuccess, addRecipientError, saveRecipient, resetRecipient} =
+  recipientSlice.actions;
 export default recipientSlice.reducer;

@@ -47,9 +47,13 @@ const productSlice = createSlice({
       const id = state.products.findIndex(product => product.id === action.payload.id);
       state.products[id] = action.payload;
     },
+
+    resetProducts(state) {
+      state.products = [];
+    },
   },
 });
 
-export const {addProduct, addProductSuccess, addProductError, updateProduct, updateProductSuccess} =
+export const {addProduct, addProductSuccess, addProductError, updateProduct, updateProductSuccess, resetProducts} =
   productSlice.actions;
 export default productSlice.reducer;

@@ -1,10 +1,11 @@
 export enum ORDER_STATUS {
   INIT = 1,
   AWAITING_PICKUP = 2,
-  TRANSFERRING = 3,
-  SUCCESS = 4,
-  FAIL = 5, // Dying, can be revived 
-  CANCELED = 6, // Died
+  IN_STOCK = 3,
+  TRANSFERRING = 4,
+  SUCCESS = 5,
+  FAIL = 6, // Dying, can be revived
+  CANCELED = 7, // Died
 }
 
 export enum SUB_ORDER_STATUS {

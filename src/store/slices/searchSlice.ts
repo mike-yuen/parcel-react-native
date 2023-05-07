@@ -51,9 +51,25 @@ const searchSlice = createSlice({
       state.selectedLocation = false;
       state.error = action.payload;
     },
+
+    resetSelectedLocation(state) {
+      state.selectedLocationData = {
+        placeId: '',
+        name: '',
+        address: '',
+        location: {lat: '', lng: ''},
+      };
+    },
   },
 });
 
-export const {search, searchSuccess, searchError, selectLocation, selectLocationSuccess, selectLocationError} =
-  searchSlice.actions;
+export const {
+  search,
+  searchSuccess,
+  searchError,
+  selectLocation,
+  selectLocationSuccess,
+  selectLocationError,
+  resetSelectedLocation,
+} = searchSlice.actions;
 export default searchSlice.reducer;
