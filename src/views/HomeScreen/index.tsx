@@ -36,8 +36,15 @@ const statusItems = [
   {icon: {name: 'list', type: 'entypo'}, key: 0, text: 'All'},
   {icon: {name: 'cogs', type: 'material-community'}, key: ORDER_STATUS.INIT, text: 'Processing'},
   {icon: {name: 'package', type: 'material-community'}, key: ORDER_STATUS.AWAITING_PICKUP, text: 'Awaiting pickup'},
+  {
+    icon: {name: 'package', type: 'material-community'},
+    key: ORDER_STATUS.TRANSFERRING_TO_STOCK,
+    text: 'Transferring to stock',
+  },
+  {icon: {name: 'package', type: 'material-community'}, key: ORDER_STATUS.IN_STOCK, text: 'In stock'},
   {icon: {name: 'truck-fast', type: 'material-community'}, key: ORDER_STATUS.TRANSFERRING, text: 'Delivering'},
   {icon: {name: 'truck-check', type: 'material-community'}, key: ORDER_STATUS.SUCCESS, text: 'Delivered'},
+  {icon: {name: 'truck-check', type: 'material-community'}, key: ORDER_STATUS.CANCELED, text: 'Canceled'},
 ];
 
 const _renderItem = ({item, index}: any) => {
@@ -184,7 +191,7 @@ const HomeScreen = ({navigation}: any) => {
             backdropOpacity={0.5}
             onBackdropPress={onCloseFilter}
             style={{margin: 0, justifyContent: 'flex-end'}}>
-            <View style={{flex: 0.62, backgroundColor: 'white', borderTopLeftRadius: 20, borderTopRightRadius: 20}}>
+            <View style={{flex: 0.84, backgroundColor: 'white', borderTopLeftRadius: 20, borderTopRightRadius: 20}}>
               <Text style={{textAlign: 'center', marginTop: 8, paddingVertical: 10, fontSize: 17, fontWeight: '700'}}>
                 Parcel filter
               </Text>

@@ -9,7 +9,7 @@ import {getOrder} from '~/store/slices/orderSlice';
 
 import logoImage from '~/assets/logo2x.png';
 import {COLORS} from '~/constants/colors';
-import {ORDER_STATUS} from '~/constants/status';
+import {ORDER_STATUS, SUB_ORDER_TYPE} from '~/constants/status';
 import {DateTime} from 'luxon';
 
 const OrderDetailsScreen = ({navigation, route}: any) => {
@@ -42,7 +42,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               [ORDER_STATUS.INIT]: (
                 <>
                   <View>
-                    <Text style={{fontSize: 18, color: colors.grey0}}>Order is processing</Text>
+                    <Text style={{fontSize: 18, color: colors.grey0, fontWeight: '700'}}>Order is processing</Text>
                     <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
                   </View>
                 </>
@@ -50,7 +50,25 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               [ORDER_STATUS.AWAITING_PICKUP]: (
                 <>
                   <View>
-                    <Text style={{fontSize: 18, color: colors.grey0}}>Order is awaiting pickup</Text>
+                    <Text style={{fontSize: 18, color: colors.grey0, fontWeight: '700'}}>Order is awaiting pickup</Text>
+                    <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
+                  </View>
+                </>
+              ),
+              [ORDER_STATUS.TRANSFERRING_TO_STOCK]: (
+                <>
+                  <View>
+                    <Text style={{fontSize: 18, color: colors.grey0, fontWeight: '700'}}>
+                      Order is transferring to stock
+                    </Text>
+                    <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
+                  </View>
+                </>
+              ),
+              [ORDER_STATUS.IN_STOCK]: (
+                <>
+                  <View>
+                    <Text style={{fontSize: 18, color: colors.grey0, fontWeight: '700'}}>Order is in stock</Text>
                     <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
                   </View>
                 </>
@@ -58,7 +76,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               [ORDER_STATUS.TRANSFERRING]: (
                 <>
                   <View>
-                    <Text style={{fontSize: 18, color: colors.grey0}}>Order is delivering</Text>
+                    <Text style={{fontSize: 18, color: colors.grey0, fontWeight: '700'}}>Order is delivering</Text>
                     <Text style={{fontSize: 16, color: colors.grey0}}>Thanks for your using ParcelGO!</Text>
                   </View>
                 </>
@@ -66,7 +84,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               [ORDER_STATUS.SUCCESS]: (
                 <>
                   <View>
-                    <Text style={{fontSize: 18, color: colors.white}}>Order is completed</Text>
+                    <Text style={{fontSize: 18, color: colors.white, fontWeight: '700'}}>Order is completed</Text>
                     <Text style={{fontSize: 16, color: colors.white}}>Thanks for your using ParcelGO!</Text>
                   </View>
                   <Icon name="check-decagram" type="material-community" color={colors.white} />
@@ -129,6 +147,8 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
                   {
                     [ORDER_STATUS.INIT]: 'Order is processing',
                     [ORDER_STATUS.AWAITING_PICKUP]: 'Order is awaiting pickup',
+                    [ORDER_STATUS.TRANSFERRING_TO_STOCK]: 'Order is transferring to stock',
+                    [ORDER_STATUS.IN_STOCK]: 'Order is in stock',
                     [ORDER_STATUS.TRANSFERRING]: 'Order is delivering',
                     [ORDER_STATUS.SUCCESS]: 'Order is delivered',
                     [ORDER_STATUS.FAIL]: <></>,
@@ -138,7 +158,15 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
               </Text>
             </View>
             <Text style={{color: colors.grey3, marginLeft: 28, marginTop: 2}}>
-              {order.createdAt && DateTime.fromISO(order.createdAt).toFormat('dd-MM-yyyy HH:mm')}
+              Priority: <Text style={{color: colors.black}}>{order.isExpress ? 'Express' : 'Standard'}</Text>
+            </Text>
+            {order.fee && (
+              <Text style={{color: colors.grey3, marginLeft: 28, marginTop: 2}}>
+                Value: <Text style={{color: colors.black}}>{`${order.fee.toLocaleString('en-US')}đ`}</Text>
+              </Text>
+            )}
+            <Text style={{color: colors.grey3, marginLeft: 28, marginTop: 2}}>
+              Created time: {order.createdAt && DateTime.fromISO(order.createdAt).toFormat('dd-MM-yyyy HH:mm')}
             </Text>
           </View>
         </View>
@@ -180,8 +208,11 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
           </View>
           <View style={{marginLeft: 32}}>
             {order.recipient && <Text style={{fontSize: 15, color: '#1cbc9f'}}>{order.recipient.address}</Text>}
-            {order.recipient && <Text style={{fontSize: 15, color: colors.grey3}}>{order.recipient.name}</Text>}
-            {order.recipient && <Text style={{fontSize: 15, color: colors.grey3}}>{order.recipient.phone}</Text>}
+            {order.recipient && (
+              <Text style={{fontSize: 15, color: colors.grey3}}>Recipient: {order.recipient.name}</Text>
+            )}
+            {order.recipient && <Text style={{fontSize: 15, color: colors.grey3}}>Phone: {order.recipient.phone}</Text>}
+            {order.recipient && <Text style={{fontSize: 15, color: colors.grey3}}>Email: {order.recipient.email}</Text>}
           </View>
         </View>
 
@@ -235,6 +266,7 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
             alignItems: 'center',
             justifyContent: 'space-between',
             backgroundColor: colors.white,
+            paddingBottom: 10,
           }}>
           {order.subOrders &&
             order.subOrders.map(subOrder => (
@@ -247,26 +279,95 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
                     borderColor: COLORS.golden,
                     borderWidth: 2,
                     borderRadius: 8,
-                    height: 50,
-                    width: 50,
+                    height: 60,
+                    width: 60,
                   }}>
-                  <Image source={logoImage} containerStyle={styles.logoImage} />
+                  {
+                    {
+                      [SUB_ORDER_TYPE.CLOTHES]: (
+                        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                          <Icon type="ionicon" name="ios-shirt" color={'blue'} size={36}></Icon>
+                        </View>
+                      ),
+                      [SUB_ORDER_TYPE.ELECTRIC]: (
+                        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                          <Icon type="ionicon" name="game-controller" color={'green'} size={36}></Icon>
+                        </View>
+                      ),
+                      [SUB_ORDER_TYPE.FOOD]: (
+                        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                          <Icon type="ionicon" name="ios-fast-food" color={'orange'} size={36}></Icon>
+                        </View>
+                      ),
+                      [SUB_ORDER_TYPE.FRAGILE]: (
+                        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                          <Icon type="material-community" name="glass-fragile" color={'purple'} size={36}></Icon>
+                        </View>
+                      ),
+                      [SUB_ORDER_TYPE.OTHERS]: (
+                        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                          <Icon type="foundation" name="social-dropbox" color={'red'} size={36}></Icon>
+                        </View>
+                      ),
+                    }[order.packageType as SUB_ORDER_TYPE]
+                  }
+                  {/* <Image source={logoImage} containerStyle={styles.logoImage} /> */}
                 </View>
                 <View style={{flex: 1}}>
                   <Text
                     numberOfLines={1}
                     style={{
                       fontSize: 16,
-                      fontWeight: '700',
                       color: COLORS.black,
                     }}>
-                    {subOrder.name}
+                    Order type:{' '}
+                    {
+                      {
+                        [SUB_ORDER_TYPE.CLOTHES]: <Text style={{fontWeight: '700'}}>Clothes</Text>,
+                        [SUB_ORDER_TYPE.ELECTRIC]: <Text style={{fontWeight: '700'}}>Electric</Text>,
+                        [SUB_ORDER_TYPE.FOOD]: <Text style={{fontWeight: '700'}}>Food</Text>,
+                        [SUB_ORDER_TYPE.FRAGILE]: <Text style={{fontWeight: '700'}}>Fragile</Text>,
+                        [SUB_ORDER_TYPE.OTHERS]: <Text style={{fontWeight: '700'}}>Others</Text>,
+                      }[order.packageType as SUB_ORDER_TYPE]
+                    }
                   </Text>
-                  <Text style={{color: colors.grey2, lineHeight: 22}}>Weight: {subOrder.weight} kg</Text>
+                  <Text style={{color: colors.grey2, lineHeight: 22}}>
+                    Weight: {subOrder.weight} kg | Dimension: {subOrder.dimension} cm
+                  </Text>
+                  <Text style={{color: colors.grey2, lineHeight: 22}}>Description: {subOrder.name}</Text>
                 </View>
               </ListItem>
             ))}
         </View>
+
+        {/* Images */}
+        {order.pickupImageUrl && (
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 16,
+              backgroundColor: colors.white,
+              paddingBottom: 20,
+            }}>
+            <View style={{width: '50%', paddingRight: 10}}>
+              <Text style={{fontWeight: '700', marginBottom: 10}}>Pickup Image</Text>
+              <View style={{borderWidth: 1, borderColor: COLORS.golden, padding: 8, borderRadius: 10}}>
+                <Image source={{uri: order.pickupImageUrl || ''}} containerStyle={styles.logoImage} />
+              </View>
+            </View>
+            {order.deliverImageUrl && (
+              <View style={{width: '50%', paddingLeft: 10}}>
+                <Text style={{fontWeight: '700', marginBottom: 10}}>Delivery Image</Text>
+                <View style={{borderWidth: 1, borderColor: COLORS.golden, padding: 8, borderRadius: 10}}>
+                  <Image source={{uri: order.deliverImageUrl || ''}} containerStyle={styles.logoImage} />
+                </View>
+              </View>
+            )}
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -274,8 +375,8 @@ const OrderDetailsScreen = ({navigation, route}: any) => {
 
 const styles = StyleSheet.create({
   logoImage: {
-    width: 35,
-    height: 28,
+    width: '100%',
+    height: 150,
     alignSelf: 'center',
   },
 });

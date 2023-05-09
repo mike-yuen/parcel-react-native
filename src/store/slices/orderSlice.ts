@@ -21,6 +21,8 @@ export interface IOrder {
   subOrders: any[];
   createdAt: string;
   warehouse?: any;
+  pickupImageUrl?: string;
+  deliverImageUrl?: string;
 }
 
 interface OrderState {

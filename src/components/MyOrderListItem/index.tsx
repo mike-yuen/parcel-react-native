@@ -272,6 +272,14 @@ const MyOrderListItem = (props: any) => {
                     </Text>
                   </>
                 ),
+                [ORDER_STATUS.TRANSFERRING_TO_STOCK]: (
+                  <>
+                    <Icon name="truck-fast" type="material-community" size={18} color={COLORS.darkGolden} />
+                    <Text style={{marginLeft: 8, fontSize: 14, color: COLORS.darkGolden}}>
+                      Order is transferring to stock
+                    </Text>
+                  </>
+                ),
                 [ORDER_STATUS.IN_STOCK]: (
                   <>
                     <Icon name="warehouse" type="material-community" size={18} color={COLORS.darkGolden} />
@@ -293,7 +301,7 @@ const MyOrderListItem = (props: any) => {
                 [ORDER_STATUS.FAIL]: <></>,
                 [ORDER_STATUS.CANCELED]: (
                   <>
-                    <Icon name="truck-delivery" type="material-community" size={18} color={colors.grey4} />
+                    <Icon name="book-cancel" type="material-community" size={18} color={colors.grey4} />
                     <Text style={{marginLeft: 8, fontSize: 14, color: colors.grey4}}>Order is canceled</Text>
                   </>
                 ),
@@ -373,6 +381,7 @@ const MyOrderListItem = (props: any) => {
                 ) : (
                   <></>
                 ),
+                [ORDER_STATUS.TRANSFERRING_TO_STOCK]: <></>,
                 [ORDER_STATUS.IN_STOCK]: user.roles.some(role => role.role === ROLE.ADMIN) ? (
                   <View style={{flexDirection: 'row'}}>
                     <Button

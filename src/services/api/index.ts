@@ -272,6 +272,34 @@ export const parcelApi = {
       throw err;
     }
   },
+
+  async import(orderId: string, warehouseId: string) {
+    try {
+      const res = await parcelClient.post('/import', {
+        orderId,
+        warehouseId,
+      });
+      const resBody = res.data;
+      console.log('import: ', resBody);
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async export(orderId: string, warehouseId: string) {
+    try {
+      const res = await parcelClient.post('/export', {
+        orderId,
+        warehouseId,
+      });
+      const resBody = res.data;
+      console.log('export: ', resBody);
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
 };
 
 export const goongApi = {

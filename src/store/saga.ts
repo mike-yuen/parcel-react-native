@@ -320,15 +320,15 @@ export function* getDriversSaga(action: any) {
 
 export function* uploadOrderImageSaga(action: any) {
   try {
-    yield call(parcelApi.uploadOrderImage, action.payload.formData);
+    const order: IOrder = yield call(parcelApi.uploadOrderImage, action.payload.formData);
 
-    if (action.payload.status === ORDER_STATUS.AWAITING_PICKUP) {
+    if (order.status === ORDER_STATUS.AWAITING_PICKUP) {
       yield call(processOrderSaga, {
-        payload: {orderId: action.payload.orderId, nextStatusId: ORDER_STATUS.TRANSFERRING},
+        payload: {orderId: order.id, nextStatusId: ORDER_STATUS.TRANSFERRING},
       });
-    } else if (action.payload.status === ORDER_STATUS.TRANSFERRING) {
+    } else if (order.status === ORDER_STATUS.TRANSFERRING) {
       yield call(processOrderSaga, {
-        payload: {orderId: action.payload.orderId, nextStatusId: ORDER_STATUS.SUCCESS},
+        payload: {orderId: order.id, nextStatusId: ORDER_STATUS.SUCCESS},
       });
     }
   } catch (error) {
