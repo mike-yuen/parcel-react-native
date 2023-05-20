@@ -14,7 +14,8 @@ import driver4 from '~/assets/driver-4.jpg';
 import driver5 from '~/assets/driver-5.jpg';
 
 import {VEHICLE_TYPES} from '~/constants/driver';
-import {assignDriverToOrders} from '~/store/slices/orderSlice';
+import {assignDriverToOrders, exportParcel} from '~/store/slices/orderSlice';
+import {ORDER_STATUS} from '~/constants/status';
 
 const driverImages = [driver1, driver2, driver3, driver4, driver5];
 
@@ -22,7 +23,7 @@ const DriverScreen = ({route}: any) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const {drivers} = useSelector((state: RootState) => state.driver);
-  const {orderId} = route.params;
+  const {orderId, status} = route.params;
 
   const getVehicleType = (type: VEHICLE_TYPES) => {
     switch (type) {
@@ -47,7 +48,12 @@ const DriverScreen = ({route}: any) => {
   };
 
   const onSubmit = (userId: string) => {
-    dispatch(assignDriverToOrders({userId, orderId}));
+    console.log('status: ', status);
+    if (status === ORDER_STATUS.IN_STOCK) {
+      dispatch(exportParcel({userId, orderId}));
+    } else {
+      dispatch(assignDriverToOrders({userId, orderId}));
+    }
     setTimeout(() => navigation.goBack(), 100);
   };
 

@@ -39,6 +39,10 @@ interface OrderState {
   orderList: {data: IOrder[]};
   processingOrder: boolean;
   processedOrder: boolean;
+  importingOrder: boolean;
+  importedOrder: boolean;
+  exportingOrder: boolean;
+  exportedOrder: boolean;
   cancelingOrder: boolean;
   canceledOrder: boolean;
   assigningDriverToOrders: boolean;
@@ -70,6 +74,10 @@ const orderSlice = createSlice({
     orderList: {data: []},
     processingOrder: false,
     processedOrder: false,
+    importingOrder: false,
+    importedOrder: false,
+    exportingOrder: false,
+    exportedOrder: false,
     cancelingOrder: false,
     canceledOrder: false,
     assigningDriverToOrders: false,
@@ -170,6 +178,38 @@ const orderSlice = createSlice({
     processOrderError(state, action) {
       state.processingOrder = false;
       state.processedOrder = false;
+      state.error = action.payload;
+    },
+
+    // import
+    importParcel(state, action) {
+      state.importingOrder = true;
+      state.importedOrder = false;
+    },
+    importParcelSuccess(state, action) {
+      state.order = Object.assign(state.order, action.payload);
+      state.importingOrder = false;
+      state.importedOrder = true;
+    },
+    importParcelError(state, action) {
+      state.importingOrder = false;
+      state.importedOrder = false;
+      state.error = action.payload;
+    },
+
+    // export
+    exportParcel(state, action) {
+      state.exportingOrder = true;
+      state.exportedOrder = false;
+    },
+    exportParcelSuccess(state, action) {
+      state.order = Object.assign(state.order, action.payload);
+      state.exportingOrder = false;
+      state.exportedOrder = true;
+    },
+    exportParcelError(state, action) {
+      state.exportingOrder = false;
+      state.exportedOrder = false;
       state.error = action.payload;
     },
 
@@ -276,6 +316,12 @@ export const {
   processOrder,
   processOrderSuccess,
   processOrderError,
+  importParcel,
+  importParcelSuccess,
+  importParcelError,
+  exportParcel,
+  exportParcelSuccess,
+  exportParcelError,
   cancelOrder,
   cancelOrderSuccess,
   cancelOrderError,

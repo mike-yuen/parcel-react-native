@@ -23,6 +23,7 @@ const userSlice = createSlice({
       address: '',
       location: {} as any,
       roles: [] as any[],
+      warehouse: {} as any,
     },
 
     error: {},

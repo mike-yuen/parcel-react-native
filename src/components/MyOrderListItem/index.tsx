@@ -12,9 +12,10 @@ import Modal from 'react-native-modal';
 import {COLORS} from '~/constants/colors';
 import {ORDER_STATUS, SUB_ORDER_TYPE} from '~/constants/status';
 import {RootState} from '~/store';
-import {cancelOrder, getOrders, processOrder, uploadImage} from '~/store/slices/orderSlice';
+import {cancelOrder, getOrders, importParcel, processOrder, uploadImage} from '~/store/slices/orderSlice';
 import {ROLE} from '~/constants/role';
 import MyInput from '../MyInput';
+import {parcelApi} from '~/services/api';
 
 const MyOrderListItem = (props: any) => {
   const dimension = useWindowDimensions();
@@ -59,7 +60,7 @@ const MyOrderListItem = (props: any) => {
   // };
 
   const onGoToDriverScreen = (orderId: string) => {
-    navigation.navigate('Driver', {orderId: orderId});
+    navigation.navigate('Driver', {orderId: orderId, status: data.status});
   };
 
   const takeAPhoto = async () => {
@@ -85,7 +86,9 @@ const MyOrderListItem = (props: any) => {
     }
   };
 
-  const onImport = () => {};
+  const onImport = async () => {
+    dispatch(importParcel({orderId: data.id, warehouseId: data.warehouseId}));
+  };
 
   const onRejectOrder = (formData: {[x: string]: string}) => {
     if (formData && formData.comment) {
@@ -365,7 +368,10 @@ const MyOrderListItem = (props: any) => {
                       onPress={onOpenPhotoModal}
                     />
                   </View>
-                ) : user.roles.some(role => role.role === ROLE.ADMIN) ? (
+                ) : (
+                  <></>
+                ),
+                [ORDER_STATUS.TRANSFERRING_TO_STOCK]: user.roles.some(role => role.role === ROLE.ADMIN) ? (
                   <Button
                     title={'Import'}
                     buttonStyle={{
@@ -381,7 +387,6 @@ const MyOrderListItem = (props: any) => {
                 ) : (
                   <></>
                 ),
-                [ORDER_STATUS.TRANSFERRING_TO_STOCK]: <></>,
                 [ORDER_STATUS.IN_STOCK]: user.roles.some(role => role.role === ROLE.ADMIN) ? (
                   <View style={{flexDirection: 'row'}}>
                     <Button

@@ -112,6 +112,30 @@ export const parcelApi = {
     }
   },
 
+  async getOrdersByWarehouse(warehouseId: string) {
+    const params: {[x: string]: any} = {
+      pageSize: 100,
+      pageNumber: 0,
+      warehouseId,
+      sortBy: 'createdAt',
+      sortDirection: -1,
+    };
+
+    try {
+      const res = await parcelClient.get('/order/order-by-warehouse', {
+        params,
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        },
+      });
+      const resBody = res.data;
+      console.log('order-by-warehouse: ', resBody);
+      return resBody;
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async getOrder(id: string) {
     try {
       const res = await parcelClient.get(`/order/${id}`);
@@ -287,11 +311,11 @@ export const parcelApi = {
     }
   },
 
-  async export(orderId: string, warehouseId: string) {
+  async export(orderId: string, userId: string) {
     try {
       const res = await parcelClient.post('/export', {
         orderId,
-        warehouseId,
+        userId,
       });
       const resBody = res.data;
       console.log('export: ', resBody);

@@ -1,11 +1,25 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {ScrollView, View} from 'react-native';
-import {Button, Image, Text, colors} from 'react-native-elements';
+import {Button, Image, ListItem, Text, colors} from 'react-native-elements';
+import {useSelector} from 'react-redux';
 
 import notFoundImage from '~/assets/not-found.png';
+import MyOrderListItem from '~/components/MyOrderListItem';
 import {COLORS} from '~/constants/colors';
+import {parcelApi} from '~/services/api';
+import {RootState} from '~/store';
 
 const ImExScreen = ({navigation}: any) => {
+  const {orderList} = useSelector((state: RootState) => state.order);
+  const {user} = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    if (user && user.warehouse) {
+      console.log('------', user, user.warehouse);
+      parcelApi.getOrdersByWarehouse(user.warehouse.id);
+    }
+  }, [user]);
+
   return (
     <ScrollView>
       {/* Logo */}
@@ -26,34 +40,52 @@ const ImExScreen = ({navigation}: any) => {
           borderTopLeftRadius: 30,
           borderTopRightRadius: 30,
         }}>
-        <View style={{paddingHorizontal: 16, paddingVertical: 24}}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Button
-              title={'In stock'}
-              containerStyle={{borderRadius: 30, marginRight: 10}}
-              buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
-              titleStyle={{color: '#24252a', fontSize: 14, fontWeight: '600', paddingHorizontal: 10}}
-            />
-            <Button
-              title={'Ready to import'}
-              containerStyle={{borderRadius: 30, marginRight: 10}}
-              buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
-              titleStyle={{color: '#24252a', fontSize: 14, fontWeight: '600', paddingHorizontal: 10}}
-            />
+        <View style={{paddingHorizontal: 16}}>
+          <View style={{paddingVertical: 24}}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Button
+                title={'In stock'}
+                containerStyle={{borderRadius: 30, marginRight: 10}}
+                buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
+                titleStyle={{color: '#24252a', fontSize: 14, fontWeight: '600', paddingHorizontal: 10}}
+              />
+              <Button
+                title={'Ready to import'}
+                containerStyle={{borderRadius: 30, marginRight: 10}}
+                buttonStyle={{backgroundColor: '#f5f5f5', borderRadius: 30, paddingVertical: 4}}
+                titleStyle={{color: '#24252a', fontSize: 14, fontWeight: '600', paddingHorizontal: 10}}
+              />
+            </View>
           </View>
-        </View>
 
-        <View style={{alignItems: 'center', justifyContent: 'center', paddingTop: 100, paddingBottom: 210}}>
-          <Image
-            source={notFoundImage}
-            containerStyle={{
-              width: 92,
-              height: 84,
-              alignSelf: 'center',
-              marginTop: 30,
-            }}
-          />
-          <Text style={{fontSize: 12, color: '#8c8f96', marginTop: 6}}>No parcels found</Text>
+          {orderList.data && orderList.data.length ? (
+            orderList.data.map(order => (
+              <ListItem
+                key={order.id}
+                containerStyle={{padding: 0}}
+                onPress={() =>
+                  navigation.navigate('Detail', {
+                    orderId: order.id,
+                    departure: 'ImEx',
+                  })
+                }>
+                <MyOrderListItem data={order} />
+              </ListItem>
+            ))
+          ) : (
+            <View style={{alignItems: 'center', justifyContent: 'center', paddingTop: 100, paddingBottom: 210}}>
+              <Image
+                source={notFoundImage}
+                containerStyle={{
+                  width: 92,
+                  height: 84,
+                  alignSelf: 'center',
+                  marginTop: 30,
+                }}
+              />
+              <Text style={{fontSize: 12, color: '#8c8f96', marginTop: 6}}>No parcels found</Text>
+            </View>
+          )}
         </View>
       </View>
     </ScrollView>

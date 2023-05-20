@@ -34,6 +34,12 @@ import {
   uploadImageSuccess,
   uploadImageError,
   uploadImage,
+  importParcelSuccess,
+  importParcelError,
+  importParcel,
+  exportParcelSuccess,
+  exportParcelError,
+  exportParcel,
 } from './slices/orderSlice';
 import {
   addProduct,
@@ -123,8 +129,8 @@ export function* signOutSaga() {
 
 export function* getUserSaga() {
   try {
-    const {id, displayName, email, phone, address, location, roles} = yield call(parcelApi.currentUser);
-    yield put(getUserSuccess({id, displayName, email, phone, address, location, roles}));
+    const {id, displayName, email, phone, address, location, roles, warehouse} = yield call(parcelApi.currentUser);
+    yield put(getUserSuccess({id, displayName, email, phone, address, location, roles, warehouse}));
   } catch (error) {
     yield put(getUserError(error));
   }
@@ -260,6 +266,28 @@ export function* processOrderSaga(action: any) {
   }
 }
 
+export function* importParcelSaga(action: any) {
+  try {
+    const {orderId, warehouseId} = action.payload;
+    console.log('importParcelSaga: ', orderId, warehouseId);
+    const data: {id: string} = yield call(parcelApi.import, orderId, warehouseId);
+    if (data) yield put(importParcelSuccess(data));
+  } catch (error) {
+    yield put(importParcelError(error));
+  }
+}
+
+export function* exportParcelSaga(action: any) {
+  try {
+    const {orderId, userId} = action.payload;
+    console.log('exportParcelSaga: ', orderId, userId);
+    const data: {id: string} = yield call(parcelApi.export, orderId, userId);
+    if (data) yield put(exportParcelSuccess(data));
+  } catch (error) {
+    yield put(exportParcelError(error));
+  }
+}
+
 export function* cancelOrderSaga(action: any) {
   try {
     const {orderId, comment} = action.payload;
@@ -360,6 +388,8 @@ function* rootSaga() {
     takeLatest(getOrder.type, getOrderSaga),
     takeLatest(getTrackingOrderDetail.type, getTrackingOrderDetailSaga),
     takeLatest(processOrder.type, processOrderSaga),
+    takeLatest(importParcel.type, importParcelSaga),
+    takeLatest(exportParcel.type, exportParcelSaga),
     takeLatest(cancelOrder.type, cancelOrderSaga),
     takeLatest(assignDriverToOrders.type, assignDriverToOrdersSaga),
     takeLatest(trackOrder.type, trackOrderSaga),
