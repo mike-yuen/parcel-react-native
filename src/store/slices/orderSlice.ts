@@ -37,6 +37,9 @@ interface OrderState {
   gettingOrders: boolean;
   gotOrders: boolean;
   orderList: {data: IOrder[]};
+  gettingOrdersInStock: boolean;
+  gotOrdersInStock: boolean;
+  orderListInStock: {data: IOrder[]};
   processingOrder: boolean;
   processedOrder: boolean;
   importingOrder: boolean;
@@ -72,6 +75,9 @@ const orderSlice = createSlice({
     gettingOrders: false,
     gotOrders: false,
     orderList: {data: []},
+    gettingOrdersInStock: false,
+    gotOrdersInStock: false,
+    orderListInStock: {data: []},
     processingOrder: false,
     processedOrder: false,
     importingOrder: false,
@@ -140,6 +146,22 @@ const orderSlice = createSlice({
     getOrdersError(state, action) {
       state.gettingOrders = false;
       state.gotOrders = false;
+      state.error = action.payload;
+    },
+
+    // getOrdersInStock
+    getOrdersInStock(state, action) {
+      state.gettingOrdersInStock = true;
+      state.gotOrdersInStock = false;
+    },
+    getOrdersInStockSuccess(state, action) {
+      state.orderListInStock = action.payload;
+      state.gettingOrdersInStock = false;
+      state.gotOrdersInStock = true;
+    },
+    getOrdersInStockError(state, action) {
+      state.gettingOrdersInStock = false;
+      state.gotOrdersInStock = false;
       state.error = action.payload;
     },
 
@@ -309,6 +331,9 @@ export const {
   getOrders,
   getOrdersSuccess,
   getOrdersError,
+  getOrdersInStock,
+  getOrdersInStockSuccess,
+  getOrdersInStockError,
   getOrder,
   getOrderSuccess,
   getOrderError,

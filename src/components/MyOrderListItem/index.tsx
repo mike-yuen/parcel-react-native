@@ -126,12 +126,12 @@ const MyOrderListItem = (props: any) => {
                 fontWeight: '400',
                 marginBottom: 4,
                 color: colors.white,
-                backgroundColor: '#ed4d2d',
+                backgroundColor: data.isExpress ? '#ed4d2d' : colors.grey2,
                 paddingVertical: 2,
                 paddingHorizontal: 6,
                 borderRadius: 4,
               }}>
-              Order
+              {data.isExpress ? 'Express' : 'Standard'}
             </Text>
             <Text style={{marginLeft: 6, fontWeight: '700'}}>
               {data.id.slice(0, 9)}...{data.id.slice(data.id.length - 6, data.id.length)}

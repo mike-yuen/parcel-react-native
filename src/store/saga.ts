@@ -40,6 +40,9 @@ import {
   exportParcelSuccess,
   exportParcelError,
   exportParcel,
+  getOrdersInStockSuccess,
+  getOrdersInStockError,
+  getOrdersInStock,
 } from './slices/orderSlice';
 import {
   addProduct,
@@ -237,6 +240,16 @@ export function* getOrdersSaga(action: any) {
   }
 }
 
+export function* getOrdersInStockSaga(action: any) {
+  try {
+    const {warehouseId} = action.payload;
+    const data: any[] = yield call(parcelApi.getOrdersByWarehouse, warehouseId);
+    if (data) yield put(getOrdersInStockSuccess(data));
+  } catch (error) {
+    yield put(getOrdersInStockError(error));
+  }
+}
+
 export function* getOrderSaga(action: any) {
   try {
     const data: {id: string} = yield call(parcelApi.getOrder, action.payload);
@@ -385,6 +398,7 @@ function* rootSaga() {
     takeLatest(createIntentOrder.type, createIntentOrderSaga),
     takeLatest(addOrder.type, addOrderSaga),
     takeLatest(getOrders.type, getOrdersSaga),
+    takeLatest(getOrdersInStock.type, getOrdersInStockSaga),
     takeLatest(getOrder.type, getOrderSaga),
     takeLatest(getTrackingOrderDetail.type, getTrackingOrderDetailSaga),
     takeLatest(processOrder.type, processOrderSaga),

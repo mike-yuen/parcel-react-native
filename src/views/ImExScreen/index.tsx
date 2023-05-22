@@ -1,24 +1,30 @@
 import React, {useEffect} from 'react';
 import {ScrollView, View} from 'react-native';
 import {Button, Image, ListItem, Text, colors} from 'react-native-elements';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
 import notFoundImage from '~/assets/not-found.png';
 import MyOrderListItem from '~/components/MyOrderListItem';
 import {COLORS} from '~/constants/colors';
-import {parcelApi} from '~/services/api';
 import {RootState} from '~/store';
+import {getOrdersInStock} from '~/store/slices/orderSlice';
 
 const ImExScreen = ({navigation}: any) => {
-  const {orderList} = useSelector((state: RootState) => state.order);
+  const dispatch = useDispatch();
+  const {order, orderListInStock} = useSelector((state: RootState) => state.order);
   const {user} = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     if (user && user.warehouse) {
-      console.log('------', user, user.warehouse);
-      parcelApi.getOrdersByWarehouse(user.warehouse.id);
+      dispatch(getOrdersInStock({warehouseId: user.warehouse.id}));
     }
   }, [user]);
+
+  useEffect(() => {
+    if (order.id) {
+      dispatch(getOrdersInStock({warehouseId: user.warehouse.id}));
+    }
+  }, [order]);
 
   return (
     <ScrollView>
@@ -58,8 +64,8 @@ const ImExScreen = ({navigation}: any) => {
             </View>
           </View>
 
-          {orderList.data && orderList.data.length ? (
-            orderList.data.map(order => (
+          {orderListInStock.data && orderListInStock.data.length ? (
+            orderListInStock.data.map(order => (
               <ListItem
                 key={order.id}
                 containerStyle={{padding: 0}}

@@ -105,7 +105,7 @@ export const parcelApi = {
         },
       });
       const resBody = res.data;
-      console.log('orders: ', resBody.count);
+      console.log('orders: ', resBody);
       return resBody;
     } catch (err) {
       throw err;
