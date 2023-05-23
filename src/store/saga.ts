@@ -364,9 +364,15 @@ export function* uploadOrderImageSaga(action: any) {
     const order: IOrder = yield call(parcelApi.uploadOrderImage, action.payload.formData);
 
     if (order.status === ORDER_STATUS.AWAITING_PICKUP) {
-      yield call(processOrderSaga, {
-        payload: {orderId: order.id, nextStatusId: ORDER_STATUS.TRANSFERRING},
-      });
+      if (order.isExpress) {
+        yield call(processOrderSaga, {
+          payload: {orderId: order.id, nextStatusId: ORDER_STATUS.TRANSFERRING},
+        });
+      } else {
+        yield call(processOrderSaga, {
+          payload: {orderId: order.id, nextStatusId: ORDER_STATUS.TRANSFERRING_TO_STOCK},
+        });
+      }
     } else if (order.status === ORDER_STATUS.TRANSFERRING) {
       yield call(processOrderSaga, {
         payload: {orderId: order.id, nextStatusId: ORDER_STATUS.SUCCESS},
